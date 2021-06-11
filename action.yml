@@ -1,5 +1,5 @@
 name: 'add-label'
-description: 'Display the PR title and comment';
+description: 'Display the PR title and comment'
 
 runs:
   using: 'node12'

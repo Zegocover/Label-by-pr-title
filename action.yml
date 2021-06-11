@@ -1,5 +1,6 @@
 name: 'add-label'
 description: 'Display the PR title and comment'
+
 inputs:
  GITHUB_TOKEN:
     description: 'GitHub token'

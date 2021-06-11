@@ -2,7 +2,7 @@ name: 'Label my PR'
 on: [pull_request]
 
 jobs:
-  build:
+  label_my_pr_job:
     runs-on: ubuntu-latest
 
     steps:

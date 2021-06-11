@@ -15,13 +15,18 @@ async function run()
 //		issue_number: pull_request.number,
 //		body: 'Thank you for submitting a pull request! We will try to review this as soon as we can.'
 //	});	
-
-	await octokit.issues.addLabels({
-		...context.repo.owner,
-		...context.repo,
-		issue_number: pull_request.number,
-		labels: "bug"
-	});
+await octokit.issues.addLabels({
+	owner: context.repo.owner,
+	repo: context.repo,
+	issue_number: pull_request.number,
+	labels: 'bug'
+});
+//	await octokit.issues.addLabels({
+//		...context.repo.owner,
+//		...context.repo,
+//		issue_number: pull_request.number,
+//		labels: 'bug'
+//	});
 	  
 	console.log('Hello, world!');
 	} catch(error)

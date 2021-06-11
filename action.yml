@@ -1,6 +1,9 @@
 name: 'add-label'
 description: 'Display the PR title and comment'
 inputs:
+ GITHUB_TOKEN:
+    description: 'GitHub token'
+    required: true
 configuration-path:
     description: 'The path for the add-label configurations'
     default: '.github/label_config.yml'
@@ -8,4 +11,4 @@ configuration-path:
     
 runs:
   using: 'node12'
-  main: 'index.js'
+  main: 'dist/index.js'

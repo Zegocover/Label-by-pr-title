@@ -1,10 +1,8 @@
-name: 'Label my PR'
 on: [pull_request]
 
 jobs:
   label_my_pr_job:
     runs-on: ubuntu-latest
-
     steps:
     - name: Checkout
       uses: actions/checkout@v2

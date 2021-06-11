@@ -17,6 +17,7 @@ async function run()
 //	});	
 
 	await octokit.issues.addLabels({
+		...context.repo.owner,
 		...context.repo,
 		issue_number: pull_request.number,
 		labels: 'bug'

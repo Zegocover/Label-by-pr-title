@@ -6191,6 +6191,7 @@ async function run()
 	console.log("PR owner is: " + pr_owner);
 	console.log("PR repo is: " + pr_repo);
 	console.log("PR number is: " + pr_number);
+	console.log("PR issue number is: " + pull_request.issue_number);
 
 	const myLabel = pull_request.labels;
 		const readable_Labels = JSON.stringify(myLabel,undefined,2);

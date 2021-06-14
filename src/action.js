@@ -32,6 +32,10 @@ async function run()
 
 		const stringed3 = JSON.stringify(myLabel[0],undefined,2);
 		console.log("Print first label: " + stringed3);
+		console.log("First label name is: " + myLabel[0].name);
+
+
+
 	for (const lbl in myLabel) {
 		const stringed = JSON.stringify(lbl,undefined,2);
 		console.log("each label name: " + lbl.name);

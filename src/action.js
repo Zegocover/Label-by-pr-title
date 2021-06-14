@@ -31,8 +31,9 @@ async function run()
 		const readable_Labels = JSON.stringify(myLabel,undefined,2);
 	//	console.log("Print all labels: " + readable_Labels);
 
-		const stringed3 = JSON.stringify(myLabel[0],undefined,2);
-		console.log("Print first label: " + stringed3);
+		const first_Label = JSON.stringify(myLabel[0],undefined,2);
+		console.log("Print first label: " + first_Label);
+		console.log("Print first label name: " + first_Label.name);
 		console.log("First label name is: " + myLabel[0].name);
 	
 

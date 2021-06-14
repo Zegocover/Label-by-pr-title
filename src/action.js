@@ -28,7 +28,7 @@ async function run()
 
 	const myLabel = pull_request.labels;
 	for (const lbl in myLabel) {
-		console.log("each label: " + lbl);
+		console.log("each label: " + lbl.name);
 	}
 
 	console.log("Retrieved labels OK: " + myLabel);

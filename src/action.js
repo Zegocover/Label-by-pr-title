@@ -9,6 +9,7 @@ async function run()
 	const octokit = github.getOctokit(GITHUB_TOKEN);
 	const { context = {} } = github;
 	const { pull_request } = context.payload;
+	const bugLabel = ["Bug"];
 
 	await octokit.rest.issues.createComment({
 		...context.repo,
@@ -20,7 +21,7 @@ async function run()
 		...context.repo.owner,
 		...context.repo,
 		issue_number: pull_request.number,
-		labels: ['bug']
+		labels: bugLabel
 	});
 	  
 	console.log('Hello, world!');

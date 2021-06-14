@@ -6193,6 +6193,10 @@ async function run()
 	console.log("PR number is: " + pr_number);
 
 	const myLabel = pull_request.labels;
+	for (const lbl in myLabels) {
+		console.log("each label: " + lbl);
+	}
+
 	console.log("Retrieved labels OK: " + myLabel);
 
 	await octokit.rest.issues.getLabel({

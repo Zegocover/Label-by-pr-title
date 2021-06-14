@@ -6198,7 +6198,15 @@ async function run()
 	}
 
 	console.log("Retrieved labels OK: " + myLabel);
+	
 
+	await octokit.rest.issues.removeLabel({
+		owner: pr_owner,
+		repo: pr_repo,
+		issue_number: pull_request.number,
+		labels: myLabel,
+	});
+	console.log("Removed label OK");
 /*
 	await octokit.rest.issues.addLabels({
 		owner: pr_owner,

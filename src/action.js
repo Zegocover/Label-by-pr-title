@@ -6,7 +6,6 @@ async function run()
 	try
 	{
 	const GITHUB_TOKEN = core.getInput('GITHUB_TOKEN');
-	const git_client = new github.GitHub('GITHUB_TOKEN');
 	console.log("my token" + GITHUB_TOKEN);
 	const octokit = github.getOctokit(GITHUB_TOKEN);
 	const { context = {} } = github;
@@ -16,18 +15,11 @@ async function run()
 	console.log("PR number is: " + github.context.payload.pull_request.number);
 	console.log("First label name is: " + allMyLabels[0].name);
 	
-
-	await git_client.issues.removeLabel({
+	await octokit.rest.issues.removeLabel({
 		...context.repo,
 		issue_number: pull_request.number,
 		labels: allMyLabels[0].name
 	});
-
-	/*await octokit.rest.issues.removeLabel({
-		...context.repo,
-		issue_number: pull_request.number,
-		labels: allMyLabels[0].name
-	});*/
 	console.log("Removed first label OK");
 /*
 

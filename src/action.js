@@ -16,13 +16,14 @@ async function run()
 		issue_number: pull_request.number,
 		body: '2Thank you for submitting a pull request! We will try to review this as soon as we can.'
 	});	
-
-	context.pull_request.addLabels({
-		...context.repo,
-		issue_number: pull_request.number,
-		labels: String["bug"],
-	})
-
+	const pr_owner = context.repo.owner;
+	const pr_repo = context.repo;
+	const pr_number = pull_request.number;
+	await octokit.request('POST /repos/'&pr_owner&'/'& pr_repo & '/issues/'& pr_number &'/labels/bug', {
+		owner: pr_owner,
+		repo: pr_repo,
+		issue_number: pr_number
+	      })
 
 	await octokit.rest.issues.addLabels({
 		...context.repo,

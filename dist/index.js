@@ -6193,32 +6193,22 @@ async function run()
 	console.log("PR number is: " + pr_number);
 
 	const myLabel = pull_request.labels;
-		const stringed2 = JSON.stringify(myLabel,undefined,2);
-		console.log("Print all labels: " + stringed2);
+		const readable_Labels = JSON.stringify(myLabel,undefined,2);
+		console.log("Print all labels: " + readable_Labels);
 
 		const stringed3 = JSON.stringify(myLabel[0],undefined,2);
 		console.log("Print first label: " + stringed3);
 		console.log("First label name is: " + myLabel[0].name);
-
-
-
-	for (const lbl in myLabel) {
-		const stringed = JSON.stringify(lbl,undefined,2);
-		console.log("each label name: " + lbl.name);
-		console.log("each label stringged: " + stringed);
-	}
-
-	console.log("Retrieved labels OK: " + myLabel);
 	
-/*
+
 	await octokit.rest.issues.removeLabel({
 		owner: pr_owner,
 		repo: pr_repo,
 		issue_number: pull_request.number,
-		labels: myLabel,
+		labels: myLabel[0],
 	});
-	console.log("Removed label OK");
-
+	console.log("Removed first label OK");
+/*
 	await octokit.rest.issues.addLabels({
 		owner: pr_owner,
 		repo: pr_repo,

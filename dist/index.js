@@ -6183,7 +6183,7 @@ async function run()
 		body: '3Thank you for submitting a pull request! We will try to review this as soon as we can.'
 	});	
 
-	const client = new github.GitHub(token);
+	const client = new github.GitHub(GITHUB_TOKEN);
 	const pr_owner = context.repo.owner;
 	const pr_repo = context.repo;
 	const pr_number = pull_request.number;

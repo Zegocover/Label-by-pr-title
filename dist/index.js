@@ -6175,7 +6175,7 @@ async function run()
 	const octokit = github.getOctokit(GITHUB_TOKEN);
 	const { context = {} } = github;
 	const { pull_request } = context.payload;
-	const bugLabel = string["bug"];
+	const bugLabel = String["bug"];
 
 	await octokit.rest.issues.createComment({
 		...context.repo,

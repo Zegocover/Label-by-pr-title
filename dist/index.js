@@ -6187,10 +6187,10 @@ async function run()
 	const pr_number = pull_request.number;
 	console.log("comment created successfully");
 	console.log("PR owner is" + pr_owner);
-	console.log("PR repo is" + pr_repo);
+	console.log("PR repo is" + pr_repo.name);
 	console.log("PR number is" + pr_number);
 
-	await octokit.rest.issues.getLabel({
+	await octokit.issues.getLabel({
 		owner: pr_owner,
 		repo: pr_repo,
 		name:"bug",

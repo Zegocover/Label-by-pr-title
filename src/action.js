@@ -39,7 +39,7 @@ async function run()
 		owner: pr_owner,
 		repo: pr_repo,
 		issue_number: pull_request.number,
-		labels: myLabel[0],
+		labels: "documentation",
 	});
 	console.log("Removed first label OK");
 /*

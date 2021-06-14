@@ -6194,7 +6194,7 @@ async function run()
 
 	const myLabel = pull_request.labels;
 		const readable_Labels = JSON.stringify(myLabel,undefined,2);
-		console.log("Print all labels: " + readable_Labels);
+	//	console.log("Print all labels: " + readable_Labels);
 
 		const stringed3 = JSON.stringify(myLabel[0],undefined,2);
 		console.log("Print first label: " + stringed3);
@@ -6204,7 +6204,7 @@ async function run()
 	await octokit.rest.issues.removeLabel({
 		...context.repo,
 		issue_number: context.payload.number,
-		labels: "bug"
+		labels: myLabel[0].name
 	});
 	console.log("Removed first label OK");
 /*

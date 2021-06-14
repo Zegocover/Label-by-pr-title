@@ -26,28 +26,22 @@ async function run()
 	console.log("PR repo is: " + pr_repo);
 	console.log("PR number is: " + pr_number);
 
-	const myLabel = pull_request.labels;
+/*	const myLabel = pull_request.labels;
 	for (const lbl in myLabel) {
 		console.log("each label: " + lbl);
 	}
 
 	console.log("Retrieved labels OK: " + myLabel);
+*/
 
-	await octokit.rest.issues.getLabel({
-		owner: pr_owner,
-		repo: pr_repo,
-		name: 'bug'
-	});
-	console.log("Retrieved labels OK");
-/*
-	await octokit.rest.issues.addLabels('POST /repos/{owner}/{repo}/issues/{issue_number}/labels', {
+	await octokit.rest.issues.addLabels({
 		owner: pr_owner,
 		repo: pr_repo,
 		issue_number: pull_request.number,
-		labels: "bug",
+		labels: 0,
 	});
 	console.log("set label OK");
-	*/  
+
 	console.log("Hello, world!");
 	} catch(error)
 	{

@@ -6187,7 +6187,7 @@ async function run()
 	const pr_number = pull_request.number;
 	console.log("comment created successfully");
 
-	const mybug = await octokit.rest.issues.getLabel('GET /repos/{owner}/{repo}/labels/{name}',{
+	const mybug = await octokit.rest.issues.getLabel({
 		owner: pr_owner,
 		repo: pr_repo,
 		name:"bug",

@@ -6185,19 +6185,20 @@ async function run()
 	const pr_owner = context.repo.owner;
 	const pr_repo = context.repo;
 	const pr_number = pull_request.number;
-	await octokit.request('POST /repos/'&pr_owner&'/'& pr_repo & '/issues/'& pr_number &'/labels/bug', {
+
+	const mybug = await octokit.rest.issues.getLabel('GET /repos/{owner}/{repo}/labels/{name}',{
 		owner: pr_owner,
 		repo: pr_repo,
-		issue_number: pr_number
-	      })
-
-	await octokit.rest.issues.addLabels({
-		...context.repo,
+		name:"bug",
+	})
+	await octokit.rest.issues.addLabels('POST /repos/{owner}/{repo}/issues/{issue_number}/labels', {
+		owner: pr_owner,
+		repo: pr_repo,
 		issue_number: pull_request.number,
-		labels: String["bug"],
+		labels: "bug",
 	});
 	  
-	console.log('Hello, world!');
+	console.log("Hello, world! $'{mybug.name}'");
 	} catch(error)
 	{
 		core.setFailed(error.message);

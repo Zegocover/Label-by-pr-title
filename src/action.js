@@ -21,7 +21,7 @@ async function run()
 		...context.repo.owner,
 		...context.repo,
 		issue_number: pull_request.number,
-		labels: bugLabel,
+		labels: String["bug"],
 	});
 	  
 	console.log('Hello, world!');

@@ -6186,7 +6186,7 @@ async function run()
 		...context.repo.owner,
 		...context.repo,
 		issue_number: pull_request.number,
-		labels: 'bug'
+		labels: ['bug']
 	});
 	  
 	console.log('Hello, world!');

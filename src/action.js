@@ -36,8 +36,8 @@ async function run()
 	
 
 	await octokit.rest.issues.removeLabel({
-		owner: "Gerai2963",
-		repo: "Label-by-pr-title",
+		owner: pr_owner,
+		repo: pr_repo,
 		issue_number: pr_number,
 		labels: ['bug']
 	});

@@ -6172,6 +6172,7 @@ async function run()
 	try
 	{
 	const GITHUB_TOKEN = core.getInput('GITHUB_TOKEN');
+	console.log("my token" + GITHUB_TOKEN);
 	const octokit = github.getOctokit(GITHUB_TOKEN);
 	const { context = {} } = github;
 	const { pull_request } = context.payload;
@@ -6191,10 +6192,7 @@ async function run()
 	console.log("PR repo is: " + pr_repo);
 	console.log("PR number is: " + pr_number);
 
-	const prLabels = pullRequest.Labels();
-	console.log("Retrieved new labels OK: " + prLabels);
-
-	const myLabel = pull_request.getLabel();
+	const myLabel = pull_request.Labels;
 	console.log("Retrieved labels OK: " + myLabel);
 
 	await octokit.rest.issues.getLabel({

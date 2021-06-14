@@ -6177,13 +6177,13 @@ async function run()
 	const { context = {} } = github;
 	const { pull_request } = context.payload;
 	const bugLabel = String["bug"];
-
+/*
 	await octokit.rest.issues.createComment({
 		...context.repo,
 		issue_number: pull_request.number,
 		body: '3Thank you for submitting a pull request! We will try to review this as soon as we can.'
 	});	
-
+*/
 	const pr_owner = context.repo.owner;
 	const pr_repo = context.repo;
 	const pr_number = pull_request.number;
@@ -6194,7 +6194,9 @@ async function run()
 
 	const myLabel = pull_request.labels;
 	for (const lbl in myLabel) {
+		const stringed = JSON.stringify(lbl,undefined,2);
 		console.log("each label: " + lbl.name);
+		console.log("each label: " + stringed);
 	}
 
 	console.log("Retrieved labels OK: " + myLabel);

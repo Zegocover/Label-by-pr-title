@@ -12,7 +12,7 @@ async function run()
 	const { pull_request } = context.payload;
 	const allMyLabels = pull_request.labels;
 
-	console.log("PR number is: " + github.context.payload.pull_request.issue_number);
+	console.log("PR number is: " + github.context.payload.pull_request.number);
 	console.log("First label name is: " + allMyLabels[0].name);
 
 	await octokit.rest.issues.removeLabel({

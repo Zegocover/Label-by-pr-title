@@ -6202,8 +6202,7 @@ async function run()
 	
 
 	await octokit.rest.issues.removeLabel({
-		owner: pr_owner,
-		repo: pr_repo,
+		...context.repo,
 		issue_number: context.payload.number,
 		labels: "documentation",
 	});

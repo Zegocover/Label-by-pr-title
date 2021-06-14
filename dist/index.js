@@ -6183,7 +6183,6 @@ async function run()
 		body: '3Thank you for submitting a pull request! We will try to review this as soon as we can.'
 	});	
 
-	const client = new github.GitHub(GITHUB_TOKEN);
 	const pr_owner = context.repo.owner;
 	const pr_repo = context.repo;
 	const pr_number = pull_request.number;
@@ -6192,14 +6191,7 @@ async function run()
 	console.log("PR repo is: " + pr_repo);
 	console.log("PR number is: " + pr_number);
 
-	const { data: pullRequest } = await client.pulls.get({
-		owner: github.context.repo.owner,
-		repo: github.context.repo.repo,
-		pull_number: pr_number,
-	      })
-	
-	console.log("Retrieved pull request");
-	const prLabels = pullRequest.Labels;
+	const prLabels = pullRequest.Labels();
 	console.log("Retrieved new labels OK: " + prLabels);
 
 	const myLabel = pull_request.getLabel();

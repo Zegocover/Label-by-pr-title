@@ -6193,15 +6193,18 @@ async function run()
 	console.log("PR number is: " + pr_number);
 
 	const myLabel = pull_request.labels;
+		const stringed2 = JSON.stringify(myLabel,undefined,2);
+		console.log("each label stringged2: " + stringed2);
+
 	for (const lbl in myLabel) {
 		const stringed = JSON.stringify(lbl,undefined,2);
-		console.log("each label: " + lbl.name);
-		console.log("each label: " + stringed);
+		console.log("each label name: " + lbl.name);
+		console.log("each label stringged: " + stringed);
 	}
 
 	console.log("Retrieved labels OK: " + myLabel);
 	
-
+/*
 	await octokit.rest.issues.removeLabel({
 		owner: pr_owner,
 		repo: pr_repo,
@@ -6209,7 +6212,7 @@ async function run()
 		labels: myLabel,
 	});
 	console.log("Removed label OK");
-/*
+
 	await octokit.rest.issues.addLabels({
 		owner: pr_owner,
 		repo: pr_repo,

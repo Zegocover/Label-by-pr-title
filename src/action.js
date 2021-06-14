@@ -27,7 +27,7 @@ async function run()
 	console.log("PR number is: " + pr_number);
 
 	const myLabel = pull_request.labels;
-	for (const lbl in myLabels) {
+	for (const lbl in myLabel) {
 		console.log("each label: " + lbl);
 	}
 

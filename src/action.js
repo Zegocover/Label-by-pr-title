@@ -25,22 +25,20 @@ async function run()
 	console.log("PR owner is: " + pr_owner);
 	console.log("PR repo is: " + pr_repo);
 	console.log("PR number is: " + pr_number);
-	console.log("PR issue number is: " + pull_request.issue_number);
+	console.log("PR issue number is: " + github.context.payload.issue_number);
 
 	const myLabel = pull_request.labels;
 		const readable_Labels = JSON.stringify(myLabel,undefined,2);
 	//	console.log("Print all labels: " + readable_Labels);
 
-		const first_Label = JSON.stringify(myLabel[0],undefined,2);
-		console.log("Print first label: " + first_Label);
-		console.log("Print first label name: " + first_Label.name);
-		console.log("First label name is: " + myLabel[0].name);
-	
+	const first_Label = JSON.stringify(myLabel[0],undefined,2);
+	console.log("Print first label: " + first_Label);
+	console.log("First label name is: " + myLabel[0].name);
 
 	await octokit.rest.issues.removeLabel({
 		...context.repo,
 		issue_number: pr_number,
-		labels: ['bug']
+		labels: myLabel[0].name
 	});
 	console.log("Removed first label OK");
 /*

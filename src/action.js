@@ -14,13 +14,23 @@ async function run()
 
 	console.log("PR number is: " + github.context.payload.pull_request.number);
 	console.log("First label name is: " + allMyLabels[0].name);
+
+	await octokit.rest.issues.addLabels({
+		...context.repo,
+		issue_number: pull_request.number,
+		labels: ['enhancement']
+	});
+	console.log("Added label OK");
 	
+	/*
 	await octokit.rest.issues.removeLabel({
 		...context.repo,
 		issue_number: pull_request.number,
 		name: allMyLabels[0].name
 	});
 	console.log("Removed first label OK");
+*/
+
 /*
 
 		const readable_Labels = JSON.stringify(allMyLabels,undefined,2);

@@ -18,7 +18,7 @@ async function run()
 	await octokit.rest.issues.removeLabel({
 		...context.repo,
 		issue_number: pull_request.number,
-		label: allMyLabels[0].name
+		name: allMyLabels[0].name
 	});
 	console.log("Removed first label OK");
 /*

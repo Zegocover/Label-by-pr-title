@@ -6180,7 +6180,7 @@ async function run()
 	await octokit.rest.issues.createComment({
 		...context.repo,
 		issue_number: pull_request.number,
-		body: '2Thank you for submitting a pull request! We will try to review this as soon as we can.'
+		body: '3Thank you for submitting a pull request! We will try to review this as soon as we can.'
 	});	
 	const pr_owner = context.repo.owner;
 	const pr_repo = context.repo;

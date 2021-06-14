@@ -17,8 +17,14 @@ async function run()
 		body: '2Thank you for submitting a pull request! We will try to review this as soon as we can.'
 	});	
 
+	context.pull_request.addLabels({
+		...context.repo,
+		issue_number: pull_request.number,
+		labels: String["bug"],
+	})
+
+
 	await octokit.rest.issues.addLabels({
-		...context.repo.owner,
 		...context.repo,
 		issue_number: pull_request.number,
 		labels: String["bug"],

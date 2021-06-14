@@ -28,8 +28,10 @@ async function run()
 
 	const myLabel = pull_request.labels;
 		const stringed2 = JSON.stringify(myLabel,undefined,2);
-		console.log("each label stringged2: " + stringed2);
+		console.log("Print all labels: " + stringed2);
 
+		const stringed3 = JSON.stringify(myLabel[0],undefined,2);
+		console.log("Print first label: " + stringed3);
 	for (const lbl in myLabel) {
 		const stringed = JSON.stringify(lbl,undefined,2);
 		console.log("each label name: " + lbl.name);

@@ -14,22 +14,44 @@ async function run()
 	const octokit          = github.getOctokit(GITHUB_TOKEN);
 	const { context = {} } = github;
 	const { pull_request } = context.payload;
-	const allMyLabels      = pull_request.labels;
+	const pr_Labels      = pull_request.labels;
 	const pr_Title         = pull_request.title;
 	const labelArr            = [];
 
 	console.log("PR number is: " + github.context.payload.pull_request.number);
 	console.log("PR Title is: " + pull_request.title)
-	console.log("Select first label name from PR to remove: " + allMyLabels[0].name);
+	console.log("Select first label name from PR to remove: " + pr_Labels[0].name);
 
 	const labelsMatched = CheckLabelsWithTitle(labels,pr_Title);
-	console.log(`Add this label ${allMyLabels[0].name}`)
-	labelArr.push(allMyLabels[0].name);
-	await octokit.rest.issues.addLabels({
-		...context.repo,
-		issue_number: pull_request.number,
-		labels: labelsMatched
-	});
+
+
+	if (labelsMatched.length > 0)
+	{
+		if (pr_Labels.length > 0)
+		{
+			//check labelsMatched are included on PR
+			console.log("This pull request has labels: " + pr_Labels.toString());
+			for (const pr_label of pr_Labels)
+			{
+				if (Arr_Match(labelsMatched,pr_label))
+				{
+					console.log(`Label [0${pr_label}] exists on PR. Do not add`);
+					labelsMatched.pop(pr_label);
+				}
+			}
+		}
+		console.log(`Add this label ${pr_Labels[0].name}`)
+		labelArr.push(pr_Labels[0].name);
+		await octokit.rest.issues.addLabels({
+			...context.repo,
+			issue_number: pull_request.number,
+			labels: labelsMatched
+		});
+	}
+	else
+	{
+		console.log("No labels to add to PR");
+	}
 
 	/*
 	await octokit.rest.issues.removeLabel({
@@ -78,14 +100,11 @@ function CheckLabelsWithTitle(labels, pr_Title)
 		for (let j = 1; j < innerArrayLength; j++) {
 			var lbl = labels[i][j];
 			//console.log('[' + i + ',' + j + '] = ' + lbl);
-			console.log(`Label is ${lbl.toString()}`);
+			//console.log(`Label is ${lbl.toString()}`);
 			if (Str_Match(pr_Title,lbl))
 			{
-				console.log(`Matched... Add ${labels[i][0]} to PR`);
+				console.log(`Matched... Add Label: [${labels[i][0]}] to pull request`);
 				matchedLabels.push(labels[i][0]);
-			} 
-			else {		
-				console.log("Did not match");
 			}
 		}	
 	}
@@ -112,6 +131,18 @@ function Str_Match(strBase, strMatch)
 	else { return false; }
 }
 
+function Arr_Match(arrBase, strMatch)
+{
+	for (let item of arrBase)
+	{
+		if (Str_Match(item,strMatch))
+		{
+			console.log(`Matched ${strMatch} in array`)
+			return true;
+		}
+	}
+	return false;
+}
 
 
 run();

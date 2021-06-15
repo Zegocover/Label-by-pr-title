@@ -5,9 +5,9 @@ inputs:
  GITHUB_TOKEN:
     description: 'GitHub token'
     required: true
-configuration-path:
+CONFIG_PATH:
     description: 'The path for the add-label configurations'
-    default: '.github/label_config.yml'
+    default: '.github/Label_config.yml'
     required: false
     
 runs:

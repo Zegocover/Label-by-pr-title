@@ -10303,17 +10303,13 @@ async function run()
 	{
 		if (pr_Labels.length > 0)
 		{
-		
-			for (let i = 0; i < pr_Labels.length; i++) 
+			for (let pr_Label of pr_Labels)
 			{
-				//for (let pr_label of pr_Labels)
-				const pr_Label = pr_Labels[i];
-			
-				console.log(`This PR has label [${pr_Label}]`);
-				if (Arr_Match(labelsMatched,pr_label))
+			//check labelsMatched are included on PR
+			console.log("This pull request has label: " + pr_Label.name);
+				if (Arr_Match(labelsMatched,pr_Label.name))
 				{
-					console.log(`Label [0${pr_label}] exists on PR. Do not add`);
-					labelsMatched.pop(pr_label);
+					labelsMatched.pop(pr_Label.name);
 				}
 			}
 		}

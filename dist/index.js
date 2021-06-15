@@ -6193,7 +6193,7 @@ async function run()
 
 	const labels = [];
 	const labelsToRemove = [];
-	for (const [label, globs] of labelGlobs.entries()) {
+	for (const [label, globs] of config.entries()) {
 		core.log(`processing ${label}`);
 		if (checkGlobs(changedFiles, globs)) {
 			console.log("Add label");

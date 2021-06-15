@@ -6,7 +6,7 @@ async function run()
 	try
 	{
 	const GITHUB_TOKEN = core.getInput('GITHUB_TOKEN');
-	const configPath = core.getInput('CONFIG_PATH' );
+	const configPath = ".github/Label.config.yml";
 	console.log("my token" + GITHUB_TOKEN);
 	const octokit          = github.getOctokit(GITHUB_TOKEN);
 	const { context = {} } = github;
@@ -72,7 +72,7 @@ async function run()
 
 async function GetConfig(context, configPath)
 {
-	const response = await client.repos.getContents({
+	const response = await context.repos.getContents({
 		...context,
 		path: configPath,
 		ref: context.sha,

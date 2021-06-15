@@ -10303,8 +10303,9 @@ async function run()
 	{
 		if (pr_Labels.length > 0)
 		{
+		const readable_Labels = JSON.stringify(pr_Labels);
 			//check labelsMatched are included on PR
-			console.log("This pull request has labels: " + pr_Labels.toString());
+			console.log("This pull request has labels: " + readable_Labels);
 			for (const pr_label of pr_Labels)
 			{
 				if (Arr_Match(labelsMatched,pr_label))

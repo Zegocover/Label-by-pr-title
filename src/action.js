@@ -1,6 +1,5 @@
 const core = require('@actions/core');
 const github = require('@actions/github');
-const yaml = require('js-yaml');
 
 async function run()
 {
@@ -9,14 +8,12 @@ async function run()
 
 	try
 	{
-	const GITHUB_TOKEN = core.getInput('GITHUB_TOKEN');
-	console.log("my token" + GITHUB_TOKEN);
+	const GITHUB_TOKEN     = core.getInput('GITHUB_TOKEN');
 	const octokit          = github.getOctokit(GITHUB_TOKEN);
 	const { context = {} } = github;
 	const { pull_request } = context.payload;
 	const pr_Labels        = pull_request.labels;
 	const pr_Title         = pull_request.title;
-	const labelArr         = [];
 
 	console.log("PR number is: " + github.context.payload.pull_request.number);
 	console.log("PR Title is: " + pull_request.title)
@@ -27,10 +24,9 @@ async function run()
 	{
 		if (pr_Labels.length > 0)
 		{
+			console.log("This PR has labels, checking...");
 			for (let pr_Label of pr_Labels)
 			{
-				//check labelsToAddd are included on PR
-				console.log("This pull request has label: " + pr_Label.name);
 				if (Arr_Match(labelsToAdd,pr_Label.name))
 				{
 					console.log(`Label ${pr_Label.name} already added to PR`);
@@ -42,12 +38,12 @@ async function run()
 		if (labelsToAdd.length > 0)
 		{
 			console.log(`Labels to add to PR: ${labelsToAdd}`)
-			labelArr.push(pr_Labels[0].name);
 			await octokit.rest.issues.addLabels({
 				...context.repo,
 				issue_number: pull_request.number,
 				labels: labelsToAdd
 			});
+			console.log("Labels added.");
 		}
 		else
 		{

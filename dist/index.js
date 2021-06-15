@@ -10313,13 +10313,22 @@ async function run()
 				}
 			}
 		}
-		console.log(`Add this label ${pr_Labels[0].name}`)
-		labelArr.push(pr_Labels[0].name);
-		await octokit.rest.issues.addLabels({
-			...context.repo,
-			issue_number: pull_request.number,
-			labels: labelsMatched
-		});
+
+
+		if (labelsMatched.length > 0)
+		{
+			console.log(`Add this label ${pr_Labels[0].name}`)
+			labelArr.push(pr_Labels[0].name);
+			await octokit.rest.issues.addLabels({
+				...context.repo,
+				issue_number: pull_request.number,
+				labels: labelsMatched
+			});
+		}
+		else
+		{
+			console.log("Label exists. No new labels added to pull request.");
+		}
 	}
 	else
 	{
@@ -10388,7 +10397,7 @@ function DefineLabelMatches()
 {
 	//Label associations
 	const bugLabel = ['bug','name','fix'];
-	const enhancementLabel = ['enhancement','enhance', 'new','feature']
+	const enhancementLabel = ['enhancement','enhance', 'new','feature','abe']
 	const labels = [];
 	labels.push(bugLabel);
 	labels.push(enhancementLabel);	

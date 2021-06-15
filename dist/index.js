@@ -6191,6 +6191,10 @@ async function run()
 		path: configPath
 	});
 
+	// loads (hopefully) a `{[label:string]: string | StringOrMatchConfig[]}`, but is `any`:
+	const configObject = yaml.load(config);
+	console.log("Did we read the data? ")
+	console.log(configObject);
 	const labels = [];
 	const labelsToRemove = [];
 	for (const [label, globs] of config.entries()) {

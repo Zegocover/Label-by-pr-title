@@ -30,10 +30,13 @@ async function run()
 		if (pr_Labels.length > 0)
 		{
 		
-			for (let pr_label of pr_Labels)
+			for (let i = 0; i < pr_Labels.length; i++) 
 			{
+				//for (let pr_label of pr_Labels)
+				const pr_Label = pr_Labels[i];
+			
 				console.log(`This PR has label [${pr_Label}]`);
-				if (Arr_Match(labelsMatched,pr_label.toString()))
+				if (Arr_Match(labelsMatched,pr_label))
 				{
 					console.log(`Label [0${pr_label}] exists on PR. Do not add`);
 					labelsMatched.pop(pr_label);

@@ -14,46 +14,44 @@ async function run()
 	const octokit          = github.getOctokit(GITHUB_TOKEN);
 	const { context = {} } = github;
 	const { pull_request } = context.payload;
-	const pr_Labels      = pull_request.labels;
+	const pr_Labels        = pull_request.labels;
 	const pr_Title         = pull_request.title;
-	const labelArr            = [];
+	const labelArr         = [];
 
 	console.log("PR number is: " + github.context.payload.pull_request.number);
 	console.log("PR Title is: " + pull_request.title)
-	console.log("Select first label name from PR to remove: " + pr_Labels[0].name);
 
-	const labelsMatched = CheckLabelsWithTitle(labels,pr_Title);
+	const labelsToAdd = CheckLabelsWithTitle(labels,pr_Title);
 
-
-	if (labelsMatched.length > 0)
+	if (labelsToAdd.length > 0)
 	{
 		if (pr_Labels.length > 0)
 		{
 			for (let pr_Label of pr_Labels)
 			{
-			//check labelsMatched are included on PR
-			console.log("This pull request has label: " + pr_Label.name);
-				if (Arr_Match(labelsMatched,pr_Label.name))
+				//check labelsToAddd are included on PR
+				console.log("This pull request has label: " + pr_Label.name);
+				if (Arr_Match(labelsToAdd,pr_Label.name))
 				{
-					RemoveFromArray(pr_Label, labelsMatched);
+					console.log(`Label ${pr_Label.name} already added to PR`);
+					RemoveFromArray(labelsToAdd, pr_Label.name);
 				}
 			}
 		}
 
-
-		if (labelsMatched.length > 0)
+		if (labelsToAdd.length > 0)
 		{
-			console.log(`Add these label ${labelsMatched}`)
+			console.log(`Labels to add to PR: ${labelsToAdd}`)
 			labelArr.push(pr_Labels[0].name);
 			await octokit.rest.issues.addLabels({
 				...context.repo,
 				issue_number: pull_request.number,
-				labels: labelsMatched
+				labels: labelsToAdd
 			});
 		}
 		else
 		{
-			console.log("Label exists. No new labels added to pull request.");
+			console.log("Labels exist. No new labels added to pull request.");
 		}
 	}
 	else
@@ -77,7 +75,6 @@ async function run()
 		labels: labelArr
 	});
 	*/
-	console.log("Added label OK");
 /*
 
 		const readable_Labels = JSON.stringify(allMyLabels,undefined,2);
@@ -91,18 +88,16 @@ async function run()
 		body: '3Thank you for submitting a pull request! We will try to review this as soon as we can.'
 	});
 */
-	console.log("Hello, world!");
 	} catch(error)
 	{
 		core.setFailed(error.message);
 	}
 }
 
-function RemoveFromArray(pr_Label, labelsMatched) {
-	console.log(`Remove the label [${pr_Label.name}] from being added to PR`);
-	const index = labelsMatched.indexOf(pr_Label.name);
+function RemoveFromArray(arr, strMatch) {
+	const index = arr.indexOf(strMatch);
 	if (index > -1) {
-		labelsMatched.splice(index, 1);
+		arr.splice(index, 1);
 	}
 }
 
@@ -122,7 +117,7 @@ function CheckLabelsWithTitle(labels, pr_Title)
 				console.log(`Matched... Add Label: [${labels[i][0]}] to pull request`);
 				matchedLabels.push(labels[i][0]);
 			}
-		}	
+		}
 	}
 	return matchedLabels;
 }
@@ -134,7 +129,7 @@ function DefineLabelMatches()
 	const enhancementLabel = ['enhancement','enhance', 'new','feature','Label']
 	const labels = [];
 	labels.push(bugLabel);
-	labels.push(enhancementLabel);	
+	labels.push(enhancementLabel);
 	return labels
 }
 

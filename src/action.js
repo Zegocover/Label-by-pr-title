@@ -35,6 +35,7 @@ async function run()
 			console.log("This pull request has label: " + pr_Label.name);
 				if (Arr_Match(labelsMatched,pr_Label.name))
 				{
+					console.log(`Remove the label [${pr_Label}] from being added`);
 					labelsMatched.pop(pr_Label.name);
 				}
 			}
@@ -43,7 +44,7 @@ async function run()
 
 		if (labelsMatched.length > 0)
 		{
-			console.log(`Add this label ${pr_Labels[0].name}`)
+			console.log(`Add these label ${labelsMatched}`)
 			labelArr.push(pr_Labels[0].name);
 			await octokit.rest.issues.addLabels({
 				...context.repo,

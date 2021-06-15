@@ -6,7 +6,7 @@ async function run()
 	try
 	{
 	const GITHUB_TOKEN = core.getInput('GITHUB_TOKEN');
-	const configPath = core.getInput('CONFIG_PATH', {required: true });
+	const configPath = core.getInput('CONFIG_PATH' );
 	console.log("my token" + GITHUB_TOKEN);
 	const octokit          = github.getOctokit(GITHUB_TOKEN);
 	const { context = {} } = github;

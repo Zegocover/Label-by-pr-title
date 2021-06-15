@@ -10,5 +10,5 @@ jobs:
       uses: ./
       with:
         GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
-        CONFIG_PATH: '../Label_config.yml'
+        CONFIG_PATH: "../Label_config.yml"
         

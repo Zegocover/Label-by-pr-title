@@ -6185,7 +6185,11 @@ async function run()
 	console.log("PR Title is: " + pull_request.title)
 	console.log("Select first label name from PR to remove: " + allMyLabels[0].name);
 
-	const config = await GetConfig(octokit, context, configPath);
+	//const config = await GetConfig(octokit, context, configPath);
+	const config = octokit.rest.repos.getContent({
+		...context.repo,
+		path: configPath
+	});
 
 	const labels = [];
 	const labelsToRemove = [];

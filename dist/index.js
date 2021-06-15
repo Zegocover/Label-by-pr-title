@@ -10310,7 +10310,10 @@ async function run()
 				if (Arr_Match(labelsMatched,pr_Label.name))
 				{
 					console.log(`Remove the label [${pr_Label.name}] from being added`);
-					labelsMatched.pop(pr_Label.name);
+					const index = labelsMatched.indexOf(pr_Label.name);
+					if (index > -1) {
+						labelsMatched.splice(index, 1);
+					}
 				}
 			}
 		}

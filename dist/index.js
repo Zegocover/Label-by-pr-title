@@ -10278,10 +10278,12 @@ const yaml = __nccwpck_require__(1917);
 
 async function run()
 {
+	//Label associations
+	const labels = DefineLabelMatches()
+
 	try
 	{
 	const GITHUB_TOKEN = core.getInput('GITHUB_TOKEN');
-	const configPath = ".github/Label.config.yml";
 	console.log("my token" + GITHUB_TOKEN);
 	const octokit          = github.getOctokit(GITHUB_TOKEN);
 	const { context = {} } = github;
@@ -10294,28 +10296,15 @@ async function run()
 	console.log("PR Title is: " + pull_request.title)
 	console.log("Select first label name from PR to remove: " + allMyLabels[0].name);
 
-	//const config = await GetConfig(octokit, context, configPath);
-	const config = octokit.rest.repos.getContent({
+	const labelsMatched = CheckLabelsWithTitle(labels,pr_Title);
+	console.log(`Add this label ${allMyLabels[0].name}`)
+	labelArr.push(allMyLabels[0].name);
+	await octokit.rest.issues.addLabels({
 		...context.repo,
-		path: configPath
+		issue_number: pull_request.number,
+		labels: labelsMatched
 	});
 
-	// loads (hopefully) a `{[label:string]: string | StringOrMatchConfig[]}`, but is `any`:
-	const configObject = yaml.load(config);
-	console.log("Did we read the data? ")
-	console.log(configObject);
-	const labels = [];
-	const labelsToRemove = [];
-	for (const [label, globs] of config.entries()) {
-		core.log(`processing ${label}`);
-		if (checkGlobs(changedFiles, globs)) {
-			console.log("Add label");
-			labels.push(label);
-		} else if (pullRequest.labels.find((l) => l.name === label)) {
-			labelsToRemove.push(label);
-			console.log("Remove label");
-		}
-	}
 	/*
 	await octokit.rest.issues.removeLabel({
 		...context.repo,
@@ -10331,8 +10320,8 @@ async function run()
 		issue_number: pull_request.number,
 		labels: labelArr
 	});
-	console.log("Added label OK");
 	*/
+	console.log("Added label OK");
 /*
 
 		const readable_Labels = JSON.stringify(allMyLabels,undefined,2);
@@ -10353,15 +10342,48 @@ async function run()
 	}
 }
 
-async function GetConfig(octokit, context, configPath)
+function CheckLabelsWithTitle(labels, pr_Title)
 {
-	const response = octokit.rest.repos.getContent({
-		owner: context.owner,
-		repo: context.repo,
-		path: configPath
-	});
+	const matchedLabels = [];
+	for (let i = 0; i < labels.length; i++) {
+		// get the size of the inner array
+		var innerArrayLength = labels[i].length;
+		// loop the inner array
+		for (let j = 1; j < innerArrayLength; j++) {
+			var lbl = labels[i][j];
+			console.log('[' + i + ',' + j + '] = ' + lbl);
+			console.log(`Label is ${lbl.toString()}`);
+			if (Str_Match(pr_Title,lbl))
+			{
+				console.log(`Matched... Add ${labels[i][0]} to PR`);
+				matchedLabels.push(labels[i][j]);
+			} 
+			else {		
+				console.log("Did not match");
+			}
+		}	
+	}
+	return matchedLabels;
+}
 
-  return Buffer.from(response.data.content, response.data.encoding).toString();
+function DefineLabelMatches()
+{
+	//Label associations
+	const bugLabel = ['bug','name','fix'];
+	const enhancementLabel = ['enhancement','enhance', 'new','feature']
+	const labels = [];
+	labels.push(bugLabel);
+	labels.push(enhancementLabel);	
+	return labels
+}
+
+function Str_Match(strBase, strMatch)
+{
+	if (strBase.toLowerCase().indexOf(strMatch.toLowerCase()) != -1)
+	{
+		return true;
+	}
+	else { return false; }
 }
 
 

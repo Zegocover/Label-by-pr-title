@@ -6238,7 +6238,7 @@ async function run()
 
 async function GetConfig(context, configPath)
 {
-	const response = await context.repos.getContents({
+	const response = await context.rest.repos.getContents({
 		...context,
 		path: configPath,
 		ref: context.sha,

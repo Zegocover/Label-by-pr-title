@@ -6184,7 +6184,7 @@ async function run()
 	await octokit.rest.issues.addLabels({
 		...context.repo,
 		issue_number: pull_request.number,
-		labels: ['enhancement']
+		labels: 'enhancement'
 	});
 	console.log("Added label OK");
 	

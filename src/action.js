@@ -6,15 +6,34 @@ async function run()
 	try
 	{
 	const GITHUB_TOKEN = core.getInput('GITHUB_TOKEN');
+	const configPath = core.getInput('CONFIG_PATH', {required: true });
 	console.log("my token" + GITHUB_TOKEN);
 	const octokit          = github.getOctokit(GITHUB_TOKEN);
 	const { context = {} } = github;
 	const { pull_request } = context.payload;
 	const allMyLabels      = pull_request.labels;
-	const label         = [];
+	const pr_Title         = pull_request.title;
+	const labelArr            = [];
 
 	console.log("PR number is: " + github.context.payload.pull_request.number);
+	console.log("PR Title is: " + pull_request.title)
 	console.log("Select first label name from PR to remove: " + allMyLabels[0].name);
+
+	const config = await GetConfig(context,configPath);
+
+	const labels = [];
+	const labelsToRemove = [];
+	for (const [label, globs] of labelGlobs.entries()) {
+		core.log(`processing ${label}`);
+		if (checkGlobs(changedFiles, globs)) {
+			console.log("Add label");
+			labels.push(label);
+		} else if (pullRequest.labels.find((l) => l.name === label)) {
+			labelsToRemove.push(label);
+			console.log("Remove label");
+		}
+	}
+	/*
 	await octokit.rest.issues.removeLabel({
 		...context.repo,
 		issue_number: pull_request.number,
@@ -23,13 +42,14 @@ async function run()
 	console.log("Removed first label OK");
 
 	console.log(`Add this label ${allMyLabels[0].name}`)
-	label.push(allMyLabels[0].name);
+	labelArr.push(allMyLabels[0].name);
 	await octokit.rest.issues.addLabels({
 		...context.repo,
 		issue_number: pull_request.number,
-		labels: label
+		labels: labelArr
 	});
 	console.log("Added label OK");
+	*/
 /*
 
 		const readable_Labels = JSON.stringify(allMyLabels,undefined,2);
@@ -42,14 +62,6 @@ async function run()
 		issue_number: pull_request.number,
 		body: '3Thank you for submitting a pull request! We will try to review this as soon as we can.'
 	});
-
-	await octokit.rest.issues.addLabels({
-		owner: pr_owner,
-		repo: pr_repo,
-		issue_number: pull_request.number,
-		labels: `bug`,
-	});
-	console.log("set label OK");
 */
 	console.log("Hello, world!");
 	} catch(error)
@@ -58,6 +70,16 @@ async function run()
 	}
 }
 
+async function GetConfig(context, configPath)
+{
+	const response = await client.repos.getContents({
+		...context,
+		path: configPath,
+		ref: context.sha,
+	});
+
+  return Buffer.from(response.data.content, response.data.encoding).toString();
+}
 
 
 

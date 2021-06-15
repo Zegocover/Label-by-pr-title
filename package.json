@@ -4,6 +4,7 @@
   "description": "Add label given string match of PR title",
   "main": "index.js",
   "scripts": {
+    "build": "ncc build src/action.js -o dist",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -19,6 +20,10 @@
   "homepage": "https://github.com/Gerai2963/Label-by-pr-title#readme",
   "dependencies": {
     "@actions/core": "^1.4.0",
-    "@actions/github": "^5.0.0"
+    "@actions/github": "^5.0.0",
+    "typescript": "^4.3.2"
+  },
+  "devDependencies": {
+    "@vercel/ncc": "^0.28.6"
   }
 }

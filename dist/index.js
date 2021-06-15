@@ -10351,7 +10351,7 @@ function CheckLabelsWithTitle(labels, pr_Title)
 		// loop the inner array
 		for (let j = 1; j < innerArrayLength; j++) {
 			var lbl = labels[i][j];
-			console.log('[' + i + ',' + j + '] = ' + lbl);
+			//console.log('[' + i + ',' + j + '] = ' + lbl);
 			console.log(`Label is ${lbl.toString()}`);
 			if (Str_Match(pr_Title,lbl))
 			{

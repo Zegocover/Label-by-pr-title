@@ -10309,11 +10309,7 @@ async function run()
 			console.log("This pull request has label: " + pr_Label.name);
 				if (Arr_Match(labelsMatched,pr_Label.name))
 				{
-					console.log(`Remove the label [${pr_Label.name}] from being added`);
-					const index = labelsMatched.indexOf(pr_Label.name);
-					if (index > -1) {
-						labelsMatched.splice(index, 1);
-					}
+					RemoveFromArray(pr_Label, labelsMatched);
 				}
 			}
 		}
@@ -10376,6 +10372,14 @@ async function run()
 	}
 }
 
+function RemoveFromArray(pr_Label, labelsMatched) {
+	console.log(`Remove the label [${pr_Label.name}] from being added to PR`);
+	const index = labelsMatched.indexOf(pr_Label.name);
+	if (index > -1) {
+		labelsMatched.splice(index, 1);
+	}
+}
+
 function CheckLabelsWithTitle(labels, pr_Title)
 {
 	const matchedLabels = [];
@@ -10423,7 +10427,6 @@ function Arr_Match(arrBase, strMatch)
 	{
 		if (Str_Match(item,strMatch))
 		{
-			console.log(`Matched ${strMatch} in array`)
 			return true;
 		}
 	}

@@ -35,7 +35,7 @@ async function run()
 			console.log("This pull request has label: " + pr_Label.name);
 				if (Arr_Match(labelsMatched,pr_Label.name))
 				{
-					console.log(`Remove the label [${pr_Label}] from being added`);
+					console.log(`Remove the label [${pr_Label.name}] from being added`);
 					labelsMatched.pop(pr_Label.name);
 				}
 			}
@@ -124,7 +124,7 @@ function DefineLabelMatches()
 {
 	//Label associations
 	const bugLabel = ['bug','name','fix'];
-	const enhancementLabel = ['enhancement','enhance', 'new','feature','abe']
+	const enhancementLabel = ['enhancement','enhance', 'new','feature','Label']
 	const labels = [];
 	labels.push(bugLabel);
 	labels.push(enhancementLabel);	

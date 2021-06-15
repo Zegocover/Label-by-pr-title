@@ -10304,7 +10304,7 @@ async function run()
 		if (pr_Labels.length > 0)
 		{
 		
-			for (const pr_label of pr_Labels)
+			for (let pr_label of pr_Labels)
 			{
 				console.log(`This PR has label [${pr_Label}]`);
 				if (Arr_Match(labelsMatched,pr_label.toString()))

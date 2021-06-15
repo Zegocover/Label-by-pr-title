@@ -10356,7 +10356,7 @@ function CheckLabelsWithTitle(labels, pr_Title)
 			if (Str_Match(pr_Title,lbl))
 			{
 				console.log(`Matched... Add ${labels[i][0]} to PR`);
-				matchedLabels.push(labels[i][j]);
+				matchedLabels.push(labels[i][0]);
 			} 
 			else {		
 				console.log("Did not match");

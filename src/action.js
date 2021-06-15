@@ -19,7 +19,7 @@ async function run()
 	console.log("PR Title is: " + pull_request.title)
 	console.log("Select first label name from PR to remove: " + allMyLabels[0].name);
 
-	const config = await GetConfig(octokit,configPath);
+	const config = await GetConfig(octokit, context, configPath);
 
 	const labels = [];
 	const labelsToRemove = [];
@@ -70,11 +70,12 @@ async function run()
 	}
 }
 
-async function GetConfig(octokit, configPath)
+async function GetConfig(octokit, context, configPath)
 {
 	const response = octokit.rest.repos.getContent({
-		...context,
-		path: configPath,
+		owner: context.owner,
+		repo: context.repo,
+		path: configPath
 	});
 
   return Buffer.from(response.data.content, response.data.encoding).toString();

@@ -10400,7 +10400,6 @@ async function fetchContent(octokit, context)
 	const response = await octokit.rest.repos.getContent({
 	  ...context,
 	  path: "../.github/pr_label_config.yml",
-	  ref: "Read-Labels-from-File"
 	});
       
 	//return Buffer.from(response.data.content, response.data.encoding).toString();

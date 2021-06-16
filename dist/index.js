@@ -10403,7 +10403,7 @@ async function fetchContent(octokit, context)
 	});
       
 	//return Buffer.from(response.data.content, response.data.encoding).toString();
-	return response;
+	return response.data;
 }
  
 

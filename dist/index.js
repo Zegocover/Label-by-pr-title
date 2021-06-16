@@ -6194,9 +6194,9 @@ async function run()
 	{
 		if (pr_Labels.length > 0)
 		{
-			for (const [key,value] of Object.entries(pr_Labels))
+			for (const [key,[key2,value]] of Object.entries(pr_Labels))
 			{
-				console.log(`Key is ${key} and one value is ${value}`);
+				console.log(`Key is ${key} and key2 ${key2} and value is ${value}`);
 
 			}
 			/*console.log("This PR has labels, checking...");

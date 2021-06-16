@@ -21,6 +21,15 @@ async function run()
 	const repo_Labels = await GetLabelsFromRepo(octokit, context);
 	const labelsToAdd = CheckLabelsWithTitle(labels,pr_Title);
 
+	// Testing section
+
+	const configurationContent = fetchContent(octokit,context);
+	// loads (hopefully) a `{[label:string]: string | StringOrMatchConfig[]}`, but is `any`:
+	const configObject = yaml.load(configurationContent);
+console.log(`Config object is ${JSON.stringify(configObject)}`);
+
+	//END of testing section
+
 	if (labelsToAdd.length > 0)
 	{
 		ValidateLabels(labelsToAdd, repo_Labels);
@@ -94,6 +103,7 @@ async function run()
 	}
 }
 
+
 /* Validate labels to add to PR with
 *  repository defined labels.
 *  I.e. We dont want to create new labels
@@ -105,6 +115,18 @@ function ValidateLabels(labelsToAdd, repo_Labels) {
 		}
 	}
 }
+
+async function fetchContent(octokit, context) 
+{
+	const response = await client.repos.getContents({
+	  ...context,
+	  path: ".github/pr_label_config.yml",
+	  ref: octokit.context.sha,
+	});
+      
+	return Buffer.from(response.data.content, response.data.encoding).toString();
+}
+ 
 
 /* Request labels data from repository
 *  and return an Array of label names

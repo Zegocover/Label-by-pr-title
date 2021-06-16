@@ -22,7 +22,7 @@ async function run()
 		...context.repo,
 	      });
 
-	const lab1 = JSON.stringify(allMyLabels[0],undefined,2);
+	const lab1 = JSON.stringify(lab,undefined,2);
 
 	console.log("Infoir from issues is: " + lab1);
 	const labelsToAdd = CheckLabelsWithTitle(labels,pr_Title);

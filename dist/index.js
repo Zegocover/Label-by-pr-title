@@ -6273,7 +6273,7 @@ function CheckLabelsWithTitle(labels, pr_Title)
 		for (let j = 1; j < innerArrayLength; j++) {
 			var lbl = labels[i][j];
 			//console.log('[' + i + ',' + j + '] = ' + lbl);
-			//console.log(`Label is ${lbl.toString()}`);
+			console.log(`Label is ${lbl.toString()}`);
 			if (Str_Match(pr_Title,lbl))
 			{
 				console.log(`Matched... Add Label: [${labels[i][0]}] to pull request`);

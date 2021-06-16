@@ -6213,7 +6213,7 @@ async function run()
 		}
 		else
 		{
-			console.log("Labels exist. No new labels added to pull request.");
+			console.log("No new labels added to pull request.");
 		}
 	}
 	else

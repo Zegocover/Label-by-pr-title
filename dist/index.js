@@ -6189,27 +6189,11 @@ async function run()
 
 	if (labelsToAdd.length > 0)
 	{
-		for (let lbl of labelsToAdd)
-		{
-			if (!Arr_Match(repoLabels,lbl))
-			{
-				throw new Error(`Trying to add invalid label [${lbl}] to repo. Valid repo labels are: /n ${repoLabels.toString()}`);
-			}
-			else 
-			{
-				console.log(`Label ${lbl} is valid for repo: ${repoLabels.toString()}`);
-			}
-		}
+		ValidateLabels(labelsToAdd, repoLabels);
+		console.log(`Labels ${pr_Labels.toString()} are valid for this repo`);
 
 		if (pr_Labels.length > 0)
 		{
-			for (let [key,value] of Object.entries(pr_Labels))
-			{
-				for (let [key2,value2] of Object.entries(value))
-				{				
-					console.log(`Key is ${key} and key2 ${key2} and value is ${value2}`);
-				}
-			}
 			console.log("This PR has labels, checking...");
 			for (let pr_Label of pr_Labels)
 			{
@@ -6219,7 +6203,6 @@ async function run()
 					RemoveFromArray(labelsToAdd, pr_Label.name);
 				}
 			}
-		
 		}
 
 		if (labelsToAdd.length > 0)
@@ -6277,14 +6260,28 @@ async function run()
 	}
 }
 
+/* Validate labels to add to PR with
+*  repository defined labels.
+*  I.e. We dont want to create new labels
+*/
+function ValidateLabels(labelsToAdd, repoLabels) {
+	for (let lbl of labelsToAdd) {
+		if (!Arr_Match(repoLabels, lbl)) {
+			throw new Error(`Trying to add invalid label [${lbl}] to repo. Valid repo labels are: \n\t ${repoLabels.toString()}`);
+		}
+	}
+}
+
+/* Request labels data from repository
+*  and return an Array of label names
+*/
 async function GetLabelsFromRepo(octokit, context) {
 	const repoLabels = [];
+
 	const lbl_obj = await octokit.rest.issues.listLabelsForRepo({
 		...context.repo,
 	});
-	
 
-	//const lab1 = JSON.stringify(lab,undefined,2);
 	console.log("Status of request is: " + lbl_obj.status);
 	for (let lblObj of lbl_obj.data)
 	{
@@ -6292,25 +6289,17 @@ async function GetLabelsFromRepo(octokit, context) {
 		repoLabels.push(lblObj.name);
 	}
 	return repoLabels;
-	//console.log("Infoirirrom issues is: " + lab1);
-/*	for (let [key, value] of Object.entries(lab)) {
-
-		for (let [key2, value2] of Object.entries(value)) {
-			console.log(`Key is ${key} and key2 ${key2} and value is ${value2}`);
-		}
-	}*/
 }
 
-function RemoveFromArray(arr, strMatch) {
-	const index = arr.indexOf(strMatch);
-	if (index > -1) {
-		arr.splice(index, 1);
-	}
-}
-
+/* Given array of labels = [['labelname1','matchword1','matchword2'], ['labelname2','matchword3','matchword4']]
+*  Does the pr_Title start with any of the matching words?
+*  true - Add labelname to MatchedLabels array
+*  false - continue
+*/
 function CheckLabelsWithTitle(labels, pr_Title)
 {
 	const matchedLabels = [];
+
 	for (let i = 0; i < labels.length; i++) {
 		// get the size of the inner array
 		var innerArrayLength = labels[i].length;
@@ -6327,10 +6316,24 @@ function CheckLabelsWithTitle(labels, pr_Title)
 	return matchedLabels;
 }
 
+/* Remove strMatch from arr if it exists
+*/
+function RemoveFromArray(arr, strMatch) {
+	const index = arr.indexOf(strMatch);
+	if (index > -1) {
+		arr.splice(index, 1);
+	}
+}
+
+
+/* Define the array of labels and their matching string as: array[array[]]
+*  [['labelname1','matchword1','matchword2'], ['labelname2','matchword3','matchword4']]
+*  return: array[array[]]
+*/
 function DefineLabelMatches()
 {
 	//Label associations
-	const bugLabel = ['bug1','name','fix', 'test'];
+	const bugLabel = ['bug','name','fix', 'test'];
 	const enhancementLabel = ['enhancement','enhance', 'new','feature','Label']
 	const labels = [];
 	labels.push(bugLabel);
@@ -6338,6 +6341,9 @@ function DefineLabelMatches()
 	return labels
 }
 
+/* Given string strBase does it start with strMatch
+*  returns: True|False
+*/
 function Str_Match(strBase, strMatch)
 {
 	if (strBase.toLowerCase().startsWith(strMatch.toLowerCase()))
@@ -6347,6 +6353,9 @@ function Str_Match(strBase, strMatch)
 	else { return false; }
 }
 
+/* Given array arrBase for each item, does it start with strMatch
+*  returns: True|False
+*/
 function Arr_Match(arrBase, strMatch)
 {
 	for (let item of arrBase)

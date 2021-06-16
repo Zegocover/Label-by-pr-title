@@ -10393,7 +10393,7 @@ function ValidateLabels(labelsToAdd, repo_Labels) {
 
 async function fetchContent(octokit, context) 
 {
-	const response = await client.repos.getContents({
+	const response = await octokit.repos.getContents({
 	  ...context,
 	  path: ".github/pr_label_config.yml",
 	  ref: octokit.context.sha,

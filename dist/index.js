@@ -6195,7 +6195,12 @@ async function run()
 		console.log(`PR_Labels is ${pr_Labels}`);
 		if (pr_Labels.length > 0)
 		{
-			console.log("This PR has labels, checking...");
+			for (const [key,value] of Object.Entries(pr_Labels))
+			{
+				console.log(`Key is ${key} and one value is ${value}`);
+
+			}
+			/*console.log("This PR has labels, checking...");
 			for (let pr_Label of pr_Labels)
 			{
 			console.log(`PR_Labels is ${pr_Labels} and one label is ${pr_Label}`);
@@ -6204,7 +6209,7 @@ async function run()
 					console.log(`Label ${pr_Label.name} already added to PR`);
 					RemoveFromArray(labelsToAdd, pr_Label.name);
 				}
-			}
+			}*/
 		
 		}
 

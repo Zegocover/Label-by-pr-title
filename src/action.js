@@ -24,7 +24,7 @@ async function run()
 
 	//const lab1 = JSON.stringify(lab,undefined,2);
 	console.log("Status of request is: "+ lab.status);
-	console.log("Infoir from issues is: " + lab1);
+	//console.log("Info from issues is: " + lab1);
 	for (let [key,value] of Object.entries(lab.data))
 	{
 		

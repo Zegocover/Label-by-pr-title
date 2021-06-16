@@ -6194,7 +6194,7 @@ async function run()
 	{
 		if (pr_Labels.length > 0)
 		{
-			for (let [key,value] of Object.entries(pr_Labels))
+			for (let [key,value] of pr_Labels.entries())
 			{
 				console.log(`Key is ${key} and value is ${value}`);
 

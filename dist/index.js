@@ -6186,29 +6186,26 @@ async function run()
 
 	const labelsToAdd = CheckLabelsWithTitle(labels,pr_Title);
 
-	/*await octokit.rest.issues.listLabelsForRepo({
-		...context,
-	});*/
-
 	if (labelsToAdd.length > 0)
 	{
 		if (pr_Labels.length > 0)
 		{
-			for (const [key,[key2,value]] of Object.entries(pr_Labels))
+			for (let [key,value] of Object.entries(pr_Labels))
 			{
-				console.log(`Key is ${key} and key2 ${key2} and value is ${value}`);
-
+				for (let [key2,value2] of Object.entries(value))
+				{				
+					console.log(`Key is ${key} and key2 ${key2} and value is ${value2}`);
+				}
 			}
-			/*console.log("This PR has labels, checking...");
+			console.log("This PR has labels, checking...");
 			for (let pr_Label of pr_Labels)
 			{
-			console.log(`PR_Labels is ${pr_Labels} and one label is ${pr_Label}`);
 				if (Arr_Match(labelsToAdd,pr_Label.name))
 				{
 					console.log(`Label ${pr_Label.name} already added to PR`);
 					RemoveFromArray(labelsToAdd, pr_Label.name);
 				}
-			}*/
+			}
 		
 		}
 

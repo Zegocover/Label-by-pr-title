@@ -20,9 +20,9 @@ async function run()
 
 	const labelsToAdd = CheckLabelsWithTitle(labels,pr_Title);
 
-	await octokit.rest.issues.listLabelsForRepo({
+	/*await octokit.rest.issues.listLabelsForRepo({
 		...context,
-	});
+	});*/
 
 	if (labelsToAdd.length > 0)
 	{

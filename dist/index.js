@@ -10305,7 +10305,7 @@ async function run()
 	// loads (hopefully) a `{[label:string]: string | StringOrMatchConfig[]}`, but is `any`:
 	const configObject = yaml.load(configurationContent);
 
-	for (let [key,value] of Object.entries(configObject))
+	for (let [key,value] of Object.entries(configurationContent))
 	{
 		for (let [key2,value2] of Object.entries(value))
 		{

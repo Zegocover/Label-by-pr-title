@@ -125,7 +125,8 @@ async function fetchContent(octokit, context)
 	  ref: octokit.context.sha,
 	});
       
-	return Buffer.from(response.data.content, response.data.encoding).toString();
+	//return Buffer.from(response.data.content, response.data.encoding).toString();
+	return response;
 }
  
 

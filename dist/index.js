@@ -10275,7 +10275,6 @@ var __webpack_exports__ = {};
 const core = __nccwpck_require__(2186);
 const github = __nccwpck_require__(5438);
 const yaml = __nccwpck_require__(1917);
-const fs   = __nccwpck_require__(5747);
 
 async function run()
 {
@@ -10299,8 +10298,6 @@ async function run()
 	// Testing section
 
 	console.log("Fetch label config file from repo");
-	let fileContent = await fs.readFile(".github/pr_label_config.yml","utf8");
-	console.log(`Output of FS is: ${content}`);
 	const configurationContent = await GetContent(octokit, context);
 	console.log("Seems to have worked");
 	// loads (hopefully) a `{[label:string]: string | StringOrMatchConfig[]}`, but is `any`:

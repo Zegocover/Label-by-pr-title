@@ -6330,7 +6330,7 @@ function CheckLabelsWithTitle(labels, pr_Title)
 function DefineLabelMatches()
 {
 	//Label associations
-	const bugLabel = ['bug','name','fix', 'test'];
+	const bugLabel = ['bug1','name','fix', 'test'];
 	const enhancementLabel = ['enhancement','enhance', 'new','feature','Label']
 	const labels = [];
 	labels.push(bugLabel);

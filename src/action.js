@@ -26,13 +26,13 @@ async function run()
 
 	if (labelsToAdd.length > 0)
 	{
-		console.log(`PR_Labels is ${pr_labels}`);
+		console.log(`PR_Labels is ${pr_Labels}`);
 		if (pr_Labels.length > 0)
 		{
 			console.log("This PR has labels, checking...");
 			for (let pr_Label of pr_Labels)
 			{
-			console.log(`PR_Labels is ${pr_labels} and one label is ${pr_label}`);
+			console.log(`PR_Labels is ${pr_Labels} and one label is ${pr_Label}`);
 				if (Arr_Match(labelsToAdd,pr_Label.name))
 				{
 					console.log(`Label ${pr_Label.name} already added to PR`);

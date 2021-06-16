@@ -6285,7 +6285,7 @@ async function GetLabelsFromRepo(octokit, context) {
 	
 
 	//const lab1 = JSON.stringify(lab,undefined,2);
-	console.log("Status of request is: " + lab.status);
+	console.log("Status of request is: " + lbl_obj.status);
 	for (let lblObj of lbl_obj.data)
 	{
 		console.log(`Adding repo label to array: ${lblObj.name}`);

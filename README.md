@@ -1,25 +1,15 @@
-# Label-by-pr-title
+# Label-by-pr-title action
 Add label given string match of PR title
-
-
-# Hello world javascript action
-
-This action prints "Hello World" or "Hello" + the name of a person to greet to the log.
 
 ## Inputs
 
-### `who-to-greet`
+### `GITHUB_TOKEN`
 
-**Required** The name of the person to greet. Default `"World"`.
+**Required** The secret to access repo.
 
-## Outputs
-
-### `time`
-
-The time we greeted you.
 
 ## Example usage
 
-uses: actions/hello-world-javascript-action@v1.1
+uses: actions/Label-by-pr-title@v1.0
 with:
-  who-to-greet: 'Mona the Octocat'
+  GITHUB_TOKEN:  ${{secrets.GITHUB_TOKEN}

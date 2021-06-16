@@ -6184,26 +6184,23 @@ async function run()
 	console.log("PR number is: " + github.context.payload.pull_request.number);
 	console.log("PR Title is: " + pull_request.title)
 
-	const lab = await octokit.rest.issues.listLabelsForRepo({
-		...context.repo,
-	      });
-
-	//const lab1 = JSON.stringify(lab,undefined,2);
-	console.log("Status of request is: "+ lab.status);
-	//console.log("Info from issues is: " + lab1);
-	for (let [key,value] of Object.entries(lab.data))
-	{
-		
-		for (let [key2,value2] of Object.entries(value))
-		{				
-			console.log(`Key is ${key} and key2 ${key2} and value is ${value2}`);
-		}
-	}
-
+	const repoLabels = await GetLabelsFromRepo(octokit, context);
 	const labelsToAdd = CheckLabelsWithTitle(labels,pr_Title);
 
 	if (labelsToAdd.length > 0)
 	{
+		for (let lbl of labelsToAdd)
+		{
+			if (!Arr_Match(repoLabels,lbl))
+			{
+				throw new Error(`Trying to add invalid label [${lbl}] to repo. Valid repo labels are: /n ${repoLabels.toString()}`);
+			}
+			else 
+			{
+				console.log(`Label ${lbl} is valid for repo: ${repoLabels.toString()}`);
+			}
+		}
+
 		if (pr_Labels.length > 0)
 		{
 			for (let [key,value] of Object.entries(pr_Labels))
@@ -6277,6 +6274,22 @@ async function run()
 	} catch(error)
 	{
 		core.setFailed(error.message);
+	}
+}
+
+async function GetLabelsFromRepo(octokit, context) {
+	const lab = await octokit.rest.issues.listLabelsForRepo({
+		...context.repo,
+	});
+
+	//const lab1 = JSON.stringify(lab,undefined,2);
+	console.log("Status of request is: " + lab.status);
+	//console.log("Infoirirrom issues is: " + lab1);
+	for (let [key, value] of Object.entries(lab)) {
+
+		for (let [key2, value2] of Object.entries(value)) {
+			console.log(`Key is ${key} and key2 ${key2} and value is ${value2}`);
+		}
 	}
 }
 

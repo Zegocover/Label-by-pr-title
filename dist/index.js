@@ -6184,13 +6184,13 @@ async function run()
 	console.log("PR number is: " + github.context.payload.pull_request.number);
 	console.log("PR Title is: " + pull_request.title)
 
-	const repoLabels = await GetLabelsFromRepo(octokit, context);
+	const repo_Labels = await GetLabelsFromRepo(octokit, context);
 	const labelsToAdd = CheckLabelsWithTitle(labels,pr_Title);
 
 	if (labelsToAdd.length > 0)
 	{
-		ValidateLabels(labelsToAdd, repoLabels);
-		console.log(`Labels ${pr_Labels.toString()} are valid for this repo`);
+		ValidateLabels(labelsToAdd, repo_Labels);
+		console.log(`Labels ${labelsToAdd.toString()} are valid for this repo`);
 
 		if (pr_Labels.length > 0)
 		{
@@ -6264,10 +6264,10 @@ async function run()
 *  repository defined labels.
 *  I.e. We dont want to create new labels
 */
-function ValidateLabels(labelsToAdd, repoLabels) {
+function ValidateLabels(labelsToAdd, repo_Labels) {
 	for (let lbl of labelsToAdd) {
-		if (!Arr_Match(repoLabels, lbl)) {
-			throw new Error(`Trying to add invalid label [${lbl}] to repo. Valid repo labels are: \n\t ${repoLabels.toString()}`);
+		if (!Arr_Match(repo_Labels, lbl)) {
+			throw new Error(`Trying to add invalid label [${lbl}] to repo. Valid repo labels are: \n\t ${repo_Labels.toString()}`);
 		}
 	}
 }
@@ -6276,7 +6276,7 @@ function ValidateLabels(labelsToAdd, repoLabels) {
 *  and return an Array of label names
 */
 async function GetLabelsFromRepo(octokit, context) {
-	const repoLabels = [];
+	const repo_Labels = [];
 
 	const lbl_obj = await octokit.rest.issues.listLabelsForRepo({
 		...context.repo,
@@ -6285,10 +6285,10 @@ async function GetLabelsFromRepo(octokit, context) {
 	console.log("Status of request is: " + lbl_obj.status);
 	for (let lblObj of lbl_obj.data)
 	{
-		console.log(`Adding repo label to array: ${lblObj.name}`);
-		repoLabels.push(lblObj.name);
+		//Add label name to array
+		repo_Labels.push(lblObj.name);
 	}
-	return repoLabels;
+	return repo_Labels;
 }
 
 /* Given array of labels = [['labelname1','matchword1','matchword2'], ['labelname2','matchword3','matchword4']]

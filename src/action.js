@@ -106,8 +106,6 @@ function CheckLabelsWithTitle(labels, pr_Title)
 		// loop the inner array
 		for (let j = 1; j < innerArrayLength; j++) {
 			var lbl = labels[i][j];
-			//console.log('[' + i + ',' + j + '] = ' + lbl);
-			//console.log(`Label is ${lbl.toString()}`);
 			if (Str_Match(pr_Title,lbl))
 			{
 				console.log(`Matched... Add Label: [${labels[i][0]}] to pull request`);
@@ -131,7 +129,7 @@ function DefineLabelMatches()
 
 function Str_Match(strBase, strMatch)
 {
-	if (strBase.toLowerCase().indexOf(strMatch.toLowerCase()) != -1)
+	if (strBase.toLowerCase().startsWith(strMatch.toLowerCase()))
 	{
 		return true;
 	}

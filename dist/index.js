@@ -10300,10 +10300,10 @@ async function run()
 
 	console.log("Fetch label config file from repo");
 
-	const configurationContent = await fetchContent(octokit, context);
+	const configurationContent = await GetContent(octokit, context);
 	console.log("Seems to have worked");
 	// loads (hopefully) a `{[label:string]: string | StringOrMatchConfig[]}`, but is `any`:
-	const configObject = yaml.load(configurationContent);
+	const configObject = yaml.load(configurationContent.data.content);
 
 	for (let [key,value] of Object.entries(configurationContent))
 	{
@@ -10403,7 +10403,7 @@ function ValidateLabels(labelsToAdd, repo_Labels) {
 	}
 }
 
-async function fetchContent(octokit, context) 
+async function GetContent(octokit, context) 
 {
 	//const response = await octokit.rest.repos.getContents({
 	const response = await octokit.rest.repos.getContent({

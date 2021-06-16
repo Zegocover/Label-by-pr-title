@@ -10298,7 +10298,7 @@ async function run()
 
 	// Testing section
 
-	console.log("Fetch label config file from repo"+ octokit.rest.repos.path);
+	console.log("Fetch label config file from repo\n"+ octokit.rest.repos.getTopPaths);
 
 	const configurationContent = await fetchContent(octokit, context);
 	console.log("Seems to have worked");

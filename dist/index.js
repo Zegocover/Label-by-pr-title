@@ -10307,7 +10307,10 @@ async function run()
 
 	for (let [key,value] of Object.entries(configObject))
 	{
-		console.log(`The key is: ${key} and value is: ${value}`);
+		for (let [key2,value2] of Object.entries(value))
+		{
+			console.log(`The key is: ${key2} and value is: ${value2}`);
+		}
 	}
 
 console.log(`Config object is ${JSON.stringify(configObject)}`);

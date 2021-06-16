@@ -6278,19 +6278,26 @@ async function run()
 }
 
 async function GetLabelsFromRepo(octokit, context) {
-	const lab = await octokit.rest.issues.listLabelsForRepo({
+	const repoLabels = [];
+	const lbl_obj = await octokit.rest.issues.listLabelsForRepo({
 		...context.repo,
 	});
+	
 
 	//const lab1 = JSON.stringify(lab,undefined,2);
 	console.log("Status of request is: " + lab.status);
+	for (let lblObj of lbl_obj.data)
+	{
+		console.log(`Adding repo label to array: ${lblObj.name}`);
+		repoLabels.push(lblObj.name);
+	}
 	//console.log("Infoirirrom issues is: " + lab1);
-	for (let [key, value] of Object.entries(lab)) {
+/*	for (let [key, value] of Object.entries(lab)) {
 
 		for (let [key2, value2] of Object.entries(value)) {
 			console.log(`Key is ${key} and key2 ${key2} and value is ${value2}`);
 		}
-	}
+	}*/
 }
 
 function RemoveFromArray(arr, strMatch) {

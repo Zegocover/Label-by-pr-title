@@ -10,6 +10,6 @@ Add label given string match of PR title
 
 ## Example usage
 
-uses: actions/Label-by-pr-title@v1.1
+uses: actions/Label-by-pr-title@v1.0
 with:
   GITHUB_TOKEN:  ${{secrets.GITHUB_TOKEN}

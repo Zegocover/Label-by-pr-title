@@ -20,11 +20,21 @@ async function run()
 
 	const labelsToAdd = CheckLabelsWithTitle(labels,pr_Title);
 
+	await octokit.rest.issues.listLabelsForRepo({
+		...context,
+	});
+
 	if (labelsToAdd.length > 0)
 	{
 		if (pr_Labels.length > 0)
 		{
-			console.log("This PR has labels, checking...");
+			for (let [key,value] of Object.entries(pr_Labels))
+			{
+				console.log(`Key is ${key} and value is ${value}`);
+
+			}
+
+/*			console.log("This PR has labels, checking...");
 			for (let pr_Label of pr_Labels)
 			{
 				if (Arr_Match(labelsToAdd,pr_Label.name))
@@ -33,6 +43,7 @@ async function run()
 					RemoveFromArray(labelsToAdd, pr_Label.name);
 				}
 			}
+		*/
 		}
 
 		if (labelsToAdd.length > 0)

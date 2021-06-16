@@ -1,7 +1,6 @@
 const core = require('@actions/core');
 const github = require('@actions/github');
 const yaml = require("js-yaml");
-const fs   = require('fs');
 
 async function run()
 {
@@ -24,9 +23,7 @@ async function run()
 	const labelsToAdd = CheckLabelsWithTitle(labels,pr_Title);
 	// Testing section
 
-	console.log("Fetch label config file from repo");
-	let fileContent = fs.readFile(".github/pr_label_config.yml","utf8");
-	console.log(`Output of FS is: ${content}`);
+	console.log("Get label config file from repo");
 	const configurationContent = await GetContent(octokit, context);
 	console.log("Seems to have worked");
 	// loads (hopefully) a `{[label:string]: string | StringOrMatchConfig[]}`, but is `any`:

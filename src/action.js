@@ -28,22 +28,17 @@ async function run()
 	{
 		if (pr_Labels.length > 0)
 		{
-			for (let [key,value] of pr_Labels.entries())
-			{
-				console.log(`Key is ${key} and value is ${value}`);
-
-			}
-
-/*			console.log("This PR has labels, checking...");
+			console.log("This PR has labels, checking...");
 			for (let pr_Label of pr_Labels)
 			{
+			console.log(`PR_Labels is ${pr_labels} and one label is ${pr_label}`);
 				if (Arr_Match(labelsToAdd,pr_Label.name))
 				{
 					console.log(`Label ${pr_Label.name} already added to PR`);
 					RemoveFromArray(labelsToAdd, pr_Label.name);
 				}
 			}
-		*/
+		
 		}
 
 		if (labelsToAdd.length > 0)

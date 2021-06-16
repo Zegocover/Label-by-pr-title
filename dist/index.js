@@ -6291,6 +6291,7 @@ async function GetLabelsFromRepo(octokit, context) {
 		console.log(`Adding repo label to array: ${lblObj.name}`);
 		repoLabels.push(lblObj.name);
 	}
+	return repoLabels;
 	//console.log("Infoirirrom issues is: " + lab1);
 /*	for (let [key, value] of Object.entries(lab)) {
 

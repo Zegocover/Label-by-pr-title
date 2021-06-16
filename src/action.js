@@ -26,6 +26,7 @@ async function run()
 
 	if (labelsToAdd.length > 0)
 	{
+		console.log(`PR_Labels is ${pr_labels}`);
 		if (pr_Labels.length > 0)
 		{
 			console.log("This PR has labels, checking...");

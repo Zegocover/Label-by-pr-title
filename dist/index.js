@@ -6297,6 +6297,7 @@ function DefineLabelMatches()
 
 function Str_Match(strBase, strMatch)
 {
+	console.log(`Does this string [${strBase.toLowerCase()}] start with this word: [${strMatch}]`);
 	if (strBase.toLowerCase().startsWith(strMatch.toLowerCase()) != -1)
 	{
 		return true;

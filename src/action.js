@@ -128,8 +128,8 @@ async function fetchContent(octokit, context)
 	  path: '.github/pr_label_config.yml',
 	});
       
-	return Buffer.from(response.data.content, response.data.encoding).toString();
-	//return response;
+	//return Buffer.from(response.data.content, response.data.encoding).toString();
+	return response;
 }
  
 

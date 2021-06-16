@@ -6184,6 +6184,13 @@ async function run()
 	console.log("PR number is: " + github.context.payload.pull_request.number);
 	console.log("PR Title is: " + pull_request.title)
 
+	const lab = await octokit.rest.issues.listLabelsForRepo({
+		...context.repo,
+	      });
+
+	const lab1 = JSON.stringify(allMyLabels[0],undefined,2);
+
+	console.log("Infoir from issues is: " + lab1);
 	const labelsToAdd = CheckLabelsWithTitle(labels,pr_Title);
 
 	if (labelsToAdd.length > 0)

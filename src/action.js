@@ -131,7 +131,7 @@ function DefineLabelMatches()
 
 function Str_Match(strBase, strMatch)
 {
-	if (strBase.toLowerCase().indexOf(strMatch.toLowerCase()) != -1)
+	if (strBase.toLowerCase().startsWith(strMatch.toLowerCase()) != -1)
 	{
 		return true;
 	}

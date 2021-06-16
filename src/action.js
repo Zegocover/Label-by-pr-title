@@ -26,10 +26,9 @@ async function run()
 
 	if (labelsToAdd.length > 0)
 	{
-		console.log(`PR_Labels is ${pr_Labels}`);
 		if (pr_Labels.length > 0)
 		{
-			for (const [key,value] of Object.Entries(pr_Labels))
+			for (const [key,value] of Object.entries(pr_Labels))
 			{
 				console.log(`Key is ${key} and one value is ${value}`);
 

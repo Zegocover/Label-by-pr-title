@@ -10299,7 +10299,7 @@ async function run()
 	// Testing section
 
 	console.log("Fetch label config file from repo");
-	let fileContent = fs.readFile(".github/pr_label_config.yml","utf8");
+	let fileContent = await fs.readFile(".github/pr_label_config.yml","utf8");
 	console.log(`Output of FS is: ${content}`);
 	const configurationContent = await GetContent(octokit, context);
 	console.log("Seems to have worked");

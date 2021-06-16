@@ -25,6 +25,15 @@ async function run()
 	const lab1 = JSON.stringify(lab,undefined,2);
 
 	console.log("Infoir from issues is: " + lab1);
+	for (let [key,value] of Object.entries(lab))
+	{
+		
+		for (let [key2,value2] of Object.entries(value))
+		{				
+			console.log(`Key is ${key} and key2 ${key2} and value is ${value2}`);
+		}
+	}
+
 	const labelsToAdd = CheckLabelsWithTitle(labels,pr_Title);
 
 	if (labelsToAdd.length > 0)

@@ -10298,7 +10298,10 @@ async function run()
 
 	// Testing section
 
+	console.log("Fetch label config file from repo"+ octokit.rest.repos.path);
+
 	const configurationContent = await fetchContent(octokit, context);
+	console.log("Seems to have worked");
 	// loads (hopefully) a `{[label:string]: string | StringOrMatchConfig[]}`, but is `any`:
 	const configObject = yaml.load(configurationContent);
 console.log(`Config object is ${JSON.stringify(configObject)}`);
@@ -10396,7 +10399,7 @@ async function fetchContent(octokit, context)
 	//const response = await octokit.rest.repos.getContents({
 	const response = await octokit.rest.repos.getContent({
 	  ...context,
-	  path: ".github/pr_label_config.yml",
+	  path: "../.github/pr_label_config.yml",
 	});
       
 	//return Buffer.from(response.data.content, response.data.encoding).toString();

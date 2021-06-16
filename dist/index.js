@@ -10298,7 +10298,7 @@ async function run()
 
 	// Testing section
 
-	const configurationContent = fetchContent(octokit,context);
+	const configurationContent = await fetchContent(octokit,context);
 	// loads (hopefully) a `{[label:string]: string | StringOrMatchConfig[]}`, but is `any`:
 	const configObject = yaml.load(configurationContent);
 console.log(`Config object is ${JSON.stringify(configObject)}`);

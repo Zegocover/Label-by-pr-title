@@ -10315,6 +10315,7 @@ async function run()
 		}
 	}
 
+	console.log("Show as JSON stringify");
 console.log(`Config object is ${JSON.stringify(configurationContent)}`);
 
 	//END of testing section
@@ -10412,8 +10413,8 @@ async function GetContent(octokit, context)
 	  path: '.github/pr_label_config.yml',
 	});
       
-	return Buffer.from(response.data.content, response.data.encoding).toString();
-	//return response;
+	//return Buffer.from(response.data.content, response.data.encoding).toString();
+	return response.data;
 }
  
 

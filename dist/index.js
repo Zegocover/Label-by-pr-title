@@ -10275,6 +10275,7 @@ var __webpack_exports__ = {};
 const core = __nccwpck_require__(2186);
 const github = __nccwpck_require__(5438);
 const yaml = __nccwpck_require__(1917);
+const fs = __nccwpck_require__(5747);
 
 async function run()
 {
@@ -10290,6 +10291,9 @@ async function run()
 	const pr_Labels        = pull_request.labels;
 	const pr_Title         = pull_request.title;
 
+		let fileContents = fs.readFileSync('.github/pr_label_config.yml', 'base64');
+		console.log(`Pre load file content: ${fileContents}`);
+		let data = yaml.load(content);
 	console.log("PR number is: " + github.context.payload.pull_request.number);
 	console.log("PR Title is: " + pull_request.title)
 

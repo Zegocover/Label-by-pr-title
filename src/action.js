@@ -1,6 +1,7 @@
 const core = require('@actions/core');
 const github = require('@actions/github');
 const yaml = require("js-yaml");
+const fs = require('fs');
 
 async function run()
 {
@@ -16,6 +17,9 @@ async function run()
 	const pr_Labels        = pull_request.labels;
 	const pr_Title         = pull_request.title;
 
+		let fileContents = fs.readFileSync('.github/pr_label_config.yml', 'base64');
+		console.log(`Pre load file content: ${fileContents}`);
+		let data = yaml.load(content);
 	console.log("PR number is: " + github.context.payload.pull_request.number);
 	console.log("PR Title is: " + pull_request.title)
 

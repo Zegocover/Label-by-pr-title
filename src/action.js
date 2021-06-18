@@ -136,7 +136,7 @@ function ValidateLabels(labelsToAdd, repo_Labels) {
 
 async function GetContent(octokit, context) 
 {
-	const { response } = await octokit.rest.repos.getContent({
+	response = await octokit.rest.repos.getContent({
 	  ...context.repo,
 	  path: '.github/pr_label_config.yml',
 	});

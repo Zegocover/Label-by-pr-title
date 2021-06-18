@@ -1,13 +1,11 @@
 const core = require('@actions/core');
 const github = require('@actions/github');
 const yaml = require("js-yaml");
-import { components } from "@octokit/openapi-types";
 
 async function run()
 {
 	//Label associations
 	const labels = DefineLabelMatches()
-	const DirectoryItem = components["schemas"]["content"][String];
 
 	try
 	{

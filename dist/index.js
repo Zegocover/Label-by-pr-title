@@ -10302,7 +10302,7 @@ async function run()
 	//Promise(GetContent(octokit, context),"");
 	const configurationContent = await GetContent(octokit, context);
 	console.log("Show as JSON stringify");
-	const configObject1 = yaml.load(configurationContent.data.download_url);
+	const configObject1 = yaml.load(configurationContent.data.html_url);
 console.log(`Config object1 is ${JSON.stringify(configObject1)}`);
 	
 	console.log("Seems to have worked");

@@ -10305,7 +10305,8 @@ console.log(`Config object is ${JSON.stringify(configurationContent)}`);
 	
 	console.log("Seems to have worked");
 	// loads (hopefully) a `{[label:string]: string | StringOrMatchConfig[]}`, but is `any`:
-//	const configObject = yaml.load(configurationContent.data.content);
+	const configObject = yaml.load(configurationContent.data.content);
+	console.log("Seems to have worked YAML: " +configObject);
 
 	for (let [key,value] of Object.entries(configurationContent))
 	{

@@ -140,6 +140,14 @@ async function GetContent(octokit, context)
 	  ...context.repo,
 	  path: '.github/pr_label_config.yml',
 	});
+
+	if (typeof response.data.content === 'string') {
+		console.log("This is a string \n" + response.data.content)
+	      }
+	    
+	      if (typeof response.data.content !== undefined) {
+		console.log("This is not undefined \n" + response.data.content)
+	      }
       
 	//return Buffer.from(response.data.content, response.data.encoding).toString();
 	return response;

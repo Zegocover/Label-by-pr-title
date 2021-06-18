@@ -17,9 +17,6 @@ async function run()
 	const pr_Labels        = pull_request.labels;
 	const pr_Title         = pull_request.title;
 
-		let fileContents = fs.readFileSync('.github/pr_label_config.yml', 'base64');
-		console.log(`Pre load file content: ${fileContents}`);
-		let data = yaml.load(content);
 	console.log("PR number is: " + github.context.payload.pull_request.number);
 	console.log("PR Title is: " + pull_request.title)
 
@@ -31,7 +28,7 @@ async function run()
 	//Promise(GetContent(octokit, context),"");
 	const configurationContent = await GetContent(octokit, context);
 	console.log("Show as JSON stringify");
-console.log(`Config object is ${JSON.stringify(configurationContent)}`);
+console.log(`Config object is ${JSON.stringify(configurationContent.data.download_url)}`);
 	
 	console.log("Seems to have worked");
 	// loads (hopefully) a `{[label:string]: string | StringOrMatchConfig[]}`, but is `any`:

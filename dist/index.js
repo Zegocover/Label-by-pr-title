@@ -2064,6 +2064,23 @@ exports.withCustomRequest = withCustomRequest;
 
 /***/ }),
 
+/***/ 4058:
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+var __webpack_unused_export__;
+
+
+__webpack_unused_export__ = ({ value: true });
+
+const VERSION = "7.3.0";
+
+__webpack_unused_export__ = VERSION;
+//# sourceMappingURL=index.js.map
+
+
+/***/ }),
+
 /***/ 4193:
 /***/ ((__unused_webpack_module, exports) => {
 
@@ -10266,20 +10283,36 @@ module.exports = require("zlib");;
 /******/ 	}
 /******/ 	
 /************************************************************************/
+/******/ 	/* webpack/runtime/make namespace object */
+/******/ 	(() => {
+/******/ 		// define __esModule on exports
+/******/ 		__nccwpck_require__.r = (exports) => {
+/******/ 			if(typeof Symbol !== 'undefined' && Symbol.toStringTag) {
+/******/ 				Object.defineProperty(exports, Symbol.toStringTag, { value: 'Module' });
+/******/ 			}
+/******/ 			Object.defineProperty(exports, '__esModule', { value: true });
+/******/ 		};
+/******/ 	})();
+/******/ 	
 /******/ 	/* webpack/runtime/compat */
 /******/ 	
 /******/ 	if (typeof __nccwpck_require__ !== 'undefined') __nccwpck_require__.ab = __dirname + "/";/************************************************************************/
 var __webpack_exports__ = {};
-// This entry need to be wrapped in an IIFE because it need to be isolated against other modules in the chunk.
+// This entry need to be wrapped in an IIFE because it need to be in strict mode.
 (() => {
+"use strict";
+__nccwpck_require__.r(__webpack_exports__);
+/* harmony import */ var _octokit_openapi_types__WEBPACK_IMPORTED_MODULE_0__ = __nccwpck_require__(4058);
 const core = __nccwpck_require__(2186);
 const github = __nccwpck_require__(5438);
 const yaml = __nccwpck_require__(1917);
+
 
 async function run()
 {
 	//Label associations
 	const labels = DefineLabelMatches()
+	const DirectoryItem = _octokit_openapi_types__WEBPACK_IMPORTED_MODULE_0__.components.schemas.content[String];
 
 	try
 	{
@@ -10298,7 +10331,9 @@ async function run()
 	// Testing section
 
 	console.log("Get label config file from repo");
+	//Promise(GetContent(octokit, context),"");
 	const configurationContent = await GetContent(octokit, context);
+	
 	console.log("Seems to have worked");
 	// loads (hopefully) a `{[label:string]: string | StringOrMatchConfig[]}`, but is `any`:
 	const configObject = yaml.load(configurationContent.data.content);
@@ -10405,7 +10440,6 @@ function ValidateLabels(labelsToAdd, repo_Labels) {
 
 async function GetContent(octokit, context) 
 {
-	//const response = await octokit.rest.repos.getContents({
 	const { response } = await octokit.rest.repos.getContent({
 	  ...context.repo,
 	  path: '.github/pr_label_config.yml',

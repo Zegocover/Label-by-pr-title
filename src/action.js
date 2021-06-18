@@ -1,11 +1,13 @@
 const core = require('@actions/core');
 const github = require('@actions/github');
 const yaml = require("js-yaml");
+import { components } from "@octokit/openapi-types";
 
 async function run()
 {
 	//Label associations
 	const labels = DefineLabelMatches()
+	const DirectoryItem = components["schemas"]["content"][String];
 
 	try
 	{
@@ -24,7 +26,9 @@ async function run()
 	// Testing section
 
 	console.log("Get label config file from repo");
+	//Promise(GetContent(octokit, context),"");
 	const configurationContent = await GetContent(octokit, context);
+	
 	console.log("Seems to have worked");
 	// loads (hopefully) a `{[label:string]: string | StringOrMatchConfig[]}`, but is `any`:
 	const configObject = yaml.load(configurationContent.data.content);
@@ -131,7 +135,6 @@ function ValidateLabels(labelsToAdd, repo_Labels) {
 
 async function GetContent(octokit, context) 
 {
-	//const response = await octokit.rest.repos.getContents({
 	const { response } = await octokit.rest.repos.getContent({
 	  ...context.repo,
 	  path: '.github/pr_label_config.yml',

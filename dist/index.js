@@ -10303,7 +10303,7 @@ async function run()
 	
 	console.log("Seems to have worked");
 	// loads (hopefully) a `{[label:string]: string | StringOrMatchConfig[]}`, but is `any`:
-	const configObject = yaml.load(configurationContent.data.content);
+/*	const configObject = yaml.load(configurationContent.data.content);
 
 	for (let [key,value] of Object.entries(configObject))
 	{
@@ -10314,8 +10314,8 @@ async function run()
 			console.log(`The key2 is: ${key2} and value2 is: ${value2}`);
 		}
 	}
-
-console.log(`Config object is ${JSON.stringify(configObject)}`);
+*/
+console.log(`Config object is ${JSON.stringify(configurationContent)}`);
 
 	//END of testing section
 
@@ -10413,7 +10413,7 @@ async function GetContent(octokit, context)
 	});
       
 	//return Buffer.from(response.data.content, response.data.encoding).toString();
-	return response.data;
+	return response;
 }
  
 

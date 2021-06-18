@@ -10301,6 +10301,9 @@ async function run()
 	console.log("Get label config file from repo");
 	//Promise(GetContent(octokit, context),"");
 	const configurationContent = await GetContent(octokit, context);
+		let fileContents = fs.readFileSync(configurationContent.data.download_url);
+		console.log(`Pre load file content: ${fileContents}`);
+		let data = yaml.load(content);
 	console.log("Show as JSON stringify");
 console.log(`Config object is ${JSON.stringify(configurationContent.data.download_url)}`);
 	

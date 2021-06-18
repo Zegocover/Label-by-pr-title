@@ -29,9 +29,9 @@ async function run()
 	
 	console.log("Seems to have worked");
 	// loads (hopefully) a `{[label:string]: string | StringOrMatchConfig[]}`, but is `any`:
-/*	const configObject = yaml.load(configurationContent.data.content);
+//	const configObject = yaml.load(configurationContent.data.content);
 
-	for (let [key,value] of Object.entries(configObject))
+	for (let [key,value] of Object.entries(configurationContent))
 	{
 
 		console.log(`The key is: ${key} and value is: ${value}`);
@@ -40,7 +40,7 @@ async function run()
 			console.log(`The key2 is: ${key2} and value2 is: ${value2}`);
 		}
 	}
-*/
+
 console.log(`Config object is ${JSON.stringify(configurationContent)}`);
 
 	//END of testing section

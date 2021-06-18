@@ -26,6 +26,8 @@ async function run()
 	console.log("Get label config file from repo");
 	//Promise(GetContent(octokit, context),"");
 	const configurationContent = await GetContent(octokit, context);
+	console.log("Show as JSON stringify");
+console.log(`Config object is ${JSON.stringify(configurationContent)}`);
 	
 	console.log("Seems to have worked");
 	// loads (hopefully) a `{[label:string]: string | StringOrMatchConfig[]}`, but is `any`:

@@ -1,7 +1,7 @@
 const core = require('@actions/core');
 const github = require('@actions/github');
 const yaml = require("js-yaml");
-const fs = require('fs');
+const {promises : fs}  = require('fs');
 
 async function run()
 {
@@ -23,6 +23,8 @@ async function run()
 	const repo_Labels = await GetLabelsFromRepo(octokit, context);
 	const labelsToAdd = CheckLabelsWithTitle(labels,pr_Title);
 	// Testing section
+	let readme = fs.readFile("./.github/pr_label_config.yml","base64");
+	console.log("Read me is: " + readme);
 
 	console.log("Get label config file from repo");
 	//Promise(GetContent(octokit, context),"");

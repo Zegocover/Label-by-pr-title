@@ -10418,7 +10418,6 @@ async function GetContent(octokit, context)
 	response = await octokit.rest.repos.getContent({
 	  ...context.repo,
 	  path: '.github/pr_label_config.yml',
-	  ref: context.sha,
 	});
 
       

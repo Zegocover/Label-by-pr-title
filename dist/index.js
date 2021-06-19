@@ -10304,13 +10304,13 @@ async function run()
 	//Promise(GetContent(octokit, context),"");
 	const configurationContent = await GetContent(octokit, context);
 	console.log("Show as JSON stringify");
-	const configObject1 = yaml.load(configurationContent.data.html_url);
-console.log(`Config object1 is ${JSON.stringify(configObject1)}`);
+	//const configObject1 = yaml.load(configurationContent.data.html_url);
+//console.log(`Config object1 is ${JSON.stringify(configObject1)}`);
 	
 	console.log("Seems to have worked");
 	// loads (hopefully) a `{[label:string]: string | StringOrMatchConfig[]}`, but is `any`:
 	const configObject = yaml.load(configurationContent.data.content);
-	console.log("Seems to have worked YAML: " +configObject);
+	console.log("Seems to have worked YAML: " +configObject.toString());
 
 	for (let [key,value] of Object.entries(configurationContent))
 	{

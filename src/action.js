@@ -23,7 +23,7 @@ async function run()
 	const repo_Labels = await GetLabelsFromRepo(octokit, context);
 	const labelsToAdd = CheckLabelsWithTitle(labels,pr_Title);
 	// Testing section
-	let readme = fs.readFile("./.github/pr_label_config.yml","base64");
+	let readme = await fs.readFile("./.github/pr_label_config.yml","base64");
 	console.log("Read me is: " + readme);
 
 	console.log("Get label config file from repo");

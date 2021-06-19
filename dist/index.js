@@ -10193,6 +10193,14 @@ module.exports = require("path");;
 
 /***/ }),
 
+/***/ 1765:
+/***/ ((module) => {
+
+"use strict";
+module.exports = require("process");;
+
+/***/ }),
+
 /***/ 2413:
 /***/ ((module) => {
 
@@ -10276,6 +10284,7 @@ const core = __nccwpck_require__(2186);
 const github = __nccwpck_require__(5438);
 const yaml = __nccwpck_require__(1917);
 const {promises : fs}  = __nccwpck_require__(5747);
+const { config } = __nccwpck_require__(1765);
 
 async function run()
 {
@@ -10303,16 +10312,18 @@ async function run()
 	console.log("Get label config file from repo");
 	//Promise(GetContent(octokit, context),"");
 	const configurationContent = await GetContent(octokit, context);
-	console.log("Show as JSON stringify");
+	//console.log("Show as JSON stringify");
 	//const configObject1 = yaml.load(configurationContent.data.html_url);
 //console.log(`Config object1 is ${JSON.stringify(configObject1)}`);
 	
 	console.log("Seems to have worked");
 	// loads (hopefully) a `{[label:string]: string | StringOrMatchConfig[]}`, but is `any`:
 	const configObject = yaml.load(configurationContent.data.content);
+	let encodedFileContent = new Buffer(configObject, 'base64');
+	
 	console.log("Seems to have worked YAML: " +configObject.toString());
-
-	for (let [key,value] of Object.entries(configurationContent))
+	console.log(`Hopefully decoded ${encodedFileContent.toString('utf8')}`);
+/*	for (let [key,value] of Object.entries(configurationContent))
 	{
 
 		console.log(`The key is: ${key} and value is: ${value}`);
@@ -10324,7 +10335,7 @@ async function run()
 
 	console.log("Show as JSON stringify");
 console.log(`Config object is ${JSON.stringify(configurationContent)}`);
-
+*/
 	//END of testing section
 
 	if (labelsToAdd.length > 0)
@@ -10419,7 +10430,6 @@ async function GetContent(octokit, context)
 	  ...context.repo,
 	  path: '.github/pr_label_config.yml',
 	});
-
       
 	//return Buffer.from(response.data.content, response.data.encoding).toString();
 	return response;

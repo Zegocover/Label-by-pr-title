@@ -10403,8 +10403,9 @@ async function GetContent(octokit, context, path)
 	  ...context.repo,
 	  path:defaultPath
 	});
+	console.log("The encoding used for this file is: " + response.data.encoding);
 
-	return Buffer.from(response.data.content, response.data.encoding).toString();
+	return Buffer.from(response.data.content, response.data.encoding);
 }
 
 

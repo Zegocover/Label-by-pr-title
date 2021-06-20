@@ -10404,7 +10404,7 @@ async function GetContent(octokit, context, path)
 	  path:defaultPath
 	});
 
-	return Buffer.from(response.data.content, response.data.encoding);
+	return Buffer.from(response.data.content, response.data.encoding).toString();
 }
 
 

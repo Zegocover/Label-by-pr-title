@@ -10302,7 +10302,7 @@ async function run()
 	console.log("Get label config file from repo");
 	//Get the file content
 	const configurationContent = await GetContent(octokit, context);
-	const configObject = yaml.load(configurationContent);
+	const cencodedFileContent = yaml.load(configurationContent);
 	//let encodedFileContent = new Buffer(configObject, 'base64');
 
 	console.log(`Hopefully decoded ${encodedFileContent.toString('utf8')}`);

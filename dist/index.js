@@ -10302,10 +10302,12 @@ async function run()
 	console.log("Get label config file from repo");
 	//Get the file content
 	const configurationContent = await GetContent(octokit, context);
-	const encodedFileContent = yaml.load(configurationContent);
+	encodedFileContent  = Buffer.from(response.data.content, response.data.encoding);
+
+	const decodedFileContent = yaml.load(encodedFileContent);
 	//let encodedFileContent = new Buffer(configObject, 'base64');
 
-	console.log(`Hopefully decoded ${encodedFileContent.toString('utf8')}`);
+	console.log(`Hopefully decoded ${decodedFileContent.toString('utf8')}`);
 
 	//END of testing section
 
@@ -10403,9 +10405,10 @@ async function GetContent(octokit, context, path)
 	  ...context.repo,
 	  path:defaultPath
 	});
-	console.log("The encoding used for this file is: " + response.data.encoding);
 
-	return Buffer.from(response.data.content, response.data.encoding);
+	return response;
+
+	//return Buffer.from(response.data.content, response.data.encoding);
 }
 
 

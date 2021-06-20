@@ -10193,14 +10193,6 @@ module.exports = require("path");;
 
 /***/ }),
 
-/***/ 1765:
-/***/ ((module) => {
-
-"use strict";
-module.exports = require("process");;
-
-/***/ }),
-
 /***/ 2413:
 /***/ ((module) => {
 
@@ -10283,8 +10275,8 @@ var __webpack_exports__ = {};
 const core = __nccwpck_require__(2186);
 const github = __nccwpck_require__(5438);
 const yaml = __nccwpck_require__(1917);
-const {promises : fs}  = __nccwpck_require__(5747);
-const { config } = __nccwpck_require__(1765);
+
+const defaultPath = '.github/pr_label_config.yml';
 
 async function run()
 {
@@ -10305,37 +10297,16 @@ async function run()
 
 	const repo_Labels = await GetLabelsFromRepo(octokit, context);
 	const labelsToAdd = CheckLabelsWithTitle(labels,pr_Title);
-	// Testing section
-	let readme = await fs.readFile("./.github/pr_label_config.yml", "utf8");
-	console.log("Read me is: " + readme);
 
+	// Testing section
 	console.log("Get label config file from repo");
-	//Promise(GetContent(octokit, context),"");
+	//Get the file content
 	const configurationContent = await GetContent(octokit, context);
-	//console.log("Show as JSON stringify");
-	//const configObject1 = yaml.load(configurationContent.data.html_url);
-//console.log(`Config object1 is ${JSON.stringify(configObject1)}`);
-	
-	console.log("Seems to have worked");
-	// loads (hopefully) a `{[label:string]: string | StringOrMatchConfig[]}`, but is `any`:
 	const configObject = yaml.load(configurationContent.data.content);
 	let encodedFileContent = new Buffer(configObject, 'base64');
-	
-	console.log("Seems to have worked YAML: " +configObject.toString());
+
 	console.log(`Hopefully decoded ${encodedFileContent.toString('utf8')}`);
-/*	for (let [key,value] of Object.entries(configurationContent))
-	{
 
-		console.log(`The key is: ${key} and value is: ${value}`);
-		for (let [key2,value2] of Object.entries(value))
-		{
-			console.log(`The key2 is: ${key2} and value2 is: ${value2}`);
-		}
-	}
-
-	console.log("Show as JSON stringify");
-console.log(`Config object is ${JSON.stringify(configurationContent)}`);
-*/
 	//END of testing section
 
 	if (labelsToAdd.length > 0)
@@ -10424,17 +10395,18 @@ function ValidateLabels(labelsToAdd, repo_Labels) {
 	}
 }
 
-async function GetContent(octokit, context) 
+/* Request content from github repo from the path
+*/
+async function GetContent(octokit, context, path)
 {
-	response = await octokit.rest.repos.getContent({
+	let response = await octokit.rest.repos.getContent({
 	  ...context.repo,
-	  path: '.github/pr_label_config.yml',
+	  path:defaultPath
 	});
-      
-	//return Buffer.from(response.data.content, response.data.encoding).toString();
-	return response;
+
+	return Buffer.from(response.data.content, response.data.encoding);
 }
- 
+
 
 /* Request labels data from repository
 *  and return an Array of label names

@@ -28,7 +28,7 @@ async function run()
 	console.log("Get label config file from repo");
 	//Get the file content
 	const configurationContent = await GetContent(octokit, context);
-	encodedFileContent  = Buffer.from(configurationContent, configurationContent.data.encoding);
+	encodedFileContent  = Buffer.from(configurationContent.data.content, configurationContent.data.encoding);
 
 	const decodedFileContent = yaml.load(encodedFileContent);
 	//let encodedFileContent = new Buffer(configObject, 'base64');

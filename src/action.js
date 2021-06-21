@@ -39,12 +39,13 @@ async function run()
 	const yamlFileContent = yaml.load(encodedFileContent);
 	const labelGlobs = [];
 	console.log(`Value of yamlFileContent is: ` + yamlFileContent);
-	for (const [key,label] in yamlFileContent) {
-		console.log(`The value of key is: ${yamlFileContent[key]}`);
+	for (const label in yamlFileContent) {
 		console.log(`The value of label is: ${yamlFileContent[label]}`);
 		if (typeof yamlFileContent[label] === "string") {
+			console.log("This is a string");
 		  labelGlobs.push(yamlFileContent[label]);
 		} else if (yamlFileContent[label] instanceof Array) {
+			console.log("This is a array");
 		  labelGlobs.push(yamlFileContent[label]);
 		} else {
 		  console.log(

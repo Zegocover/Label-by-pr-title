@@ -40,13 +40,15 @@ async function run()
 	const labels = []
 	// yamlFileContent is [object Object]
 	for (const tag in yamlFileContent) {
-		console.log(`The label is ${tag} and value of label is: ${yamlFileContent[tag]}`);
+		//console.log(`The label is ${tag} and value of label is: ${yamlFileContent[tag]}`);
 		if (typeof yamlFileContent[tag] === "string") {
 			console.log("This is a string");
+		console.log(`The label is ${tag} and value of label is: ${yamlFileContent[tag]}`);
 			let tempLabels = [tag, yamlFileContent[tag]]
 			labels.push(tempLabels);
 		} else if (yamlFileContent[tag] instanceof Array) {
 			console.log("This is a array");
+		console.log(`The label is ${tag} and value of label is: ${[yamlFileContent[tag]].join(", ")}`);
 			let tempLabels = [tag, [yamlFileContent[tag]].join(',')];
 			labels.push(tempLabels);
 		} else {
@@ -195,6 +197,7 @@ function CheckLabelsWithTitle(labels, pr_Title)
 		// loop the inner array
 		for (let j = 1; j < innerArrayLength; j++) {
 			var lbl = labels[i][j];
+			console.log(`Checking label ${lbl} matches PR Title`);
 			if (Str_Match(pr_Title,lbl))
 			{
 				console.log(`Matched... Add Label: [${labels[i][0]}] to pull request`);

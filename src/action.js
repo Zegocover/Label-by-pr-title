@@ -30,10 +30,18 @@ async function run()
 	const configurationContent = await GetContent(octokit, context);
 	encodedFileContent  = Buffer.from(configurationContent.data.content, configurationContent.data.encoding);
 
-	const decodedFileContent = yaml.load(encodedFileContent);
+	const decodedFileContent = yaml.load(encodedFileContent).toString('text');
 	//let encodedFileContent = new Buffer(configObject, 'base64');
 
 	console.log(`Hopefully decoded ${decodedFileContent.toString('utf8')}`);
+	for (let value of Object.entries(decodedFileContent))
+	{
+		console.log(`The value is: ${value}`);
+		/*for (let [key2,value2] of Object.entries(value))
+		{
+			console.log(`The key2 is: ${key2} and value2 is: ${value2}`);
+		}*/
+	}
 
 	//END of testing section
 

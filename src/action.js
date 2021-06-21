@@ -36,13 +36,14 @@ async function run()
 
 	const configurationContent = await GetContent(octokit, context);
 	const yamlFileContent = yaml.load(configurationContent.data.content);
-	const labelGlobs = new Map();
+	const labelGlobs = [];
 	console.log(`Length of yamlFileContent is: ` + yamlFileContent.length);
 	for (const label in yamlFileContent) {
+		console.log(`The value of label is: ${label}`);
 		if (typeof yamlFileContent[label] === "string") {
-		  labelGlobs.set(label, [yamlFileContent[label]]);
+		  labelGlobs.push(label);
 		} else if (yamlFileContent[label] instanceof Array) {
-		  labelGlobs.set(label, yamlFileContent[label]);
+		  labelGlobs.push(label);
 		} else {
 		  console.log(
 		    `found unexpected type for label ${label} (should be string or array of globs)`

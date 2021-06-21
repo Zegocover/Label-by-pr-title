@@ -28,13 +28,14 @@ async function run()
 	console.log("Get label config file from repo");
 	//Get the file content
 	const configurationContent = await GetContent(octokit, context);
-	encodedFileContent  = Buffer.from(configurationContent.data.content, configurationContent.data.encoding);
+	//encodedFileContent  = Buffer.from(configurationContent.data.content, configurationContent.data.encoding);
 
-	const decodedFileContent = yaml.load(encodedFileContent).toString('text');
+	const yamlFileContent = yaml.load(configurationContent.data.content);
+	let encodedFileContent  = Buffer.from(yamlFileContent, configurationContent.data.encoding);
 	//let encodedFileContent = new Buffer(configObject, 'base64');
 
-	console.log(`Hopefully decoded ${decodedFileContent.toString('utf8')}`);
-	for (let value of Object.entries(decodedFileContent))
+	console.log(`Hopefully decoded ${encodedFileContent.toString('utf8')}`);
+	for (let value of Object.entries(encodedFileContent))
 	{
 		console.log(`The value is: ${value}`);
 		/*for (let [key2,value2] of Object.entries(value))

@@ -10,25 +10,9 @@ async function run()
 	const labelsMatched = [];
 	const dummy_labelsMatched = ['bug','enhancement','help required'];
 
-	try {
-		let fileContents = fs.readFileSync('.github/pr_label_config.yml', 'utf8');
-		//console.log(`Pre load file content: ${fileContents}`);
-		let data = yaml.load(fileContents)
-		console.log("The length is:" + data.length);
-		for (let value of data)
-		{
-			console.log(`Value is: ${value}`);
-
-		}
-		console.log(`YAML load file content: ${data}`);
-	    
-	    } catch (e) {
-		console.log(e);
-	    }
-
 	try
 	{
-/*	const pr_Title	= "This is the name of my PR request";
+	const pr_Title	= "This is the name of my PR request";
 
 
 	console.log("PR Title is: " + pr_Title);
@@ -61,7 +45,7 @@ async function run()
 		}
 	}
 
-	console.log(`Labels to add to my PR [${dummy_labelsMatched.toString()}]`);*/
+	console.log(`Labels to add to my PR [${dummy_labelsMatched.toString()}]`);
 
 	/*
 	for (const lbl of bugLabel)
@@ -118,7 +102,8 @@ function RemoveFromArray(dummy_labelsMatched, label) {
 function DefineLabelMatches()
 {
 	//Label associations
-	const bugLabel = ['bug','name','fix','this'];
+	const tempbugLabel = ['name','fix','this'];
+	const bugLabel = ['bug', tempbugLabel.join(',')];
 	const enhancementLabel = ['enhancement','enhance', 'new','feature']
 	const labels = [];
 	labels.push(bugLabel);

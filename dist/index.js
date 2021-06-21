@@ -10281,7 +10281,7 @@ const defaultPath = '.github/pr_label_config.yml';
 async function run()
 {
 	//Label associations
-	const labels = DefineLabelMatches()
+	const labelsOriginal = DefineLabelMatches()
 
 	try
 	{
@@ -10296,7 +10296,7 @@ async function run()
 	console.log("PR Title is: " + pull_request.title)
 
 	const repo_Labels = await GetLabelsFromRepo(octokit, context);
-	const labelsToAdd = CheckLabelsWithTitle(labels,pr_Title);
+	//const labelsToAdd = CheckLabelsWithTitle(labels,pr_Title);
 
 	// Testing section
 	console.log("Get label config file from repo");
@@ -10311,31 +10311,28 @@ async function run()
 	const configurationContent = await GetContent(octokit, context);
 	let encodedFileContent  = Buffer.from(configurationContent.data.content, configurationContent.data.encoding);
 	const yamlFileContent = yaml.load(encodedFileContent);
-	const labelGlobs = new Map();
-	console.log(`Value of yamlFileContent is: ` + yamlFileContent);
-	for (const label in yamlFileContent) {
-		console.log(`The label is ${label} and value of label is: ${yamlFileContent[label]}`);
-		if (typeof yamlFileContent[label] === "string") {
+	const labels = []
+	// yamlFileContent is [object Object]
+	for (const tag in yamlFileContent) {
+		console.log(`The label is ${tag} and value of label is: ${yamlFileContent[tag]}`);
+		if (typeof yamlFileContent[tag] === "string") {
 			console.log("This is a string");
-			labelGlobs.set(label, [configObject[label]]);
-		} else if (yamlFileContent[label] instanceof Array) {
+			let tempLabels = [tag, yamlFileContent[tag]]
+			labels2.push(tempLabels);
+			labelGlobs.set(tag, [configObject[tag]]);
+		} else if (yamlFileContent[tag] instanceof Array) {
 			console.log("This is a array");
-			labelGlobs.set(label, configObject[label]);
+			let tempLabels = [tag, [yamlFileContent[tag]].join(',')];
+			labels2.push(tempLabels);
+			labelGlobs.set(tag, configObject[tag]);
 		} else {
 		  console.log(
-		    `found unexpected type for label ${label} (should be string or array of globs)`
+		    `found unexpected type for label ${tag} (should be string or array of globs)`
 		  );
 		}
 	}
+	const labelsToAdd = CheckLabelsWithTitle(labels,pr_Title);
 
-	console.log(`Length of labelGlobs is: ` + labelGlobs.length);
-	const labels2 = [];
-	const labelsToRemove = [];
-   	for (const [label, globs] of labelGlobs.entries()) {
-      		core.debug(`processing ${label}`);
-			labels2.push(label);
-		
-	}
 
 	console.log(`End of testing`);
 	//END of testing section

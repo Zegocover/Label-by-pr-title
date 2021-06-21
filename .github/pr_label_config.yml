@@ -1,7 +1,7 @@
 Bug:
-  - from
+  - created
 feat:
-  - feat
+  - ['feat','create']
 hotfix:
   - hotfix
 bugfix:

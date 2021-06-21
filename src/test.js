@@ -12,10 +12,16 @@ async function run()
 
 	try {
 		let fileContents = fs.readFileSync('.github/pr_label_config.yml', 'utf8');
-		console.log(`Pre load file content: ${fileContents}`);
-		let data = yaml.load(content);
+		//console.log(`Pre load file content: ${fileContents}`);
+		let data = yaml.load(fileContents)
+		console.log("The length is:" + data.length);
+		for (let value of data)
+		{
+			console.log(`Value is: ${value}`);
+
+		}
+		console.log(`YAML load file content: ${data}`);
 	    
-		console.log(data);
 	    } catch (e) {
 		console.log(e);
 	    }
@@ -90,7 +96,6 @@ async function run()
 	});
 	console.log("set label OK");
 */
-	console.log("Hello, world!");
 	} catch(error)
 	{
 		core.setFailed(error.message);

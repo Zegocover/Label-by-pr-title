@@ -10301,23 +10301,42 @@ async function run()
 	// Testing section
 	console.log("Get label config file from repo");
 	//Get the file content
-	const configurationContent = await GetContent(octokit, context);
-	//encodedFileContent  = Buffer.from(configurationContent.data.content, configurationContent.data.encoding);
-
+	/*const configurationContent = await GetContent(octokit, context);
 	const yamlFileContent = yaml.load(configurationContent.data.content);
 	let encodedFileContent  = Buffer.from(yamlFileContent, configurationContent.data.encoding);
-	//let encodedFileContent = new Buffer(configObject, 'base64');
-
 	console.log(`Hopefully decoded ${encodedFileContent.toString('utf8')}`);
-	for (let value of Object.entries(encodedFileContent))
-	{
-		console.log(`The value is: ${value}`);
-		/*for (let [key2,value2] of Object.entries(value))
-		{
-			console.log(`The key2 is: ${key2} and value2 is: ${value2}`);
-		}*/
+*/
+
+
+	const configurationContent = await GetContent(octokit, context);
+	const yamlFileContent = yaml.load(configurationContent.data.content);
+	const labelGlobs = new Map();
+	for (const label in yamlFileContent) {
+		if (typeof yamlFileContent[label] === "string") {
+		  labelGlobs.set(label, [yamlFileContent[label]]);
+		} else if (yamlFileContent[label] instanceof Array) {
+		  labelGlobs.set(label, yamlFileContent[label]);
+		} else {
+		  console.log(
+		    `found unexpected type for label ${label} (should be string or array of globs)`
+		  );
+		}
 	}
 
+	const labels = [];
+	const labelsToRemove = [];
+   	for (const [label, globs] of labelGlobs.entries()) {
+      		core.debug(`processing ${label}`);
+		if (checkGlobs(changedFiles, globs)) {
+			labels.push(label);
+			console.log(`Adding label: ${label}`);
+		} else if (pull_request.labels.find((l) => l.name === label)) {
+			labelsToRemove.push(label);
+			console.log(`Removing label: ${label}`);
+		}
+	}
+
+	console.log(`End of testing`);
 	//END of testing section
 
 	if (labelsToAdd.length > 0)

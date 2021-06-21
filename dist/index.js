@@ -10319,12 +10319,10 @@ async function run()
 			console.log("This is a string");
 			let tempLabels = [tag, yamlFileContent[tag]]
 			labels.push(tempLabels);
-			labelGlobs.set(tag, [configObject[tag]]);
 		} else if (yamlFileContent[tag] instanceof Array) {
 			console.log("This is a array");
 			let tempLabels = [tag, [yamlFileContent[tag]].join(',')];
 			labels.push(tempLabels);
-			labelGlobs.set(tag, configObject[tag]);
 		} else {
 		  console.log(
 		    `found unexpected type for label ${tag} (should be string or array of globs)`

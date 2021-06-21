@@ -35,7 +35,8 @@ async function run()
 
 
 	const configurationContent = await GetContent(octokit, context);
-	const yamlFileContent = yaml.load(configurationContent.data.content);
+	let encodedFileContent  = Buffer.from(configurationContent.data.content, configurationContent.data.encoding);
+	const yamlFileContent = yaml.load(encodedFileContent);
 	const labelGlobs = [];
 	console.log(`Length of yamlFileContent is: ` + yamlFileContent.length);
 	for (const label in yamlFileContent) {

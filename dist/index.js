@@ -10323,12 +10323,12 @@ async function run()
 		}
 	}
 
-	const labels = [];
+	const labels2 = [];
 	const labelsToRemove = [];
    	for (const [label, globs] of labelGlobs.entries()) {
       		core.debug(`processing ${label}`);
 		if (checkGlobs(changedFiles, globs)) {
-			labels.push(label);
+			labels2.push(label);
 			console.log(`Adding label: ${label}`);
 		} else if (pull_request.labels.find((l) => l.name === label)) {
 			labelsToRemove.push(label);

@@ -39,11 +39,11 @@ async function run()
 	const labelGlobs = [];
 	console.log(`Length of yamlFileContent is: ` + yamlFileContent.length);
 	for (const label in yamlFileContent) {
-		console.log(`The value of label is: ${label}`);
+		console.log(`The value of label is: ${yamlFileContent[label]}`);
 		if (typeof yamlFileContent[label] === "string") {
-		  labelGlobs.push(label);
+		  labelGlobs.push(yamlFileContent[label]);
 		} else if (yamlFileContent[label] instanceof Array) {
-		  labelGlobs.push(label);
+		  labelGlobs.push(yamlFileContent[label]);
 		} else {
 		  console.log(
 		    `found unexpected type for label ${label} (should be string or array of globs)`

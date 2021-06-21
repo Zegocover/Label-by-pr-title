@@ -37,6 +37,7 @@ async function run()
 	const configurationContent = await GetContent(octokit, context);
 	const yamlFileContent = yaml.load(configurationContent.data.content);
 	const labelGlobs = new Map();
+	console.log(`Length of yamlFileContent is: ` + yamlFileContent.length);
 	for (const label in yamlFileContent) {
 		if (typeof yamlFileContent[label] === "string") {
 		  labelGlobs.set(label, [yamlFileContent[label]]);
@@ -49,6 +50,7 @@ async function run()
 		}
 	}
 
+	console.log(`Length of labelGlobs is: ` + labelGlobs.length);
 	const labels2 = [];
 	const labelsToRemove = [];
    	for (const [label, globs] of labelGlobs.entries()) {

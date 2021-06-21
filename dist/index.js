@@ -10318,12 +10318,12 @@ async function run()
 		if (typeof yamlFileContent[tag] === "string") {
 			console.log("This is a string");
 			let tempLabels = [tag, yamlFileContent[tag]]
-			labels2.push(tempLabels);
+			labels.push(tempLabels);
 			labelGlobs.set(tag, [configObject[tag]]);
 		} else if (yamlFileContent[tag] instanceof Array) {
 			console.log("This is a array");
 			let tempLabels = [tag, [yamlFileContent[tag]].join(',')];
-			labels2.push(tempLabels);
+			labels.push(tempLabels);
 			labelGlobs.set(tag, configObject[tag]);
 		} else {
 		  console.log(

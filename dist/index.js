@@ -10312,7 +10312,7 @@ async function run()
 	let encodedFileContent  = Buffer.from(configurationContent.data.content, configurationContent.data.encoding);
 	const yamlFileContent = yaml.load(encodedFileContent);
 	const labelGlobs = [];
-	console.log(`Length of yamlFileContent is: ` + yamlFileContent.length);
+	console.log(`Value of yamlFileContent is: ` + yamlFileContent);
 	for (const label in yamlFileContent) {
 		console.log(`The value of label is: ${yamlFileContent[label]}`);
 		if (typeof yamlFileContent[label] === "string") {

@@ -9,10 +9,9 @@ inputs:
     description: 'Path to Label configuration'
     default: '.github/pr_label_config.yml'
     required: false
-  config2:
-    description: 'Provide config path or default'
-    default: 'defaultPath'
-    required: false
+
+outputs:
+  'Labels'
     
 runs:
   using: 'node12'

@@ -13,7 +13,18 @@ async function run()
 
 	try
 	{
-		const arr = ['b','c'];
+
+
+const arr = [['bug','a','b','c'],['deat','d','e','f'],['fix','g','h','i']];
+const str = [];
+for (const lbl of arr)
+{
+	//console.log(lbl);
+	str.push(lbl[0]);
+}
+console.log(str.join(','));
+
+/*		const arr = ['b','c'];
 var myVal = Object.prototype.toString.call(arr);
 console.log(`IS this an array? ${Array.isArray(arr)}`);
 console.log(myVal);
@@ -30,7 +41,7 @@ for (let tag in ymlData)
 	let lblArrVal = ymlData[tag].toString().split(',');
 	lblArrVal.unshift(tag);
 	console.log(`Tag added to array is: ${lblArrVal.join(';')}`);
-}
+}*/
 
  /*
 	const pr_Title	= "This is the name of my PR request";

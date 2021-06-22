@@ -10303,6 +10303,8 @@ async function run()
 	const labels               = DefineLabelsFromFile(yamlFileContent);
 	const labelsToAdd          = CheckLabelsWithTitle(labels,pr_Title);
 
+	core.setOutput("Labels",labels);
+
 	if (labelsToAdd.length > 0)
 	{
 		console.log("Validate labels from file with repo");
@@ -10378,6 +10380,15 @@ async function run()
 	}
 }
 
+function LabelsToOutput(labelAndMatchCriteria)
+{
+	const outputLabels = [];
+	for (const arr of labelAndMatchCriteria)
+	{
+		outputLabels.push(arr[0]);
+	}
+	return outputLabels.join(',');
+}
 
 /* Create array of labels and their matching criteria from file
 *  From yamlFileContent: [object Object]

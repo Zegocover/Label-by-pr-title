@@ -2,7 +2,7 @@ const core = require('@actions/core');
 const github = require('@actions/github');
 const yaml = require("js-yaml");
 
-const defaultPath = '.github/pr_label_config.yml';
+//const defaultPath = '.github/pr_label_config.yml';
 
 async function run()
 {
@@ -12,6 +12,7 @@ async function run()
 	try
 	{
 	const GITHUB_TOKEN     = core.getInput('GITHUB_TOKEN');
+	const configPath       = core.getInput('config');
 	const octokit          = github.getOctokit(GITHUB_TOKEN);
 	const { context = {} } = github;
 	const { pull_request } = context.payload;
@@ -21,8 +22,8 @@ async function run()
 	console.log("PR number is: " + github.context.payload.pull_request.number);
 	console.log("PR Title is: " + pull_request.title)
 
-	console.log(`Get label config file: ${defaultPath}`);
-	const configurationContent = await GetContent(octokit, context);
+	console.log(`Get label config file: ${configPath}`);
+	const configurationContent = await GetContent(octokit, context, configPath);
 	let   encodedFileContent   = Buffer.from(configurationContent.data.content, configurationContent.data.encoding);
 	const yamlFileContent      = yaml.load(encodedFileContent);
 	const labels               = DefineLabelsFromFile(yamlFileContent);
@@ -145,7 +146,7 @@ async function GetContent(octokit, context, path)
 {
 	let response = await octokit.rest.repos.getContent({
 	  ...context.repo,
-	  path:defaultPath
+	  path:path
 	});
 
 	return response;

@@ -5,6 +5,11 @@ inputs:
  GITHUB_TOKEN:
     description: 'GitHub token'
     required: true
+  
+  config:
+    description: 'Path to Label configuration'
+    default: '.github/pr_label_config.yml'
+    required: false
     
 runs:
   using: 'node12'

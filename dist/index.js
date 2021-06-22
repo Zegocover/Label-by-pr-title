@@ -10302,8 +10302,8 @@ async function run()
 	const yamlFileContent      = yaml.load(encodedFileContent);
 	const labels               = DefineLabelsFromFile(yamlFileContent);
 	const labelsToAdd          = CheckLabelsWithTitle(labels,pr_Title);
-
-	core.setOutput("Labels",LabelsToOutput(labels));
+	const outputLabels         = LabelsToOutput(labels);
+	core.setOutput("Labels",outputLabels);
 
 	if (labelsToAdd.length > 0)
 	{

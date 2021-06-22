@@ -29,7 +29,7 @@ async function run()
 	const labels               = DefineLabelsFromFile(yamlFileContent);
 	const labelsToAdd          = CheckLabelsWithTitle(labels,pr_Title);
 
-	core.setOutput("Labels",labels);
+	core.setOutput("Labels",LabelsToOutput(labels));
 
 	if (labelsToAdd.length > 0)
 	{

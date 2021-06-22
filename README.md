@@ -7,6 +7,10 @@ Add label given string match of PR title
 
 **Required** The secret to access repo.
 
+### `config`
+
+**Required** The labels and their matching criteria
+
 
 ## Example usage
 

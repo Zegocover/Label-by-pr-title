@@ -42,11 +42,11 @@ async function run()
 	for (const tag in yamlFileContent) {
 		//console.log(`The label is ${tag} and value of label is: ${yamlFileContent[tag]}`);
 		if (typeof yamlFileContent[tag] === "string") {
-			console.log(`This label ${tag} has string value type`);
+			console.log(`This label ${tag} has string value type: ${yamlFileContent[tag]}`);
 			let tempLabels = [tag, yamlFileContent[tag]]
 			labels.push(tempLabels);
 		} else if (Array.isArray([yamlFileContent[tag]])) {
-			console.log(`This label ${tag} has array value type`);
+			console.log(`This label ${tag} has array value type: ${[yamlFileContent[tag]].join(",")}`);
 			let tempLabels = [tag];
 			tempLabels.concat([yamlFileContent[tag]]);
 			labels.push(tempLabels);

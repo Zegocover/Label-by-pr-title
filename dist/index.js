@@ -10421,7 +10421,7 @@ async function GetContent(octokit, context, path)
 	let response = await octokit.rest.repos.getContent({
 	  ...context.repo,
 	  path:path,
-	  ref: context.sha,
+	//  ref: context.sha,
 	});
 
 	return response;

@@ -1,5 +1,6 @@
 const core = require('@actions/core');
 const github = require('@actions/github');
+const { Console } = require('console');
 const fs = require('fs');
 const yaml = require('js-yaml');
 
@@ -13,10 +14,24 @@ async function run()
 	try
 	{
 		const arr = ['b','c'];
-		
-		arr.unshift('a');
-		let temp = arr;
-console.log(`The value of temp is ${temp}`);
+var myVal = Object.prototype.toString.call(arr);
+console.log(`IS this an array? ${Array.isArray(arr)}`);
+console.log(myVal);
+
+ let data = fs.readFileSync('.github/pr_label_config.yml');
+let ymlData = yaml.load(data);
+for (let tag in ymlData)
+{
+	console.log(`The tag is ${tag} and value is ${ymlData[tag]}`)
+	let strType = typeof ymlData[tag];
+	let arrType = Object.prototype.toString.call(ymlData[tag]);
+	let isArrType = Array.isArray(ymlData[tag]);
+	//console.log(`String: ${strType} Array: ${arrType} IsArray: ${isArrType}`);
+	let lblArrVal = ymlData[tag].toString().split(',');
+	lblArrVal.unshift(tag);
+	console.log(`Tag added to array is: ${lblArrVal.join(';')}`);
+}
+
  /*
 	const pr_Title	= "This is the name of my PR request";
 

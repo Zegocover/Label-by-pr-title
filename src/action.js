@@ -46,8 +46,8 @@ async function run()
 			let tempLabels = [tag, yamlFileContent[tag]]
 			labels.push(tempLabels);
 		} else if (Array.isArray([yamlFileContent[tag]])) {
-			console.log(`This label ${tag} has array value type: ${[yamlFileContent[tag]].join(",")}`);
-			let tempLabels = [yamlFileContent[tag]];
+			console.log(`This label ${tag} has array value type: ${yamlFileContent[tag].join(";")}`);
+			let tempLabels = yamlFileContent[tag];
 			tempLabels.unshift(tag);
 			console.log(`This labels array value type: ${tempLabels}`);
 

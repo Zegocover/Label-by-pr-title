@@ -7,7 +7,7 @@ const defaultPath = '.github/pr_label_config.yml';
 async function run()
 {
 	//Label associations
-	const labelsOriginal = DefineLabelMatches()
+	//const labelsOriginal = DefineLabelMatches()
 
 	try
 	{
@@ -47,8 +47,9 @@ async function run()
 			labels.push(tempLabels);
 		} else if (Array.isArray([yamlFileContent[tag]])) {
 			console.log(`This label ${tag} has array value type: ${[yamlFileContent[tag]].join(",")}`);
-			let tempLabels = [tag];
-			tempLabels.concat([yamlFileContent[tag]]);
+			let tempLabels = [yamlFileContent[tag]].unshift(tag);
+			//let tempLabels = [tag];
+			//tempLabels.concat([yamlFileContent[tag]]);
 			labels.push(tempLabels);
 		} else {
 		  	console.log( `Unknown value type for label ${tag}. Expecting string or array of globs)`);
@@ -219,15 +220,18 @@ function RemoveFromArray(arr, strMatch) {
 *  [['labelname1','matchword1','matchword2'], ['labelname2','matchword3','matchword4']]
 *  return: array[array[]]
 */
-function DefineLabelMatches()
+function DefineLabelMatches(label, )
 {
-	//Label associations
+/*	//Label associations
 	const bugLabel = ['bug','name','fix', 'test'];
 	const enhancementLabel = ['enhancement','enhance', 'new','feature','Label']
 	const labels = [];
 	labels.push(bugLabel);
 	labels.push(enhancementLabel);
 	return labels
+*/
+
+
 }
 
 /* Given string strBase does it start with strMatch

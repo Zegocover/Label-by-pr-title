@@ -1,2 +1,12 @@
 Bug:
-- ['from']
+  - ['from','create']
+feat:
+  - feat
+hotfix:
+  - hotfix
+bugfix:
+  - bugfix
+refactor:
+  - refactor
+chore:
+  - chore

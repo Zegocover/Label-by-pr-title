@@ -10316,29 +10316,16 @@ async function run()
 	for (const tag in yamlFileContent) {
 		//console.log(`The label is ${tag} and value of label is: ${yamlFileContent[tag]}`);
 		if (typeof yamlFileContent[tag] === "string") {
-			console.log("This is a string");
-		console.log(`The label is ${tag} and value of label is: ${yamlFileContent[tag]}`);
+			console.log(`This label ${tag} has string value type`);
 			let tempLabels = [tag, yamlFileContent[tag]]
 			labels.push(tempLabels);
 		} else if (Array.isArray([yamlFileContent[tag]])) {
-			console.log("This is another array");
-		console.log(`The label is ${tag} and value of label is: ${[yamlFileContent[tag]].join(", ")}`);
-			let tempLabels = [tag, [yamlFileContent[tag]].join(',')];
-			labels.push(tempLabels);
-		} else if (Array.isArray(yamlFileContent[tag])) {
-			console.log("This is another array2");
-		console.log(`The label is ${tag} and value of label is: ${[yamlFileContent[tag]].join(", ")}`);
-			let tempLabels = [tag, [yamlFileContent[tag]].join(',')];
-			labels.push(tempLabels);
-		} else if (yamlFileContent[tag] instanceof Array) {
-			console.log("This is a array");
-		console.log(`The label is ${tag} and value of label is: ${[yamlFileContent[tag]].join(", ")}`);
-			let tempLabels = [tag, [yamlFileContent[tag]].join(',')];
+			console.log(`This label ${tag} has array value type`);
+			let tempLabels = [tag];
+			tempLabels.concat([yamlFileContent[tag]]);
 			labels.push(tempLabels);
 		} else {
-		  console.log(
-		    `found unexpected type for label ${tag} (should be string or array of globs)`
-		  );
+		  	console.log( `Unknown value type for label ${tag}. Expecting string or array of globs)`);
 		}
 	}
 	const labelsToAdd = CheckLabelsWithTitle(labels,pr_Title);

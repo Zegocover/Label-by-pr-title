@@ -46,6 +46,16 @@ async function run()
 		console.log(`The label is ${tag} and value of label is: ${yamlFileContent[tag]}`);
 			let tempLabels = [tag, yamlFileContent[tag]]
 			labels.push(tempLabels);
+		} else if (Array.isArray([yamlFileContent[tag]])) {
+			console.log("This is another array");
+		console.log(`The label is ${tag} and value of label is: ${[yamlFileContent[tag]].join(", ")}`);
+			let tempLabels = [tag, [yamlFileContent[tag]].join(',')];
+			labels.push(tempLabels);
+		} else if (Array.isArray(yamlFileContent[tag])) {
+			console.log("This is another array2");
+		console.log(`The label is ${tag} and value of label is: ${[yamlFileContent[tag]].join(", ")}`);
+			let tempLabels = [tag, [yamlFileContent[tag]].join(',')];
+			labels.push(tempLabels);
 		} else if (yamlFileContent[tag] instanceof Array) {
 			console.log("This is a array");
 		console.log(`The label is ${tag} and value of label is: ${[yamlFileContent[tag]].join(", ")}`);

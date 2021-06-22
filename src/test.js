@@ -12,6 +12,15 @@ async function run()
 
 	try
 	{
+		const arr = ['a','b','c'];
+var myVal = Object.prototype.toString.call(arr);
+console.log(`IS this an array? ${Array.isArray(arr)}`);
+console.log(myVal);
+if (myVal.Map(String.toLowerCase.match(/^(array)$/) ))
+{console.log("This is an array");}
+ else {console.log("This is not an array");}
+
+ /*
 	const pr_Title	= "This is the name of my PR request";
 
 
@@ -45,7 +54,7 @@ async function run()
 		}
 	}
 
-	console.log(`Labels to add to my PR [${dummy_labelsMatched.toString()}]`);
+	console.log(`Labels to add to my PR [${dummy_labelsMatched.toString()}]`);*/
 
 	/*
 	for (const lbl of bugLabel)

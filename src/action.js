@@ -40,7 +40,7 @@ async function run()
 	const labels = []
 	// yamlFileContent is [object Object]
 	for (const tag in yamlFileContent) {
-		//console.log(`The label is ${tag} and value of label is: ${yamlFileContent[tag]}`);
+		console.log(`The label is ${tag} label type is ${typeof yamlFileContent[tag]} and value of label is: ${yamlFileContent[tag]}`);
 		if (typeof yamlFileContent[tag] === "string") {
 			console.log(`This label ${tag} has string value type: ${yamlFileContent[tag]}`);
 			let tempLabels = [tag, yamlFileContent[tag]]

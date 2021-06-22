@@ -1,5 +1,7 @@
-feat:
+bug:
   - feat
+feat:
+  - fea
 hotfix:
   - hotfix
 bugfix:

@@ -1,10 +1,13 @@
 const core = require('@actions/core');
 const github = require('@actions/github');
+const yaml = require("js-yaml");
+
+const defaultPath = '.github/pr_label_config.yml';
 
 async function run()
 {
 	//Label associations
-	const labels = DefineLabelMatches()
+	//const labelsOriginal = DefineLabelMatches()
 
 	try
 	{
@@ -18,11 +21,17 @@ async function run()
 	console.log("PR number is: " + github.context.payload.pull_request.number);
 	console.log("PR Title is: " + pull_request.title)
 
-	const repo_Labels = await GetLabelsFromRepo(octokit, context);
-	const labelsToAdd = CheckLabelsWithTitle(labels,pr_Title);
+	console.log(`Get label config file: ${defaultPath}`);
+	const configurationContent = await GetContent(octokit, context);
+	let   encodedFileContent   = Buffer.from(configurationContent.data.content, configurationContent.data.encoding);
+	const yamlFileContent      = yaml.load(encodedFileContent);
+	const labels               = DefineLabelsFromFile(yamlFileContent);
+	const labelsToAdd          = CheckLabelsWithTitle(labels,pr_Title);
 
 	if (labelsToAdd.length > 0)
 	{
+		console.log("Validate labels from file with repo");
+		const repo_Labels = await GetAllLabelsFromRepo(octokit, context);
 		ValidateLabels(labelsToAdd, repo_Labels);
 		console.log(`Labels ${labelsToAdd.toString()} are valid for this repo`);
 
@@ -94,6 +103,30 @@ async function run()
 	}
 }
 
+
+/* Create array of labels and their matching criteria from file
+*  From yamlFileContent: [object Object]
+*  create an array of [[label1,'matchA','matchB'],['label2','matchC'],...]
+*  return the array of labels and their matching criteria
+*/
+function DefineLabelsFromFile(yamlFileContent, labels) {
+	var labels = [];
+
+	for (const tag in yamlFileContent) {
+		if (typeof yamlFileContent[tag] === "string") {
+			let tempLabels = [tag, yamlFileContent[tag]];
+			labels.push(tempLabels);
+		} else if (Array.isArray([yamlFileContent[tag]])) {
+			let tempLabels = yamlFileContent[tag].toString().split(',');
+			tempLabels.unshift(tag);
+			labels.push(tempLabels);
+		} else {
+			console.log(`Unknown value type for label ${tag}. Expecting string or array of globs)`);
+		}
+	}
+	return labels;
+}
+
 /* Validate labels to add to PR with
 *  repository defined labels.
 *  I.e. We dont want to create new labels
@@ -106,17 +139,30 @@ function ValidateLabels(labelsToAdd, repo_Labels) {
 	}
 }
 
+/* Request content from github repo from the path
+*/
+async function GetContent(octokit, context, path)
+{
+	let response = await octokit.rest.repos.getContent({
+	  ...context.repo,
+	  path:defaultPath
+	});
+
+	return response;
+
+	//return Buffer.from(response.data.content, response.data.encoding);
+}
+
+
 /* Request labels data from repository
 *  and return an Array of label names
 */
-async function GetLabelsFromRepo(octokit, context) {
+async function GetAllLabelsFromRepo(octokit, context) {
 	const repo_Labels = [];
-
-	const lbl_obj = await octokit.rest.issues.listLabelsForRepo({
+	const lbl_obj     = await octokit.rest.issues.listLabelsForRepo({
 		...context.repo,
 	});
 
-	console.log("Status of request is: " + lbl_obj.status);
 	for (let lblObj of lbl_obj.data)
 	{
 		//Add label name to array
@@ -133,6 +179,8 @@ async function GetLabelsFromRepo(octokit, context) {
 function CheckLabelsWithTitle(labels, pr_Title)
 {
 	const matchedLabels = [];
+
+	console.log("Matching labels with PR title...");
 
 	for (let i = 0; i < labels.length; i++) {
 		// get the size of the inner array
@@ -153,7 +201,10 @@ function CheckLabelsWithTitle(labels, pr_Title)
 /* Remove strMatch from arr if it exists
 */
 function RemoveFromArray(arr, strMatch) {
-	const index = arr.indexOf(strMatch);
+	var lowercaseArr = arr.map(function(value){
+		return value.toLowerCase();
+	});
+	const index = lowercaseArr.indexOf(strMatch.toLowerCase());
 	if (index > -1) {
 		arr.splice(index, 1);
 	}
@@ -164,15 +215,18 @@ function RemoveFromArray(arr, strMatch) {
 *  [['labelname1','matchword1','matchword2'], ['labelname2','matchword3','matchword4']]
 *  return: array[array[]]
 */
-function DefineLabelMatches()
+function DefineLabelMatches(label, )
 {
-	//Label associations
+/*	//Label associations
 	const bugLabel = ['bug','name','fix', 'test'];
 	const enhancementLabel = ['enhancement','enhance', 'new','feature','Label']
 	const labels = [];
 	labels.push(bugLabel);
 	labels.push(enhancementLabel);
 	return labels
+*/
+
+
 }
 
 /* Given string strBase does it start with strMatch

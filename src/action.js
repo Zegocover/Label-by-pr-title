@@ -21,51 +21,16 @@ async function run()
 	console.log("PR number is: " + github.context.payload.pull_request.number);
 	console.log("PR Title is: " + pull_request.title)
 
-	const repo_Labels = await GetLabelsFromRepo(octokit, context);
-	//const labelsToAdd = CheckLabelsWithTitle(labels,pr_Title);
-
-	// Testing section
 	console.log("Get label config file from repo");
-	//Get the file content
-	/*const configurationContent = await GetContent(octokit, context);
-	const yamlFileContent = yaml.load(configurationContent.data.content);
-	let encodedFileContent  = Buffer.from(yamlFileContent, configurationContent.data.encoding);
-	console.log(`Hopefully decoded ${encodedFileContent.toString('utf8')}`);
-*/
-
-
 	const configurationContent = await GetContent(octokit, context);
-	let encodedFileContent  = Buffer.from(configurationContent.data.content, configurationContent.data.encoding);
-	const yamlFileContent = yaml.load(encodedFileContent);
-	const labels = []
-	// yamlFileContent is [object Object]
-	for (const tag in yamlFileContent) {
-		console.log(`The label is ${tag} label type is ${Object.prototype.toString.call(yamlFileContent[tag])} and value of label is: ${yamlFileContent[tag]}`);
-		if (typeof yamlFileContent[tag] === "string") {
-			console.log(`This label ${tag} has string value type: ${yamlFileContent[tag]}`);
-			let tempLabels = [tag, yamlFileContent[tag]]
-			labels.push(tempLabels);
-		} else if (Array.isArray([yamlFileContent[tag]])) {
-			console.log(`This label ${tag} has array value type: ${yamlFileContent[tag].join(";")}`);
-			let tempLabels = yamlFileContent[tag].toString().split(',');
-			tempLabels.unshift(tag);
-			console.log(`This labels array value type: ${tempLabels.join(',')}`);
-
-			//let tempLabels = [tag];
-			//tempLabels.concat([yamlFileContent[tag]]);
-			labels.push(tempLabels);
-		} else {
-		  	console.log( `Unknown value type for label ${tag}. Expecting string or array of globs)`);
-		}
-	}
-	const labelsToAdd = CheckLabelsWithTitle(labels,pr_Title);
-
-
-	console.log(`End of testing`);
-	//END of testing section
+	let   encodedFileContent   = Buffer.from(configurationContent.data.content, configurationContent.data.encoding);
+	const yamlFileContent      = yaml.load(encodedFileContent);
+	const labels               = DefineLabelsFromFile(yamlFileContent);
+	const labelsToAdd          = CheckLabelsWithTitle(labels,pr_Title);
 
 	if (labelsToAdd.length > 0)
 	{
+		const repo_Labels = await GetAllLabelsFromRepo(octokit, context);
 		ValidateLabels(labelsToAdd, repo_Labels);
 		console.log(`Labels ${labelsToAdd.toString()} are valid for this repo`);
 
@@ -138,6 +103,30 @@ async function run()
 }
 
 
+/* Create array of labels and their matching criteria from file
+*  From yamlFileContent: [object Object]
+*  create an array of [[label1,'matchA','matchB'],['label2','matchC'],...]
+*  return the array of labels and their matching criteria
+*/
+function DefineLabelsFromFile(yamlFileContent, labels) {
+	var labels = [];
+
+	console.log('Get labels from file');
+	for (const tag in yamlFileContent) {
+		if (typeof yamlFileContent[tag] === "string") {
+			let tempLabels = [tag, yamlFileContent[tag]];
+			labels.push(tempLabels);
+		} else if (Array.isArray([yamlFileContent[tag]])) {
+			let tempLabels = yamlFileContent[tag].toString().split(',');
+			tempLabels.unshift(tag);
+			labels.push(tempLabels);
+		} else {
+			console.log(`Unknown value type for label ${tag}. Expecting string or array of globs)`);
+		}
+	}
+	return labels;
+}
+
 /* Validate labels to add to PR with
 *  repository defined labels.
 *  I.e. We dont want to create new labels
@@ -168,7 +157,7 @@ async function GetContent(octokit, context, path)
 /* Request labels data from repository
 *  and return an Array of label names
 */
-async function GetLabelsFromRepo(octokit, context) {
+async function GetAllLabelsFromRepo(octokit, context) {
 	const repo_Labels = [];
 
 	const lbl_obj = await octokit.rest.issues.listLabelsForRepo({
@@ -198,7 +187,6 @@ function CheckLabelsWithTitle(labels, pr_Title)
 		// loop the inner array
 		for (let j = 1; j < innerArrayLength; j++) {
 			var lbl = labels[i][j];
-			console.log(`Checking label ${lbl} matches PR Title`);
 			if (Str_Match(pr_Title,lbl))
 			{
 				console.log(`Matched... Add Label: [${labels[i][0]}] to pull request`);

@@ -1,5 +1,7 @@
-feat:
+bug:
   - feat
+feat:
+  - fear
 hotfix:
   - hotfix
 bugfix:

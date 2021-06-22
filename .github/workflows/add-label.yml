@@ -7,7 +7,10 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v2
     - name: Display PR title
+      id: myLabeler
       uses: ./
       with:
         GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+    - name: Get the output labels
+      run: echo "The labels are ${{ steps.myLabeler.outputs.Labels}}"
         

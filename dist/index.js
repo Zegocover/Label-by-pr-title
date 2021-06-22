@@ -10302,6 +10302,8 @@ async function run()
 	const yamlFileContent      = yaml.load(encodedFileContent);
 	const labels               = DefineLabelsFromFile(yamlFileContent);
 	const labelsToAdd          = CheckLabelsWithTitle(labels,pr_Title);
+	const outputLabels         = LabelsToOutput(labels);
+	core.setOutput("Labels",outputLabels);
 
 	if (labelsToAdd.length > 0)
 	{
@@ -10378,6 +10380,15 @@ async function run()
 	}
 }
 
+function LabelsToOutput(labelAndMatchCriteria)
+{
+	const outputLabels = [];
+	for (const arr of labelAndMatchCriteria)
+	{
+		outputLabels.push(arr[0]);
+	}
+	return outputLabels.join(',');
+}
 
 /* Create array of labels and their matching criteria from file
 *  From yamlFileContent: [object Object]
@@ -10420,7 +10431,8 @@ async function GetContent(octokit, context, path)
 {
 	let response = await octokit.rest.repos.getContent({
 	  ...context.repo,
-	  path:path
+	  path:path,
+	  ref: context.sha,
 	});
 
 	return response;

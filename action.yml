@@ -9,6 +9,9 @@ inputs:
     description: 'Path to Label configuration'
     default: '.github/pr_label_config.yml'
     required: false
+outputs:
+  Labels: # id of output
+    description: 'Labels identified from config'
     
 runs:
   using: 'node12'

@@ -12,14 +12,11 @@ async function run()
 
 	try
 	{
-		const arr = ['a','b','c'];
-var myVal = Object.prototype.toString.call(arr);
-console.log(`IS this an array? ${Array.isArray(arr)}`);
-console.log(myVal);
-if (myVal.Map(String.toLowerCase.match(/^(array)$/) ))
-{console.log("This is an array");}
- else {console.log("This is not an array");}
-
+		const arr = ['b','c'];
+		
+		arr.unshift('a');
+		let temp = arr;
+console.log(`The value of temp is ${temp}`);
  /*
 	const pr_Title	= "This is the name of my PR request";
 

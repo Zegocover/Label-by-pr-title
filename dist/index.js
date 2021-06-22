@@ -10295,7 +10295,7 @@ async function run()
 	console.log("PR number is: " + github.context.payload.pull_request.number);
 	console.log("PR Title is: " + pull_request.title)
 
-	console.log("Get label config file from repo");
+	console.log(`Get label config file: ${defaultPath}`);
 	const configurationContent = await GetContent(octokit, context);
 	let   encodedFileContent   = Buffer.from(configurationContent.data.content, configurationContent.data.encoding);
 	const yamlFileContent      = yaml.load(encodedFileContent);
@@ -10304,6 +10304,7 @@ async function run()
 
 	if (labelsToAdd.length > 0)
 	{
+		console.log("Validate labels from file with repo");
 		const repo_Labels = await GetAllLabelsFromRepo(octokit, context);
 		ValidateLabels(labelsToAdd, repo_Labels);
 		console.log(`Labels ${labelsToAdd.toString()} are valid for this repo`);
@@ -10385,7 +10386,6 @@ async function run()
 function DefineLabelsFromFile(yamlFileContent, labels) {
 	var labels = [];
 
-	console.log('Get labels from file');
 	for (const tag in yamlFileContent) {
 		if (typeof yamlFileContent[tag] === "string") {
 			let tempLabels = [tag, yamlFileContent[tag]];
@@ -10433,8 +10433,7 @@ async function GetContent(octokit, context, path)
 */
 async function GetAllLabelsFromRepo(octokit, context) {
 	const repo_Labels = [];
-
-	const lbl_obj = await octokit.rest.issues.listLabelsForRepo({
+	const lbl_obj     = await octokit.rest.issues.listLabelsForRepo({
 		...context.repo,
 	});
 
@@ -10455,6 +10454,8 @@ function CheckLabelsWithTitle(labels, pr_Title)
 {
 	const matchedLabels = [];
 
+	console.log("Matching labels with PR title...");
+
 	for (let i = 0; i < labels.length; i++) {
 		// get the size of the inner array
 		var innerArrayLength = labels[i].length;
@@ -10474,7 +10475,10 @@ function CheckLabelsWithTitle(labels, pr_Title)
 /* Remove strMatch from arr if it exists
 */
 function RemoveFromArray(arr, strMatch) {
-	const index = arr.indexOf(strMatch);
+	var lowercaseArr = arr.map(function(value){
+		return value.toLowerCase();
+	});
+	const index = lowercaseArr.indexOf(strMatch.toLowerCase());
 	if (index > -1) {
 		arr.splice(index, 1);
 	}

@@ -10276,108 +10276,110 @@ const core = __nccwpck_require__(2186);
 const github = __nccwpck_require__(5438);
 const yaml = __nccwpck_require__(1917);
 
-//const defaultPath = '.github/pr_label_config.yml';
+const AreLabelsInFile = false;
 
 async function run()
 {
-	//Label associations
-	//const labelsOriginal = DefineLabelMatches()
-
 	try
 	{
-	const GITHUB_TOKEN     = core.getInput('GITHUB_TOKEN');
-	const configPath       = core.getInput('config');
-	const octokit          = github.getOctokit(GITHUB_TOKEN);
-	const { context = {} } = github;
-	const { pull_request } = context.payload;
-	const pr_Labels        = pull_request.labels;
-	const pr_Title         = pull_request.title;
+		const GITHUB_TOKEN     = core.getInput('GITHUB_TOKEN');
+		const configPath       = core.getInput('config');
+		const octokit          = github.getOctokit(GITHUB_TOKEN);
+		const { context = {} } = github;
+		const { pull_request } = context.payload;
 
-	console.log("PR number is: " + github.context.payload.pull_request.number);
-	console.log("PR Title is: " + pull_request.title)
+		console.log("PR number is: " + github.context.payload.pull_request.number);
+		console.log(`Get label config file: ${configPath}`);
 
-	console.log(`Get label config file: ${configPath}`);
-	const configurationContent = await GetContent(octokit, context, configPath);
-	let   encodedFileContent   = Buffer.from(configurationContent.data.content, configurationContent.data.encoding);
-	const yamlFileContent      = yaml.load(encodedFileContent);
-	const labels               = DefineLabelsFromFile(yamlFileContent);
-	const labelsToAdd          = CheckLabelsWithTitle(labels,pr_Title);
-	const outputLabels         = LabelsToOutput(labels);
-	core.setOutput("Labels",outputLabels);
+		const labels       = await GetLabels(octokit, context, configPath);
+		let   labelsToAdd  = MatchLabelsWithTitle(pull_request,labels);
+		const outputLabels = LabelsToOutput(labels);
 
-	if (labelsToAdd.length > 0)
-	{
-		console.log("Validate labels from file with repo");
-		const repo_Labels = await GetAllLabelsFromRepo(octokit, context);
-		ValidateLabels(labelsToAdd, repo_Labels);
-		console.log(`Labels ${labelsToAdd.toString()} are valid for this repo`);
-
-		if (pr_Labels.length > 0)
-		{
-			console.log("This PR has labels, checking...");
-			for (let pr_Label of pr_Labels)
-			{
-				if (Arr_Match(labelsToAdd,pr_Label.name))
-				{
-					console.log(`Label ${pr_Label.name} already added to PR`);
-					RemoveFromArray(labelsToAdd, pr_Label.name);
-				}
-			}
-		}
+		core.setOutput("Labels",outputLabels);
 
 		if (labelsToAdd.length > 0)
 		{
-			console.log(`Labels to add to PR: ${labelsToAdd}`)
-			await octokit.rest.issues.addLabels({
-				...context.repo,
-				issue_number: pull_request.number,
-				labels: labelsToAdd
-			});
-			console.log("Labels added.");
+			console.log("Validate label with repo");
+			const repo_Labels = await GetAllLabelsFromRepo(octokit, context);
+			ValidateLabels(labelsToAdd, repo_Labels);
+			console.log(`Label ${labelsToAdd.toString()} is valid for this repo`);
+
+			//Is the label on the pull request already?
+			labelsToAdd = LabelExistOnPullRequest(pull_request, labelsToAdd);
+
+			if (labelsToAdd.length > 0)
+			{
+				await AddLabel(octokit, context, pull_request.number, labelsToAdd);
+			}
+			else
+			{
+				console.log("No new labels added to PR");
+			}
 		}
 		else
 		{
-			console.log("No new labels added to pull request.");
+			console.log("No labels to add to PR");
 		}
 	}
-	else
-	{
-		console.log("No labels to add to PR");
-	}
-
-	/*
-	await octokit.rest.issues.removeLabel({
-		...context.repo,
-		issue_number: pull_request.number,
-		name: allMyLabels[0].name
-	});
-	console.log("Removed first label OK");
-
-	console.log(`Add this label ${allMyLabels[0].name}`)
-	labelArr.push(allMyLabels[0].name);
-	await octokit.rest.issues.addLabels({
-		...context.repo,
-		issue_number: pull_request.number,
-		labels: labelArr
-	});
-	*/
-/*
-
-		const readable_Labels = JSON.stringify(allMyLabels,undefined,2);
-	//	console.log("Print all labels: " + readable_Labels);
-	const first_Label = JSON.stringify(allMyLabels[0],undefined,2);
-	console.log("Print first label: " + first_Label);
-
-	await octokit.rest.issues.createComment({
-		...context.repo,
-		issue_number: pull_request.number,
-		body: '3Thank you for submitting a pull request! We will try to review this as soon as we can.'
-	});
-*/
-	} catch(error)
+	catch(error)
 	{
 		core.setFailed(error.message);
 	}
+}
+
+/* Add labels to pull request.
+*/
+async function AddLabel(octokit, context, prNumber, labelsToAdd)
+{
+	console.log(`Label to add to PR: ${labelsToAdd}`)
+	await octokit.rest.issues.addLabels({
+		...context.repo,
+		issue_number: prNumber,
+		labels: labelsToAdd
+	});
+	console.log("Labels added");
+}
+
+/* If pull request has label that is in labelsToAdd then remove
+*  it from labelsToAdd
+*  Return: labelsToAdd
+*/
+function LabelExistOnPullRequest(pull_request, labelsToAdd) {
+	let pr_Labels = pull_request.labels;
+
+	if (pr_Labels.length > 0) {
+		console.log("This PR has labels, checking...");
+		for (let pr_Label of pr_Labels) {
+			if (Arr_Match(labelsToAdd, pr_Label.name)) {
+				console.log(`Label ${pr_Label.name} already added to PR`);
+				RemoveFromArray(labelsToAdd, pr_Label.name);
+			}
+		}
+	}
+
+	return labelsToAdd;
+}
+
+/* Get the labels and their matching criteria from a file
+*  or function.
+*  Return the array of labels and their matching criteria
+*/
+async function GetLabels(octokit, context, configPath) {
+	let labels = [];
+	if (AreLabelsInFile)
+	{
+		const configContent = await GetConfigContent(octokit, context, configPath);
+		let   encodedFileContent   = Buffer.from(configContent.data.content, configContent.data.encoding);
+		const yamlFileContent = yaml.load(encodedFileContent);
+
+		labels = GetLabelsFromFile(yamlFileContent);
+	}
+	else
+	{
+		labels = DefineLabelMatches();
+	}
+
+	return labels;
 }
 
 function LabelsToOutput(labelAndMatchCriteria)
@@ -10390,12 +10392,12 @@ function LabelsToOutput(labelAndMatchCriteria)
 	return outputLabels.join(',');
 }
 
-/* Create array of labels and their matching criteria from file
-*  From yamlFileContent: [object Object]
-*  create an array of [[label1,'matchA','matchB'],['label2','matchC'],...]
+/* Get labels and their matching criteria
+*  from yamlFileContent: [object Object]
 *  return the array of labels and their matching criteria
+*  E.g. Array of [[label1,'matchA','matchB'],['label2','matchC'],...]
 */
-function DefineLabelsFromFile(yamlFileContent, labels) {
+function GetLabelsFromFile(yamlFileContent) {
 	var labels = [];
 
 	for (const tag in yamlFileContent) {
@@ -10426,8 +10428,10 @@ function ValidateLabels(labelsToAdd, repo_Labels) {
 }
 
 /* Request content from github repo from the path
+*  containing pr_label_config.yml
+*  Return the loaded yaml content
 */
-async function GetContent(octokit, context, path)
+async function GetConfigContent(octokit, context, path)
 {
 	let response = await octokit.rest.repos.getContent({
 	  ...context.repo,
@@ -10436,8 +10440,6 @@ async function GetContent(octokit, context, path)
 	});
 
 	return response;
-
-	//return Buffer.from(response.data.content, response.data.encoding);
 }
 
 
@@ -10458,17 +10460,16 @@ async function GetAllLabelsFromRepo(octokit, context) {
 	return repo_Labels;
 }
 
-/* Given array of labels = [['labelname1','matchword1','matchword2'], ['labelname2','matchword3','matchword4']]
-*  Does the pr_Title start with any of the matching words?
-*  true - Add labelname to MatchedLabels array
-*  false - continue
+/* Match the first word in pr_Title with the label's matching
+*  criteria.
+*  Return array containing label if matched, otherwise empty array
 */
-function CheckLabelsWithTitle(labels, pr_Title)
+function MatchLabelsWithTitle(pull_request, labels)
 {
-	const matchedLabels = [];
+	const pr_Title      = pull_request.title;
+	let matchedLabels = [];
 
-	console.log("Matching labels with PR title...");
-
+	console.log(`Matching label criteria with PR title: ${pr_Title}`);
 	for (let i = 0; i < labels.length; i++) {
 		// get the size of the inner array
 		var innerArrayLength = labels[i].length;
@@ -10479,9 +10480,11 @@ function CheckLabelsWithTitle(labels, pr_Title)
 			{
 				console.log(`Matched... Add Label: [${labels[i][0]}] to pull request`);
 				matchedLabels.push(labels[i][0]);
+				return matchedLabels;
 			}
 		}
 	}
+	//only reach here if no label is matched
 	return matchedLabels;
 }
 
@@ -10495,25 +10498,6 @@ function RemoveFromArray(arr, strMatch) {
 	if (index > -1) {
 		arr.splice(index, 1);
 	}
-}
-
-
-/* Define the array of labels and their matching string as: array[array[]]
-*  [['labelname1','matchword1','matchword2'], ['labelname2','matchword3','matchword4']]
-*  return: array[array[]]
-*/
-function DefineLabelMatches(label, )
-{
-/*	//Label associations
-	const bugLabel = ['bug','name','fix', 'test'];
-	const enhancementLabel = ['enhancement','enhance', 'new','feature','Label']
-	const labels = [];
-	labels.push(bugLabel);
-	labels.push(enhancementLabel);
-	return labels
-*/
-
-
 }
 
 /* Given string strBase does it start with strMatch
@@ -10543,6 +10527,28 @@ function Arr_Match(arrBase, strMatch)
 	return false;
 }
 
+/* Define the array of labels and their matching string as: array[array[]]
+*  [['labelname1','matchword1','matchword2'], ['labelname2','matchword3','matchword4']]
+*  return: array[array[]]
+*/
+function DefineLabelMatches()
+{
+	//Label associations
+	const bugFixLabel = ['bugfix','bugfix'];
+	const featLabel = ['feat','feat']
+	const hotFixLabel = ['hotfix','hotfix']
+	const refactorLabel = ['refactor','refactor']
+	const choreLabel = ['chore','chore']
+
+	const labels = [];
+	labels.push(bugFixLabel);
+	labels.push(featLabel);
+	labels.push(hotFixLabel);
+	labels.push(refactorLabel);
+	labels.push(choreLabel);
+
+	return labels;
+}
 
 run();
 })();

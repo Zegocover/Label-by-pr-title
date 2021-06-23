@@ -119,15 +119,12 @@ for (let tag in ymlData)
 }
 
 function RemoveFromArray(dummy_labelsMatched, label) {
-	const index = dummy_labelsMatched.indexOf(label);
-	console.log(`Yes... at index ${index}`);
-
+	var lowercaseArr = arr.map(function(value){
+		return value.toLowerCase();
+	});
+	const index = lowercaseArr.indexOf(strMatch.toLowerCase());
 	if (index > -1) {
-		dummy_labelsMatched.splice(index, 1);
-	}
-
-	else {
-		console.log("Cannot remove this label");
+		arr.splice(index, 1);
 	}
 }
 

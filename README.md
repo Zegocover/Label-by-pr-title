@@ -1,5 +1,5 @@
 # Label-by-pr-title action
-Add label given string match of PR title
+Add label given string match of PR title.
 
 ## Inputs
 
@@ -14,6 +14,18 @@ Add label given string match of PR title
 
 ## Example usage
 
-uses: actions/Label-by-pr-title@v1.0
-with:
-  GITHUB_TOKEN:  ${{secrets.GITHUB_TOKEN}
+on: [pull_request]
+
+jobs:
+  label_my_pr_job:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+    - name: Display PR title
+      id: myLabeler
+      uses: ./
+      with:
+        GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+    - name: Get the output labels
+      run: echo "The labels are ${{ steps.myLabeler.outputs.Labels}}"

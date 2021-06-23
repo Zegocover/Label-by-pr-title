@@ -91,17 +91,18 @@ function LabelExistOnPullRequest(pull_request, labelsToAdd) {
 *  Return the array of labels and their matching criteria
 */
 async function GetLabels(octokit, context, configPath) {
+	 const labels = [];
 	if (AreLabelsInFile)
 	{
 		const configContent = await GetConfigContent(octokit, context, configPath);
 		let   encodedFileContent   = Buffer.from(configContent.data.content, configContent.data.encoding);
 		const yamlFileContent = yaml.load(encodedFileContent);
 
-		const labels = GetLabelsFromFile(yamlFileContent);
+		labels = GetLabelsFromFile(yamlFileContent);
 	}
 	else
 	{
-		const labels = DefineLabelMatches();
+		labels = DefineLabelMatches();
 	}
 
 	return labels;

@@ -10515,7 +10515,8 @@ function MatchLabelsWithTitle(pull_request, labels)
 		var innerArrayLength = labels[i].length;
 		// loop the inner array
 		for (let j = 1; j < innerArrayLength; j++) {
-			var lbl = labels[i][j];
+			// add space so that matching is against whole word
+			var lbl = labels[i][j] + " ";
 			if (Str_Match(pr_Title,lbl))
 			{
 				console.log(`Matched... Add Label: [${labels[i][0]}] to pull request`);
@@ -10567,30 +10568,8 @@ function Arr_Match(arrBase, strMatch)
 	return false;
 }
 
-/* Define the array of labels and their matching string as: array[array[]]
-*  [['labelname1','matchword1','matchword2'], ['labelname2','matchword3','matchword4']]
-*  return: array[array[]]
-*/
-function DefineLabelMatches2()
-{
-	//Label associations
-	const bugFixLabel = ['bugfix','bugfix'];
-	const featLabel = ['feat','feat']
-	const hotFixLabel = ['hotfix','hotfix']
-	const refactorLabel = ['refactor','refactor']
-	const choreLabel = ['chore','chore']
-
-	const labels = [];
-	labels.push(bugFixLabel);
-	labels.push(featLabel);
-	labels.push(hotFixLabel);
-	labels.push(refactorLabel);
-	labels.push(choreLabel);
-
-	return labels;
-}
-
 run();
+
 })();
 
 module.exports = __webpack_exports__;

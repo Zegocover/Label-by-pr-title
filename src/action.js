@@ -202,7 +202,8 @@ function MatchLabelsWithTitle(pull_request, labels)
 		var innerArrayLength = labels[i].length;
 		// loop the inner array
 		for (let j = 1; j < innerArrayLength; j++) {
-			var lbl = labels[i][j];
+			// add space so that matching is against whole word
+			var lbl = labels[i][j] + " ";
 			if (Str_Match(pr_Title,lbl))
 			{
 				console.log(`Matched... Add Label: [${labels[i][0]}] to pull request`);

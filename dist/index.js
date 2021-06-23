@@ -10296,7 +10296,7 @@ function DefineLabelMatches()
 {
 	//Label associations
 	const bugFixLabel = ['bugfix','bugfix'];
-	const featLabel = ['feat','feat']
+	const featLabel = ['feat','feat','create']
 	const hotFixLabel = ['hotfix','hotfix']
 	const refactorLabel = ['refactor','refactor']
 	const choreLabel = ['chore','chore']

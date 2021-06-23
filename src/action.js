@@ -1,6 +1,7 @@
 const core = require('@actions/core');
 const github = require('@actions/github');
 const yaml = require("js-yaml");
+import {DefineLabelMatches} from './labels'
 
 const AreLabelsInFile = false;
 
@@ -257,7 +258,7 @@ function Arr_Match(arrBase, strMatch)
 *  [['labelname1','matchword1','matchword2'], ['labelname2','matchword3','matchword4']]
 *  return: array[array[]]
 */
-function DefineLabelMatches()
+function DefineLabelMatches2()
 {
 	//Label associations
 	const bugFixLabel = ['bugfix','bugfix'];

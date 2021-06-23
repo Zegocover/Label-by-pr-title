@@ -10292,7 +10292,7 @@ async function run()
 		console.log(`Get label config file: ${configPath}`);
 
 		const labels       = await GetLabels(octokit, context, configPath);
-		const labelsToAdd  = MatchLabelsWithTitle(pull_request,labels);
+		let   labelsToAdd  = MatchLabelsWithTitle(pull_request,labels);
 		const outputLabels = LabelsToOutput(labels);
 
 		core.setOutput("Labels",outputLabels);

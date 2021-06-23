@@ -91,7 +91,7 @@ function LabelExistOnPullRequest(pull_request, labelsToAdd) {
 *  Return the array of labels and their matching criteria
 */
 async function GetLabels(octokit, context, configPath) {
-	 const labels = [];
+	let labels = [];
 	if (AreLabelsInFile)
 	{
 		const configContent = await GetConfigContent(octokit, context, configPath);
@@ -193,7 +193,7 @@ async function GetAllLabelsFromRepo(octokit, context) {
 function MatchLabelsWithTitle(pull_request, labels)
 {
 	const pr_Title      = pull_request.title;
-	const matchedLabels = [];
+	let matchedLabels = [];
 
 	console.log(`Matching label criteria with PR title: ${pr_Title}`);
 	for (let i = 0; i < labels.length; i++) {

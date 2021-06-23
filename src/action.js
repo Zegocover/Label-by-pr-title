@@ -71,7 +71,7 @@ async function AddLabel(octokit, context, prNumber, labelsToAdd)
 *  Return: labelsToAdd
 */
 function LabelExistOnPullRequest(pull_request, labelsToAdd) {
-	const pr_Labels = pull_request.labels;
+	let pr_Labels = pull_request.labels;
 
 	if (pr_Labels.length > 0) {
 		console.log("This PR has labels, checking...");

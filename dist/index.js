@@ -10266,15 +10266,55 @@ module.exports = require("zlib");;
 /******/ 	}
 /******/ 	
 /************************************************************************/
+/******/ 	/* webpack/runtime/make namespace object */
+/******/ 	(() => {
+/******/ 		// define __esModule on exports
+/******/ 		__nccwpck_require__.r = (exports) => {
+/******/ 			if(typeof Symbol !== 'undefined' && Symbol.toStringTag) {
+/******/ 				Object.defineProperty(exports, Symbol.toStringTag, { value: 'Module' });
+/******/ 			}
+/******/ 			Object.defineProperty(exports, '__esModule', { value: true });
+/******/ 		};
+/******/ 	})();
+/******/ 	
 /******/ 	/* webpack/runtime/compat */
 /******/ 	
 /******/ 	if (typeof __nccwpck_require__ !== 'undefined') __nccwpck_require__.ab = __dirname + "/";/************************************************************************/
 var __webpack_exports__ = {};
-// This entry need to be wrapped in an IIFE because it need to be isolated against other modules in the chunk.
+// This entry need to be wrapped in an IIFE because it need to be in strict mode.
 (() => {
+"use strict";
+// ESM COMPAT FLAG
+__nccwpck_require__.r(__webpack_exports__);
+
+;// CONCATENATED MODULE: ./src/labels.js
+/* Define the array of labels and their matching string as: array[array[]]
+*  [['labelname1','matchword1','matchword2'], ['labelname2','matchword3','matchword4']]
+*  return: array[array[]]
+*/
+function DefineLabelMatches()
+{
+	//Label associations
+	const bugFixLabel = ['bugfix','bugfix'];
+	const featLabel = ['feat','feat']
+	const hotFixLabel = ['hotfix','hotfix']
+	const refactorLabel = ['refactor','refactor']
+	const choreLabel = ['chore','chore']
+
+	const labels = [];
+	labels.push(bugFixLabel);
+	labels.push(featLabel);
+	labels.push(hotFixLabel);
+	labels.push(refactorLabel);
+	labels.push(choreLabel);
+
+	return labels;
+}
+;// CONCATENATED MODULE: ./src/action.js
 const core = __nccwpck_require__(2186);
 const github = __nccwpck_require__(5438);
 const yaml = __nccwpck_require__(1917);
+
 
 const AreLabelsInFile = false;
 
@@ -10531,7 +10571,7 @@ function Arr_Match(arrBase, strMatch)
 *  [['labelname1','matchword1','matchword2'], ['labelname2','matchword3','matchword4']]
 *  return: array[array[]]
 */
-function DefineLabelMatches()
+function DefineLabelMatches2()
 {
 	//Label associations
 	const bugFixLabel = ['bugfix','bugfix'];

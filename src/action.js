@@ -60,7 +60,7 @@ async function AddLabel(octokit, context, prNumber, labelsToAdd)
 	console.log(`Label to add to PR: ${labelsToAdd}`)
 	await octokit.rest.issues.addLabels({
 		...context.repo,
-		issue_number: number,
+		issue_number: prNumber,
 		labels: labelsToAdd
 	});
 	console.log("Labels added");

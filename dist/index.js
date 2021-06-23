@@ -10309,7 +10309,7 @@ async function run()
 
 			if (labelsToAdd.length > 0)
 			{
-				AddLabel(octokit, context, pull_request.number, labelsToAdd);
+				await AddLabel(octokit, context, pull_request.number, labelsToAdd);
 			}
 			else
 			{

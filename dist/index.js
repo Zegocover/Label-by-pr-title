@@ -10180,10 +10180,10 @@ function run() {
                     octokit = github.getOctokit(GITHUB_TOKEN);
                     context = github.context;
                     pull_request = context.payload;
-                    console.log("Get me PR number");
                     pr_No = pull_request.number;
+                    // ensure pr_No is type number
                     if (!pr_No) {
-                        console.log("Could not get pull request number from context, exiting");
+                        console.log("Failed retrieve PR number from payload");
                         return [2 /*return*/];
                     }
                     console.log("Got me PR number");

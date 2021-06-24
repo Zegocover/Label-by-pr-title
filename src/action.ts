@@ -14,16 +14,16 @@ interface LabelMatchAndCriteria {
 async function run() 
 {
   try {
-    	const GITHUB_TOKEN           = core.getInput('GITHUB_TOKEN');
-    	const configPath             = core.getInput('config');
-    	const octokit                = github.getOctokit(GITHUB_TOKEN);
-    	const context                = github.context;
-    	const pull_request  = context.payload;
+    	const GITHUB_TOKEN             = core.getInput('GITHUB_TOKEN');
+    	const configPath               = core.getInput('config');
+    	const octokit                  = github.getOctokit(GITHUB_TOKEN);
+    	const context                  = github.context;
+    	const pull_request             = context.payload;
+    	const pr_No :number|undefined  = pull_request.number;
 
-	console.log("Get me PR number");
-	const pr_No :number| undefined = pull_request.number;
+	// ensure pr_No is type number
 	if (!pr_No) {
-		console.log("Could not get pull request number from context, exiting");
+		console.log("Failed retrieve PR number from payload");
 		return;
 	}
 	console.log("Got me PR number");
@@ -211,7 +211,7 @@ async function GetAllLabelsFromRepo(octokit :OctokitType) {
 */
 function MatchLabelsWithTitle(pull_request :WebhookPayload, labels :string[])
 {
-	const pr_Title      = pull_request.title;
+	const pr_Title :string      = pull_request.title;
 	let matchedLabels : string[] = [];
 
 	console.log(`Matching label criteria with PR title: ${pr_Title}`);

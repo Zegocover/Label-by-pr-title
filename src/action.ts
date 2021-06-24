@@ -109,7 +109,7 @@ function LabelExistOnPullRequest(pr_Labels : (string | {
 		console.log("This PR has labels, checking...");
 		for (let pr_Label of pr_Labels) {
 			let tag = pr_Label;
-			console.log(`pre I hope this tag ${tag}`);
+			console.log(`pre I hope this tag ${tag.toString()} and value is ${tag.valueOf()}`);
 			if (!tag)
 			{
 				continue;

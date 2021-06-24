@@ -10269,7 +10269,7 @@ function LabelExistOnPullRequest(pr_Labels, labelsToAdd) {
         for (var _i = 0, pr_Labels_1 = pr_Labels; _i < pr_Labels_1.length; _i++) {
             var pr_Label = pr_Labels_1[_i];
             var tag = pr_Label;
-            console.log("pre I hope this tag " + tag);
+            console.log("pre I hope this tag " + tag.toString() + " and value is " + tag.valueOf());
             if (!tag) {
                 continue;
             }

@@ -40,8 +40,8 @@ async function run()
 	console.log(`Get label config file: ${configPath}`);
 
 	const labels       = await GetLabels(octokit, configPath);
-	const pr_Title     = await GetPRTitle(octokit, pr_No);
-	let   labelsToAdd  = MatchLabelsWithTitle(pr_Title,labels);
+	const pr_data     = await GetPRTitle(octokit, pr_No);
+	let   labelsToAdd  = MatchLabelsWithTitle(pr_data.title, labels);
 	const outputLabels = LabelsToOutput(labels);
 
 	core.setOutput("Labels",outputLabels);
@@ -54,7 +54,7 @@ async function run()
 		console.log(`Label ${labelsToAdd.toString()} is valid for this repo`);
 
 		//Is the label on the pull request already?
-		labelsToAdd = LabelExistOnPullRequest(pull_request, labelsToAdd);
+		labelsToAdd = LabelExistOnPullRequest(pr_data.labels, labelsToAdd);
 
 		if (labelsToAdd.length > 0)
 		{
@@ -94,16 +94,35 @@ async function AddLabel(octokit :OctokitType, prNumber :number, labelsToAdd :str
 *  it from labelsToAdd
 *  Return: labelsToAdd
 */
-function LabelExistOnPullRequest(pull_request :WebhookPayload , labelsToAdd :string[]) {
-	let pr_Labels = pull_request.labels;
+function LabelExistOnPullRequest(pr_Labels : (string | {
+	id?: number | undefined;
+	node_id?: string | undefined;
+	url?: string | undefined;
+	name?: string | undefined;
+	description?: string | null | undefined;
+	color?: string | null | undefined;
+	default?: boolean | undefined;
+    })[]  , labelsToAdd :string[]) {
+	
 
 	if (pr_Labels.length > 0) {
 		console.log("This PR has labels, checking...");
-		for (let pr_Label of pr_Labels) {
-			if (Arr_Match(labelsToAdd, pr_Label.name)) {
+		for (let pr_Label in pr_Labels) {
+			let tag :string | undefined = pr_Label;
+			if (!tag)
+			{
+				continue;
+			}
+			if (tag === "name")
+			{
+				console.log(`I hope this is the label name: ${pr_Labels[pr_Label]}`);
+			}
+
+
+			/*if (Arr_Match(labelsToAdd, pr_Label.name?)) {
 				console.log(`Label ${pr_Label.name} already added to PR`);
 				RemoveFromArray(labelsToAdd, pr_Label.name);
-			}
+			}*/
 		}
 	}
 
@@ -133,7 +152,8 @@ async function GetLabels(octokit :OctokitType, configPath :string) {
 }
 
 
-
+/* Define the labels to output
+*/
 function LabelsToOutput(labelAndMatchCriteria : string[])
 {
 	const outputLabels = [];
@@ -203,7 +223,7 @@ async function GetPRTitle(octokit :OctokitType, pr_No : number) {
 		repo: github.context.repo.repo,
 		issue_number: pr_No,
 	});
-	return pullRequest.data.title;
+	return pullRequest.data;
 }
 
 

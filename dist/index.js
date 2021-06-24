@@ -10387,10 +10387,13 @@ async function AddLabel(octokit, context, prNumber, labelsToAdd)
 function LabelExistOnPullRequest(pull_request, labelsToAdd) {
 	let pr_Labels = pull_request.labels;
 
-	if (pr_Labels.length > 0) {
+	if (pr_Labels.length > 0)
+	{
 		console.log("This PR has labels, checking...");
-		for (let pr_Label of pr_Labels) {
-			if (Arr_Match(labelsToAdd, pr_Label.name)) {
+		for (let pr_Label of pr_Labels)
+		{
+			if (Arr_Match(labelsToAdd, pr_Label.name))
+			{
 				console.log(`Label ${pr_Label.name} already added to PR`);
 				RemoveFromArray(labelsToAdd, pr_Label.name);
 			}
@@ -10404,8 +10407,10 @@ function LabelExistOnPullRequest(pull_request, labelsToAdd) {
 *  or function.
 *  Return the array of labels and their matching criteria
 */
-async function GetLabels(octokit, context, configPath) {
+async function GetLabels(octokit, context, configPath)
+{
 	let labels = [];
+
 	if (AreLabelsInFile)
 	{
 		const configContent = await GetConfigContent(octokit, context, configPath);
@@ -10425,6 +10430,7 @@ async function GetLabels(octokit, context, configPath) {
 function LabelsToOutput(labelAndMatchCriteria)
 {
 	const outputLabels = [];
+
 	for (const arr of labelAndMatchCriteria)
 	{
 		outputLabels.push(arr[0]);
@@ -10441,14 +10447,17 @@ function GetLabelsFromFile(yamlFileContent) {
 	var labels = [];
 
 	for (const tag in yamlFileContent) {
-		if (typeof yamlFileContent[tag] === "string") {
+		if (typeof yamlFileContent[tag] === "string")
+		{
 			let tempLabels = [tag, yamlFileContent[tag]];
 			labels.push(tempLabels);
-		} else if (Array.isArray([yamlFileContent[tag]])) {
+		} else if (Array.isArray([yamlFileContent[tag]]))
+		{
 			let tempLabels = yamlFileContent[tag].toString().split(',');
 			tempLabels.unshift(tag);
 			labels.push(tempLabels);
-		} else {
+		} else
+		{
 			console.log(`Unknown value type for label ${tag}. Expecting string or array of globs)`);
 		}
 	}
@@ -10459,9 +10468,12 @@ function GetLabelsFromFile(yamlFileContent) {
 *  repository defined labels.
 *  I.e. We dont want to create new labels
 */
-function ValidateLabels(labelsToAdd, repo_Labels) {
-	for (let lbl of labelsToAdd) {
-		if (!Arr_Match(repo_Labels, lbl)) {
+function ValidateLabels(labelsToAdd, repo_Labels)
+{
+	for (let lbl of labelsToAdd)
+	{
+		if (!Arr_Match(repo_Labels, lbl))
+		{
 			throw new Error(`Trying to add invalid label [${lbl}] to repo. Valid repo labels are: \n\t ${repo_Labels.toString()}`);
 		}
 	}
@@ -10486,7 +10498,8 @@ async function GetConfigContent(octokit, context, path)
 /* Request labels data from repository
 *  and return an Array of label names
 */
-async function GetAllLabelsFromRepo(octokit, context) {
+async function GetAllLabelsFromRepo(octokit, context)
+{
 	const repo_Labels = [];
 	const lbl_obj     = await octokit.rest.issues.listLabelsForRepo({
 		...context.repo,
@@ -10507,15 +10520,18 @@ async function GetAllLabelsFromRepo(octokit, context) {
 function MatchLabelsWithTitle(pull_request, labels)
 {
 	const pr_Title      = pull_request.title;
-	let matchedLabels = [];
+	let   matchedLabels = [];
 
 	console.log(`Matching label criteria with PR title: ${pr_Title}`);
-	for (let i = 0; i < labels.length; i++) {
+	for (let i = 0; i < labels.length; i++)
+	{
 		// get the size of the inner array
 		var innerArrayLength = labels[i].length;
 		// loop the inner array
-		for (let j = 1; j < innerArrayLength; j++) {
-			var lbl = labels[i][j];
+		for (let j = 1; j < innerArrayLength; j++)
+		{
+			// add space so that matching is against whole word
+			var lbl = labels[i][j] + " ";
 			if (Str_Match(pr_Title,lbl))
 			{
 				console.log(`Matched... Add Label: [${labels[i][0]}] to pull request`);
@@ -10530,12 +10546,14 @@ function MatchLabelsWithTitle(pull_request, labels)
 
 /* Remove strMatch from arr if it exists
 */
-function RemoveFromArray(arr, strMatch) {
+function RemoveFromArray(arr, strMatch)
+{
 	var lowercaseArr = arr.map(function(value){
 		return value.toLowerCase();
 	});
 	const index = lowercaseArr.indexOf(strMatch.toLowerCase());
-	if (index > -1) {
+	if (index > -1)
+	{
 		arr.splice(index, 1);
 	}
 }
@@ -10567,30 +10585,8 @@ function Arr_Match(arrBase, strMatch)
 	return false;
 }
 
-/* Define the array of labels and their matching string as: array[array[]]
-*  [['labelname1','matchword1','matchword2'], ['labelname2','matchword3','matchword4']]
-*  return: array[array[]]
-*/
-function DefineLabelMatches2()
-{
-	//Label associations
-	const bugFixLabel = ['bugfix','bugfix'];
-	const featLabel = ['feat','feat']
-	const hotFixLabel = ['hotfix','hotfix']
-	const refactorLabel = ['refactor','refactor']
-	const choreLabel = ['chore','chore']
-
-	const labels = [];
-	labels.push(bugFixLabel);
-	labels.push(featLabel);
-	labels.push(hotFixLabel);
-	labels.push(refactorLabel);
-	labels.push(choreLabel);
-
-	return labels;
-}
-
 run();
+
 })();
 
 module.exports = __webpack_exports__;

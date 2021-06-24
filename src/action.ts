@@ -19,7 +19,10 @@ async function run()
     	const octokit                = github.getOctokit(GITHUB_TOKEN);
     	const context                = github.context;
     	const { data: pull_request } = context.payload;
-	const pr_No :any = pull_request.number;
+
+	console.log("Get me PR number");
+	const pr_No :number = pull_request.number;
+	console.log("Got me PR number");
 
 	console.log("PR number is: " + pr_No);
 	console.log(`Get label config file: ${configPath}`);

@@ -10180,7 +10180,9 @@ function run() {
                     octokit = github.getOctokit(GITHUB_TOKEN);
                     context = github.context;
                     pull_request = context.payload.data;
+                    console.log("Get me PR number");
                     pr_No = pull_request.number;
+                    console.log("Got me PR number");
                     console.log("PR number is: " + pr_No);
                     console.log("Get label config file: " + configPath);
                     return [4 /*yield*/, GetLabels(octokit, configPath)];

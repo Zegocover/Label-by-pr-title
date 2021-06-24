@@ -4,6 +4,7 @@ import * as yaml from "js-yaml";
 import {DefineLabelMatches} from "./labels";
 import {WebhookPayload} from '@actions/github/lib/interfaces';
 
+
 const AreLabelsInFile = false;
 type OctokitType = ReturnType<typeof github.getOctokit>;
 
@@ -21,6 +22,8 @@ async function run()
     	const pull_request             = context.payload;
     	const pr_No :number|undefined  = pull_request.number;
 	    
+	
+	    
 
 	// ensure pr_No is type number
 	if (!pr_No) {
@@ -29,11 +32,20 @@ async function run()
 	}
 	console.log("Got me PR number");
 
+
+	const pullRequest = await octokit.rest.issues.get({
+		owner: github.context.repo.owner,
+      		repo: github.context.repo.repo,
+		issue_number: pr_No,
+	});
+	pullRequest.data.title
+
 	console.log("PR number is: " + pr_No);
 	console.log(`Get label config file: ${configPath}`);
 
 	const labels       = await GetLabels(octokit, configPath);
-	let   labelsToAdd  = MatchLabelsWithTitle(pull_request,labels);
+	const pr_Title = await GetPRTitle(octokit, pr_No);
+	let   labelsToAdd  = MatchLabelsWithTitle(pr_Title,labels);
 	const outputLabels = LabelsToOutput(labels);
 
 	core.setOutput("Labels",outputLabels);
@@ -187,6 +199,15 @@ async function GetConfigContent(octokit :OctokitType, path :string)
 	return response;
 }
 
+async function GetPRTitle(octokit :OctokitType, pr_No : number) {
+	const pullRequest = await octokit.rest.issues.get({
+		owner: github.context.repo.owner,
+		repo: github.context.repo.repo,
+		issue_number: pr_No,
+	});
+	return pullRequest.data.title;
+}
+
 
 /* Request labels data from repository
 *  and return an Array of label names
@@ -210,9 +231,9 @@ async function GetAllLabelsFromRepo(octokit :OctokitType) {
 *  criteria.
 *  Return array containing label if matched, otherwise empty array
 */
-function MatchLabelsWithTitle(pull_request :WebhookPayload, labels :string[])
+function MatchLabelsWithTitle(pr_Title :string, labels :string[])
 {
-	const pr_Title :string      = pull_request?.title;
+	//const pr_Title :string      = pull_request?.title;
 	let matchedLabels : string[] = [];
 
 	console.log(`Matching label criteria with PR title: ${pr_Title}`);

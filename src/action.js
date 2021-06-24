@@ -43,11 +43,11 @@ var labels_1 = require("./labels");
 var AreLabelsInFile = false;
 function run() {
     return __awaiter(this, void 0, void 0, function () {
-        var GITHUB_TOKEN, configPath, octokit, context, pull_request, pr_No, labels, labelsToAdd, outputLabels, repo_Labels, error_1;
+        var GITHUB_TOKEN, configPath, octokit, context, pull_request, pr_No, pullRequest, labels, pr_Title, labelsToAdd, outputLabels, repo_Labels, error_1;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
-                    _a.trys.push([0, 8, , 9]);
+                    _a.trys.push([0, 10, , 11]);
                     GITHUB_TOKEN = core.getInput('GITHUB_TOKEN');
                     configPath = core.getInput('config');
                     octokit = github.getOctokit(GITHUB_TOKEN);
@@ -60,41 +60,52 @@ function run() {
                         return [2 /*return*/];
                     }
                     console.log("Got me PR number");
+                    return [4 /*yield*/, octokit.rest.issues.get({
+                            owner: github.context.repo.owner,
+                            repo: github.context.repo.repo,
+                            issue_number: pr_No
+                        })];
+                case 1:
+                    pullRequest = _a.sent();
+                    pullRequest.data.title;
                     console.log("PR number is: " + pr_No);
                     console.log("Get label config file: " + configPath);
                     return [4 /*yield*/, GetLabels(octokit, configPath)];
-                case 1:
+                case 2:
                     labels = _a.sent();
-                    labelsToAdd = MatchLabelsWithTitle(pull_request, labels);
+                    return [4 /*yield*/, GetPRTitle(octokit, pr_No)];
+                case 3:
+                    pr_Title = _a.sent();
+                    labelsToAdd = MatchLabelsWithTitle(pr_Title, labels);
                     outputLabels = LabelsToOutput(labels);
                     core.setOutput("Labels", outputLabels);
-                    if (!(labelsToAdd.length > 0)) return [3 /*break*/, 6];
+                    if (!(labelsToAdd.length > 0)) return [3 /*break*/, 8];
                     console.log("Validate label with repo");
                     return [4 /*yield*/, GetAllLabelsFromRepo(octokit)];
-                case 2:
+                case 4:
                     repo_Labels = _a.sent();
                     ValidateLabels(labelsToAdd, repo_Labels);
                     console.log("Label " + labelsToAdd.toString() + " is valid for this repo");
                     //Is the label on the pull request already?
                     labelsToAdd = LabelExistOnPullRequest(pull_request, labelsToAdd);
-                    if (!(labelsToAdd.length > 0)) return [3 /*break*/, 4];
+                    if (!(labelsToAdd.length > 0)) return [3 /*break*/, 6];
                     return [4 /*yield*/, AddLabel(octokit, pr_No, labelsToAdd)];
-                case 3:
+                case 5:
                     _a.sent();
-                    return [3 /*break*/, 5];
-                case 4:
-                    console.log("No new labels added to PR");
-                    _a.label = 5;
-                case 5: return [3 /*break*/, 7];
+                    return [3 /*break*/, 7];
                 case 6:
-                    console.log("No labels to add to PR");
+                    console.log("No new labels added to PR");
                     _a.label = 7;
                 case 7: return [3 /*break*/, 9];
                 case 8:
+                    console.log("No labels to add to PR");
+                    _a.label = 9;
+                case 9: return [3 /*break*/, 11];
+                case 10:
                     error_1 = _a.sent();
                     core.setFailed(error_1.message);
-                    return [3 /*break*/, 9];
-                case 9: return [2 /*return*/];
+                    return [3 /*break*/, 11];
+                case 11: return [2 /*return*/];
             }
         });
     });
@@ -231,6 +242,23 @@ function GetConfigContent(octokit, path) {
         });
     });
 }
+function GetPRTitle(octokit, pr_No) {
+    return __awaiter(this, void 0, void 0, function () {
+        var pullRequest;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0: return [4 /*yield*/, octokit.rest.issues.get({
+                        owner: github.context.repo.owner,
+                        repo: github.context.repo.repo,
+                        issue_number: pr_No
+                    })];
+                case 1:
+                    pullRequest = _a.sent();
+                    return [2 /*return*/, pullRequest.data.title];
+            }
+        });
+    });
+}
 /* Request labels data from repository
 *  and return an Array of label names
 */
@@ -261,8 +289,8 @@ function GetAllLabelsFromRepo(octokit) {
 *  criteria.
 *  Return array containing label if matched, otherwise empty array
 */
-function MatchLabelsWithTitle(pull_request, labels) {
-    var pr_Title = pull_request === null || pull_request === void 0 ? void 0 : pull_request.title;
+function MatchLabelsWithTitle(pr_Title, labels) {
+    //const pr_Title :string      = pull_request?.title;
     var matchedLabels = [];
     console.log("Matching label criteria with PR title: " + pr_Title);
     for (var i = 0; i < labels.length; i++) {

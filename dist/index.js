@@ -10266,15 +10266,16 @@ function AddLabel(octokit, prNumber, labelsToAdd) {
 function LabelExistOnPullRequest(pr_Labels, labelsToAdd) {
     if (pr_Labels.length > 0) {
         console.log("This PR has labels, checking...");
-        for (var pr_Label in pr_Labels) {
+        for (var _i = 0, pr_Labels_1 = pr_Labels; _i < pr_Labels_1.length; _i++) {
+            var pr_Label = pr_Labels_1[_i];
             var tag = pr_Label;
-            console.log("pre I hope this tag " + tag + " is the label name: " + pr_Labels[pr_Label]);
+            console.log("pre I hope this tag " + tag);
             if (!tag) {
                 continue;
             }
-            console.log("I hope this tag " + tag + " is the label name: " + pr_Labels[pr_Label]);
+            console.log("I hope this tag " + tag);
             if (tag === "name") {
-                console.log("I hope this is the label name: " + pr_Labels[pr_Label]);
+                console.log("I hope this is the label name");
             }
             /*if (Arr_Match(labelsToAdd, pr_Label.name?)) {
                 console.log(`Label ${pr_Label.name} already added to PR`);

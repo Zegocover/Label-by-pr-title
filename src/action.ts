@@ -107,17 +107,17 @@ function LabelExistOnPullRequest(pr_Labels : (string | {
 
 	if (pr_Labels.length > 0) {
 		console.log("This PR has labels, checking...");
-		for (let pr_Label in pr_Labels) {
-			let tag :string | undefined = pr_Label;
-			console.log(`pre I hope this tag ${tag} is the label name: ${pr_Labels[pr_Label]}`);
+		for (let pr_Label of pr_Labels) {
+			let tag = pr_Label;
+			console.log(`pre I hope this tag ${tag}`);
 			if (!tag)
 			{
 				continue;
 			}
-			console.log(`I hope this tag ${tag} is the label name: ${pr_Labels[pr_Label]}`);
+			console.log(`I hope this tag ${tag}`);
 			if (tag === "name")
 			{
-				console.log(`I hope this is the label name: ${pr_Labels[pr_Label]}`);
+				console.log(`I hope this is the label name`);
 			}
 
 

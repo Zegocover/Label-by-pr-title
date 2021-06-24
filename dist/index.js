@@ -10268,9 +10268,11 @@ function LabelExistOnPullRequest(pr_Labels, labelsToAdd) {
         console.log("This PR has labels, checking...");
         for (var pr_Label in pr_Labels) {
             var tag = pr_Label;
+            console.log("pre I hope this tag " + tag + " is the label name: " + pr_Labels[pr_Label]);
             if (!tag) {
                 continue;
             }
+            console.log("I hope this tag " + tag + " is the label name: " + pr_Labels[pr_Label]);
             if (tag === "name") {
                 console.log("I hope this is the label name: " + pr_Labels[pr_Label]);
             }

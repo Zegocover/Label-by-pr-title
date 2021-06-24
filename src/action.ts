@@ -8,10 +8,6 @@ import {WebhookPayload} from '@actions/github/lib/interfaces';
 const AreLabelsInFile = false;
 type OctokitType = ReturnType<typeof github.getOctokit>;
 
-interface LabelMatchAndCriteria {
-	labelAndCriteria: string[]
-}
-
 async function run() 
 {
   try {
@@ -44,7 +40,7 @@ async function run()
 	console.log(`Get label config file: ${configPath}`);
 
 	const labels       = await GetLabels(octokit, configPath);
-	const pr_Title = await GetPRTitle(octokit, pr_No);
+	const pr_Title     = await GetPRTitle(octokit, pr_No);
 	let   labelsToAdd  = MatchLabelsWithTitle(pr_Title,labels);
 	const outputLabels = LabelsToOutput(labels);
 
@@ -138,12 +134,12 @@ async function GetLabels(octokit :OctokitType, configPath :string) {
 
 
 
-function LabelsToOutput(labelAndMatchCriteria :LabelMatchAndCriteria[])
+function LabelsToOutput(labelAndMatchCriteria : string[])
 {
 	const outputLabels = [];
 	for (const arr of labelAndMatchCriteria)
 	{
-		outputLabels.push(arr.labelAndCriteria[0]);
+		outputLabels.push(arr);
 	}
 	return outputLabels.join(',');
 }
@@ -199,6 +195,8 @@ async function GetConfigContent(octokit :OctokitType, path :string)
 	return response;
 }
 
+/* Get the PR Title from PR number
+*/
 async function GetPRTitle(octokit :OctokitType, pr_No : number) {
 	const pullRequest = await octokit.rest.issues.get({
 		owner: github.context.repo.owner,

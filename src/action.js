@@ -181,7 +181,7 @@ function LabelsToOutput(labelAndMatchCriteria) {
     var outputLabels = [];
     for (var _i = 0, labelAndMatchCriteria_1 = labelAndMatchCriteria; _i < labelAndMatchCriteria_1.length; _i++) {
         var arr = labelAndMatchCriteria_1[_i];
-        outputLabels.push(arr.labelAndCriteria[0]);
+        outputLabels.push(arr);
     }
     return outputLabels.join(',');
 }
@@ -242,6 +242,8 @@ function GetConfigContent(octokit, path) {
         });
     });
 }
+/* Get the PR Title from PR number
+*/
 function GetPRTitle(octokit, pr_No) {
     return __awaiter(this, void 0, void 0, function () {
         var pullRequest;

@@ -12,7 +12,6 @@ inputs:
 outputs:
   Labels: # id of output
     description: 'Labels identified from config'
-    
 runs:
   using: 'node12'
   main: 'dist/index.js'

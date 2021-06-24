@@ -21,7 +21,11 @@ async function run()
     	const { data: pull_request } = context.payload;
 
 	console.log("Get me PR number");
-	const pr_No :number = pull_request.number;
+	const pr_No :number|undefined = pull_request.number;
+	if (!pr_No) {
+		console.log("Could not get pull request number from context, exiting");
+		return;
+	}
 	console.log("Got me PR number");
 
 	console.log("PR number is: " + pr_No);

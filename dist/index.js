@@ -10182,6 +10182,10 @@ function run() {
                     pull_request = context.payload.data;
                     console.log("Get me PR number");
                     pr_No = pull_request.number;
+                    if (!pr_No) {
+                        console.log("Could not get pull request number from context, exiting");
+                        return [2 /*return*/];
+                    }
                     console.log("Got me PR number");
                     console.log("PR number is: " + pr_No);
                     console.log("Get label config file: " + configPath);

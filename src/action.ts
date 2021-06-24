@@ -14,15 +14,14 @@ interface LabelMatchAndCriteria {
 async function run() 
 {
   try {
-    
-    	core.debug(`Waiting 100 milliseconds ...`) // debug is only output if you set the secret `ACTIONS_RUNNER_DEBUG` to true
-    	const GITHUB_TOKEN     = core.getInput('GITHUB_TOKEN');
-	const configPath       = core.getInput('config');
-	const octokit          = github.getOctokit(GITHUB_TOKEN);
-	const context = github.context;
-	const { data: pull_request } = context.payload;
+    	const GITHUB_TOKEN           = core.getInput('GITHUB_TOKEN');
+    	const configPath             = core.getInput('config');
+    	const octokit                = github.getOctokit(GITHUB_TOKEN);
+    	const context                = github.context;
+    	const { data: pull_request } = context.payload;
+	const pr_No :number = pull_request.number;
 
-	console.log("PR number is: " + pull_request.number);
+	console.log("PR number is: " + pr_No);
 	console.log(`Get label config file: ${configPath}`);
 
 	const labels       = await GetLabels(octokit, configPath);
@@ -43,7 +42,6 @@ async function run()
 
 		if (labelsToAdd.length > 0)
 		{
-			const pr_No :number = pull_request.number;
 			await AddLabel(octokit, pr_No, labelsToAdd);
 		}
 		else

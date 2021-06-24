@@ -43,18 +43,18 @@ var labels_1 = require("./labels");
 var AreLabelsInFile = false;
 function run() {
     return __awaiter(this, void 0, void 0, function () {
-        var GITHUB_TOKEN, configPath, octokit, context, pull_request, labels, labelsToAdd, outputLabels, repo_Labels, pr_No, error_1;
+        var GITHUB_TOKEN, configPath, octokit, context, pull_request, pr_No, labels, labelsToAdd, outputLabels, repo_Labels, error_1;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
                     _a.trys.push([0, 8, , 9]);
-                    core.debug("Waiting 100 milliseconds ..."); // debug is only output if you set the secret `ACTIONS_RUNNER_DEBUG` to true
                     GITHUB_TOKEN = core.getInput('GITHUB_TOKEN');
                     configPath = core.getInput('config');
                     octokit = github.getOctokit(GITHUB_TOKEN);
                     context = github.context;
                     pull_request = context.payload.data;
-                    console.log("PR number is: " + pull_request.number);
+                    pr_No = pull_request.number;
+                    console.log("PR number is: " + pr_No);
                     console.log("Get label config file: " + configPath);
                     return [4 /*yield*/, GetLabels(octokit, configPath)];
                 case 1:
@@ -72,7 +72,6 @@ function run() {
                     //Is the label on the pull request already?
                     labelsToAdd = LabelExistOnPullRequest(pull_request, labelsToAdd);
                     if (!(labelsToAdd.length > 0)) return [3 /*break*/, 4];
-                    pr_No = pull_request.number;
                     return [4 /*yield*/, AddLabel(octokit, pr_No, labelsToAdd)];
                 case 3:
                     _a.sent();

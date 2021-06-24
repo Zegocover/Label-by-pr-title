@@ -10169,19 +10169,20 @@ var yaml = __nccwpck_require__(1917);
 var labels_1 = __nccwpck_require__(9234);
 var AreLabelsInFile = false;
 function run() {
+    var _a;
     return __awaiter(this, void 0, void 0, function () {
         var GITHUB_TOKEN, configPath, octokit, context, pull_request, pr_No, labels, labelsToAdd, outputLabels, repo_Labels, error_1;
-        return __generator(this, function (_a) {
-            switch (_a.label) {
+        return __generator(this, function (_b) {
+            switch (_b.label) {
                 case 0:
-                    _a.trys.push([0, 8, , 9]);
+                    _b.trys.push([0, 8, , 9]);
                     GITHUB_TOKEN = core.getInput('GITHUB_TOKEN');
                     configPath = core.getInput('config');
                     octokit = github.getOctokit(GITHUB_TOKEN);
                     context = github.context;
                     pull_request = context.payload.data;
                     console.log("Get me PR number");
-                    pr_No = pull_request.number;
+                    pr_No = (_a = github.context.payload.pull_request) === null || _a === void 0 ? void 0 : _a.number;
                     if (!pr_No) {
                         console.log("Could not get pull request number from context, exiting");
                         return [2 /*return*/];
@@ -10191,7 +10192,7 @@ function run() {
                     console.log("Get label config file: " + configPath);
                     return [4 /*yield*/, GetLabels(octokit, configPath)];
                 case 1:
-                    labels = _a.sent();
+                    labels = _b.sent();
                     labelsToAdd = MatchLabelsWithTitle(pull_request, labels);
                     outputLabels = LabelsToOutput(labels);
                     core.setOutput("Labels", outputLabels);
@@ -10199,7 +10200,7 @@ function run() {
                     console.log("Validate label with repo");
                     return [4 /*yield*/, GetAllLabelsFromRepo(octokit)];
                 case 2:
-                    repo_Labels = _a.sent();
+                    repo_Labels = _b.sent();
                     ValidateLabels(labelsToAdd, repo_Labels);
                     console.log("Label " + labelsToAdd.toString() + " is valid for this repo");
                     //Is the label on the pull request already?
@@ -10207,18 +10208,18 @@ function run() {
                     if (!(labelsToAdd.length > 0)) return [3 /*break*/, 4];
                     return [4 /*yield*/, AddLabel(octokit, pr_No, labelsToAdd)];
                 case 3:
-                    _a.sent();
+                    _b.sent();
                     return [3 /*break*/, 5];
                 case 4:
                     console.log("No new labels added to PR");
-                    _a.label = 5;
+                    _b.label = 5;
                 case 5: return [3 /*break*/, 7];
                 case 6:
                     console.log("No labels to add to PR");
-                    _a.label = 7;
+                    _b.label = 7;
                 case 7: return [3 /*break*/, 9];
                 case 8:
-                    error_1 = _a.sent();
+                    error_1 = _b.sent();
                     core.setFailed(error_1.message);
                     return [3 /*break*/, 9];
                 case 9: return [2 /*return*/];

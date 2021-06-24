@@ -10389,7 +10389,7 @@ function GetAllLabelsFromRepo(octokit) {
 *  Return array containing label if matched, otherwise empty array
 */
 function MatchLabelsWithTitle(pull_request, labels) {
-    var pr_Title = pull_request.title;
+    var pr_Title = pull_request === null || pull_request === void 0 ? void 0 : pull_request.title;
     var matchedLabels = [];
     console.log("Matching label criteria with PR title: " + pr_Title);
     for (var i = 0; i < labels.length; i++) {

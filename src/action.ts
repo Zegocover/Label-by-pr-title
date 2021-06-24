@@ -20,6 +20,7 @@ async function run()
     	const context                  = github.context;
     	const pull_request             = context.payload;
     	const pr_No :number|undefined  = pull_request.number;
+	    
 
 	// ensure pr_No is type number
 	if (!pr_No) {
@@ -211,7 +212,7 @@ async function GetAllLabelsFromRepo(octokit :OctokitType) {
 */
 function MatchLabelsWithTitle(pull_request :WebhookPayload, labels :string[])
 {
-	const pr_Title :string      = pull_request.title;
+	const pr_Title :string      = pull_request?.title;
 	let matchedLabels : string[] = [];
 
 	console.log(`Matching label criteria with PR title: ${pr_Title}`);
@@ -248,7 +249,7 @@ function RemoveFromArray(arr :string[], strMatch :String) {
 /* Given string strBase does it start with strMatch
 *  returns: True|False
 */
-function Str_Match(strBase :String, strMatch :String)
+function Str_Match(strBase :string, strMatch :string)
 {
 	if (strBase.toLowerCase().startsWith(strMatch.toLowerCase()))
 	{
@@ -260,7 +261,7 @@ function Str_Match(strBase :String, strMatch :String)
 /* Given array arrBase for each item, does it start with strMatch
 *  returns: True|False
 */
-function Arr_Match(arrBase :string[], strMatch :String)
+function Arr_Match(arrBase :string[], strMatch :string)
 {
 	for (let item of arrBase)
 	{

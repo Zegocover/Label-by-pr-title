@@ -10170,7 +10170,7 @@ var labels_1 = __nccwpck_require__(9234);
 var AreLabelsInFile = false;
 function run() {
     return __awaiter(this, void 0, void 0, function () {
-        var GITHUB_TOKEN, configPath, octokit, context, pull_request, labels, labelsToAdd, outputLabels, repo_Labels, error_1;
+        var GITHUB_TOKEN, configPath, octokit, context, pull_request, labels, labelsToAdd, outputLabels, repo_Labels, pr_No, error_1;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
@@ -10199,7 +10199,8 @@ function run() {
                     //Is the label on the pull request already?
                     labelsToAdd = LabelExistOnPullRequest(pull_request, labelsToAdd);
                     if (!(labelsToAdd.length > 0)) return [3 /*break*/, 4];
-                    return [4 /*yield*/, AddLabel(octokit, pull_request.number, labelsToAdd)];
+                    pr_No = pull_request.number;
+                    return [4 /*yield*/, AddLabel(octokit, pr_No, labelsToAdd)];
                 case 3:
                     _a.sent();
                     return [3 /*break*/, 5];

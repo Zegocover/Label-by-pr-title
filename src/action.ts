@@ -43,7 +43,8 @@ async function run()
 
 		if (labelsToAdd.length > 0)
 		{
-			await AddLabel(octokit, pull_request.number, labelsToAdd);
+			const pr_No :number = pull_request.number;
+			await AddLabel(octokit, pr_No, labelsToAdd);
 		}
 		else
 		{

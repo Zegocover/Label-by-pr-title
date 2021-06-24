@@ -18,7 +18,7 @@ async function run()
     	const configPath             = core.getInput('config');
     	const octokit                = github.getOctokit(GITHUB_TOKEN);
     	const context                = github.context;
-    	const { data: pull_request } = context.payload;
+    	const pull_request  = context.payload;
 
 	console.log("Get me PR number");
 	const pr_No :number| undefined = pull_request.number;

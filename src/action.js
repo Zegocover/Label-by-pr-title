@@ -52,7 +52,7 @@ function run() {
                     configPath = core.getInput('config');
                     octokit = github.getOctokit(GITHUB_TOKEN);
                     context = github.context;
-                    pull_request = context.payload.data;
+                    pull_request = context.payload;
                     console.log("Get me PR number");
                     pr_No = pull_request.number;
                     if (!pr_No) {

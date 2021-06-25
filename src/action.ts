@@ -100,20 +100,19 @@ async function LabelExistOnPullRequest(octokit : OctokitType, pr_No :number , la
 
 	if (pr_Labels.length > 0) {
 
-		for (let label of pr_Labels) {
-			let myType = typeof(label) ===  "string" ? label: label.name;
-			console.log(`This is myType: ${myType}`);
-
-		}	
+			
 
 		console.log("This PR has labels, checking...");
-		for (let pr_Label in pr_Labels) {
+		for (let label of pr_Labels) {
+			let name = typeof(label) ===  "string" ? label: label.name;
+			if (!name) {continue;}
 
-			const name :any = pr_Labels[pr_Label];
-			for (let i in name)
-			{
-				console.log(`the properties ${i} has value: ${name[i]}`);
+			if (Arr_Match(labelsToAdd, name)) {
+				console.log(`Label ${name} already added to PR`);
+				RemoveFromArray(labelsToAdd, name);
 			}
+			
+		}
 
 
 
@@ -122,7 +121,7 @@ async function LabelExistOnPullRequest(octokit : OctokitType, pr_No :number , la
 				console.log(`Label ${pr_Label.name} already added to PR`);
 				RemoveFromArray(labelsToAdd, pr_Label.name);
 			}*/
-		}
+		
 	}
 
 	return labelsToAdd;

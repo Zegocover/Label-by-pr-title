@@ -2,6 +2,7 @@ import * as core from '@actions/core';
 import * as github from '@actions/github';
 import * as yaml from "js-yaml";
 import {DefineLabelMatches} from "./labels";
+import {LabelAndCriteria} from "./labels";
 
 const AreLabelsInFile = false;
 type  OctokitType     = ReturnType<typeof github.getOctokit>;
@@ -110,7 +111,7 @@ async function LabelExistOnPullRequest(octokit : OctokitType, pr_No :number , la
 */
 async function GetLabels(octokit :OctokitType, configPath :string) {
 
-	let labels = [];
+	let labels :LabelAndCriteria[] = [];
 
 	if (AreLabelsInFile) {
 		const configContent : any      = await GetConfigContent(octokit, configPath);
@@ -128,13 +129,13 @@ async function GetLabels(octokit :OctokitType, configPath :string) {
 
 /* Define the labels to output
 */
-function LabelsToOutput(labelAndMatchCriteria : string[]) {
+function LabelsToOutput(labelAndMatchCriteria :LabelAndCriteria []) {
 
 	const outputLabels = [];
 
-	for (const arr in labelAndMatchCriteria) {
-		console.log(`Adding output label: ${arr} with value ${labelAndMatchCriteria[arr]}`)
-		outputLabels.push(arr);
+	for (const labelData of labelAndMatchCriteria) {
+		console.log(`Adding output label: ${labelData.label} with value ${labelData.criteria}`)
+		outputLabels.push(labelData.label);
 	}
 	return outputLabels.join(',');
 }
@@ -146,16 +147,19 @@ function LabelsToOutput(labelAndMatchCriteria : string[]) {
 */
 function GetLabelsFromFile(yamlFileContent:any) {
 
-	var labels = [];
+	let labels : LabelAndCriteria[] = [];
 
 	for (const tag in yamlFileContent) {
 		if (typeof yamlFileContent[tag] === "string") {
+			let strtempLabels = yamlFileContent[tag];
 			let tempLabels = [tag, yamlFileContent[tag]];
-			labels.push(tempLabels);
+			//labels.push(tempLabels);
+			labels.push({label:tag, criteria:yamlFileContent[tag]});
 		} else if (Array.isArray([yamlFileContent[tag]])) {
-			let tempLabels = yamlFileContent[tag].toString().split(',');
+			let tempLabels :any[] = yamlFileContent[tag].toString().split(',');
 			tempLabels.unshift(tag);
-			labels.push(tempLabels);
+			//labels.push(tempLabels);
+			labels.push({label: tag, criteria: tempLabels})
 		} else {
 			console.log(`Unknown value type for label ${tag}. Expecting string or array of globs)`);
 		}
@@ -230,14 +234,22 @@ async function GetAllLabelsFromRepo(octokit :OctokitType) {
 *  criteria.
 *  Return array containing label if matched, otherwise empty array
 */
-function MatchLabelsWithTitle(pr_Title :string, labels :string[]) {
+function MatchLabelsWithTitle(pr_Title :string, labels :LabelAndCriteria[]) {
 
 	let matchedLabels : string[] = [];
 
 	console.log(`Matching label criteria with PR title: ${pr_Title}`);
-	for (let i = 0; i < labels.length; i++) {
+	for (let label of labels)
+	{
+		if (Str_Match(pr_Title,label.label)) {
+			console.log(`Matched... Add Label: [${label.label}] to pull request`);
+			matchedLabels.push(label.label);
+			return matchedLabels;
+		}
+	}
+	/*for (let i = 0; i < labels.length; i++) {
 		// get the size of the inner array
-		var innerArrayLength = labels[i].length;
+		var innerArrayLength = labels[i].criteria.length;
 		// loop the inner array
 
 		for (let j = 1; j < innerArrayLength; j++) {
@@ -249,7 +261,7 @@ function MatchLabelsWithTitle(pr_Title :string, labels :string[]) {
 				return matchedLabels;
 			}
 		}
-	}
+	}*/
 	//only reach here if no label is matched
 	return matchedLabels;
 }

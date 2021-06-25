@@ -10319,9 +10319,10 @@ function GetLabels(octokit, configPath) {
 */
 function LabelsToOutput(labelAndMatchCriteria) {
     var outputLabels = [];
-    for (var arr in labelAndMatchCriteria) {
-        console.log("Adding output label: " + arr + " with value " + labelAndMatchCriteria[arr]);
-        outputLabels.push(arr);
+    for (var _i = 0, labelAndMatchCriteria_1 = labelAndMatchCriteria; _i < labelAndMatchCriteria_1.length; _i++) {
+        var labelData = labelAndMatchCriteria_1[_i];
+        console.log("Adding output label: " + labelData.label + " with value " + labelData.criteria);
+        outputLabels.push(labelData.label);
     }
     return outputLabels.join(',');
 }
@@ -10334,13 +10335,16 @@ function GetLabelsFromFile(yamlFileContent) {
     var labels = [];
     for (var tag in yamlFileContent) {
         if (typeof yamlFileContent[tag] === "string") {
+            var strtempLabels = yamlFileContent[tag];
             var tempLabels = [tag, yamlFileContent[tag]];
-            labels.push(tempLabels);
+            //labels.push(tempLabels);
+            labels.push({ label: tag, criteria: yamlFileContent[tag] });
         }
         else if (Array.isArray([yamlFileContent[tag]])) {
             var tempLabels = yamlFileContent[tag].toString().split(',');
             tempLabels.unshift(tag);
-            labels.push(tempLabels);
+            //labels.push(tempLabels);
+            labels.push({ label: tag, criteria: tempLabels });
         }
         else {
             console.log("Unknown value type for label " + tag + ". Expecting string or array of globs)");
@@ -10435,19 +10439,29 @@ function GetAllLabelsFromRepo(octokit) {
 function MatchLabelsWithTitle(pr_Title, labels) {
     var matchedLabels = [];
     console.log("Matching label criteria with PR title: " + pr_Title);
-    for (var i = 0; i < labels.length; i++) {
+    for (var _i = 0, labels_2 = labels; _i < labels_2.length; _i++) {
+        var label = labels_2[_i];
+        if (Str_Match(pr_Title, label.label)) {
+            console.log("Matched... Add Label: [" + label.label + "] to pull request");
+            matchedLabels.push(label.label);
+            return matchedLabels;
+        }
+    }
+    /*for (let i = 0; i < labels.length; i++) {
         // get the size of the inner array
-        var innerArrayLength = labels[i].length;
+        var innerArrayLength = labels[i].criteria.length;
         // loop the inner array
-        for (var j = 1; j < innerArrayLength; j++) {
+
+        for (let j = 1; j < innerArrayLength; j++) {
             var lbl = labels[i][j];
-            if (Str_Match(pr_Title, lbl)) {
-                console.log("Matched... Add Label: [" + labels[i][0] + "] to pull request");
+
+            if (Str_Match(pr_Title,lbl)) {
+                console.log(`Matched... Add Label: [${labels[i][0]}] to pull request`);
                 matchedLabels.push(labels[i][0]);
                 return matchedLabels;
             }
         }
-    }
+    }*/
     //only reach here if no label is matched
     return matchedLabels;
 }
@@ -10496,12 +10510,32 @@ run();
 "use strict";
 
 exports.__esModule = true;
-exports.DefineLabelMatches = void 0;
+exports.DefineLabelMatches2 = exports.DefineLabelMatches = void 0;
 /* Define the array of labels and their matching string as: array[array[]]
 *  [['labelname1','matchword1','matchword2'], ['labelname2','matchword3','matchword4']]
 *  return: array[array[]]
 */
 function DefineLabelMatches() {
+    //Label associations
+    var bugFix = { label: 'bugfix', criteria: ['bugfix1'] };
+    var feat = { label: 'feat', criteria: ['feat'] };
+    var hotFix = { label: 'hotfix', criteria: ['hotfix'] };
+    var refactor = { label: 'refactor', criteria: ['refactor'] };
+    var chore = { label: 'chore', criteria: ['chore'] };
+    var labels = [];
+    labels.push(bugFix);
+    labels.push(feat);
+    labels.push(hotFix);
+    labels.push(refactor);
+    labels.push(chore);
+    return labels;
+}
+exports.DefineLabelMatches = DefineLabelMatches;
+/* Define the array of labels and their matching string as: array[array[]]
+*  [['labelname1','matchword1','matchword2'], ['labelname2','matchword3','matchword4']]
+*  return: array[array[]]
+*/
+function DefineLabelMatches2() {
     //Label associations
     var bugFixLabel = ['bugfix', 'bugfix'];
     var featLabel = ['feat', 'feat'];
@@ -10514,9 +10548,9 @@ function DefineLabelMatches() {
     labels.push(hotFixLabel);
     labels.push(refactorLabel);
     labels.push(choreLabel);
-    return labels;
+    return bugFixLabel;
 }
-exports.DefineLabelMatches = DefineLabelMatches;
+exports.DefineLabelMatches2 = DefineLabelMatches2;
 
 
 /***/ }),

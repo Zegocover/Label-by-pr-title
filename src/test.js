@@ -1,165 +1,53 @@
-const core = require('@actions/core');
-const github = require('@actions/github');
-const { Console } = require('console');
-const fs = require('fs');
-const yaml = require('js-yaml');
-
-async function run()
-{
-	//Label associations
-	const labels = DefineLabelMatches();
-	const labelsMatched = [];
-	const dummy_labelsMatched = ['bug','enhancement','help required'];
-
-	try
-	{
-
-
-const arr = [['bug','a','b','c'],['deat','d','e','f'],['fix','g','h','i']];
-const str = [];
-for (const lbl of arr)
-{
-	//console.log(lbl);
-	str.push(lbl[0]);
+"use strict";
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+var __generator = (this && this.__generator) || function (thisArg, body) {
+    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
+    return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
+    function verb(n) { return function (v) { return step([n, v]); }; }
+    function step(op) {
+        if (f) throw new TypeError("Generator is already executing.");
+        while (_) try {
+            if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
+            if (y = 0, t) op = [op[0] & 2, t.value];
+            switch (op[0]) {
+                case 0: case 1: t = op; break;
+                case 4: _.label++; return { value: op[1], done: false };
+                case 5: _.label++; y = op[1]; op = [0]; continue;
+                case 7: op = _.ops.pop(); _.trys.pop(); continue;
+                default:
+                    if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
+                    if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
+                    if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
+                    if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
+                    if (t[2]) _.ops.pop();
+                    _.trys.pop(); continue;
+            }
+            op = body.call(thisArg, _);
+        } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
+        if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
+    }
+};
+exports.__esModule = true;
+var labels_1 = require("./labels");
+function run() {
+    return __awaiter(this, void 0, void 0, function () {
+        var labels, _i, labels_2, labelCriteria;
+        return __generator(this, function (_a) {
+            labels = labels_1.TestDefineLabelMatches();
+            for (_i = 0, labels_2 = labels; _i < labels_2.length; _i++) {
+                labelCriteria = labels_2[_i];
+                console.log("The label is: " + labelCriteria.label + " and its criteria is: " + labelCriteria.criteria);
+            }
+            return [2 /*return*/];
+        });
+    });
 }
-console.log(str.join(','));
-
-/*		const arr = ['b','c'];
-var myVal = Object.prototype.toString.call(arr);
-console.log(`IS this an array? ${Array.isArray(arr)}`);
-console.log(myVal);
-
- let data = fs.readFileSync('.github/pr_label_config.yml');
-let ymlData = yaml.load(data);
-for (let tag in ymlData)
-{
-	console.log(`The tag is ${tag} and value is ${ymlData[tag]}`)
-	let strType = typeof ymlData[tag];
-	let arrType = Object.prototype.toString.call(ymlData[tag]);
-	let isArrType = Array.isArray(ymlData[tag]);
-	//console.log(`String: ${strType} Array: ${arrType} IsArray: ${isArrType}`);
-	let lblArrVal = ymlData[tag].toString().split(',');
-	lblArrVal.unshift(tag);
-	console.log(`Tag added to array is: ${lblArrVal.join(';')}`);
-}*/
-
- /*
-	const pr_Title	= "This is the name of my PR request";
-
-
-	console.log("PR Title is: " + pr_Title);
-	for (let i = 0; i < labels.length; i++) {
-		// get the size of the inner array
-		var innerArrayLength = labels[i].length;
-		// loop the inner array
-		for (let j = 1; j < innerArrayLength; j++) {
-		    	var lbl = labels[i][j];
-			console.log(`Label is ${lbl.toString()}`);
-			if (Str_Match(pr_Title,lbl))
-			{
-				console.log(`Matched... \n\t Add ${labels[i][0]} to PR`);
-				labelsMatched.push(labels[i][0]);
-			} 
-			else {		
-				console.log("Did not match");
-			}
-		}	
-	}
-	const pr_Labels = ['bug','enhancement'];
-	//check labelsMatched are included on PR
-	console.log("This pull request has labels: " + pr_Labels.toString());
-	for (const label of pr_Labels)
-	{
-		console.log(`Is label [${label}] in the labelsMatched array? [${dummy_labelsMatched.toString()}]`);
-		if (Arr_Match(dummy_labelsMatched,label))
-		{
-			RemoveFromArray(dummy_labelsMatched, label);
-		}
-	}
-
-	console.log(`Labels to add to my PR [${dummy_labelsMatched.toString()}]`);*/
-
-	/*
-	for (const lbl of bugLabel)
-	{
-		console.log(`Label is ${lbl.toString()}`);
-		if (Str_Match(pr_Title,lbl))
-		{
-			console.log("Matched... Add bug to PR");
-		} 
-		else {		
-			console.log("Did not match");
-		}
-	}*/
-/*
-
-		const readable_Labels = JSON.stringify(allMyLabels,undefined,2);
-	//	console.log("Print all labels: " + readable_Labels);
-	const first_Label = JSON.stringify(allMyLabels[0],undefined,2);
-	console.log("Print first label: " + first_Label);
-
-	await octokit.rest.issues.createComment({
-		...context.repo,
-		issue_number: pull_request.number,
-		body: '3Thank you for submitting a pull request! We will try to review this as soon as we can.'
-	});
-
-	await octokit.rest.issues.addLabels({
-		owner: pr_owner,
-		repo: pr_repo,
-		issue_number: pull_request.number,
-		labels: `bug`,
-	});
-	console.log("set label OK");
-*/
-	} catch(error)
-	{
-		core.setFailed(error.message);
-	}
-}
-
-function RemoveFromArray(dummy_labelsMatched, label) {
-	var lowercaseArr = arr.map(function(value){
-		return value.toLowerCase();
-	});
-	const index = lowercaseArr.indexOf(strMatch.toLowerCase());
-	if (index > -1) {
-		arr.splice(index, 1);
-	}
-}
-
-function DefineLabelMatches()
-{
-	//Label associations
-	const tempbugLabel = ['name','fix','this'];
-	const bugLabel = ['bug', tempbugLabel.join(',')];
-	const enhancementLabel = ['enhancement','enhance', 'new','feature']
-	const labels = [];
-	labels.push(bugLabel);
-	labels.push(enhancementLabel);	
-	return labels
-}
-
-function Str_Match(strBase, strMatch)
-{
-	if (strBase.toLowerCase().startsWith(strMatch.toLowerCase()))
-	{
-		return true;
-	}
-	else { return false; }
-}
-
-function Arr_Match(arrBase, strMatch)
-{
-	for (let item of arrBase)
-	{
-		if (Str_Match(item,strMatch))
-		{
-			console.log(`Matched ${strMatch} in array`)
-			return true;
-		}
-	}
-	return false;
-}
-
 run();

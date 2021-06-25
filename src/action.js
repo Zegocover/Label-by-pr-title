@@ -141,7 +141,7 @@ function AddLabel(octokit, prNumber, labelsToAdd) {
 */
 function LabelExistOnPullRequest(octokit, pr_No, labelsToAdd) {
     return __awaiter(this, void 0, void 0, function () {
-        var pr_Labels, pr_Label, name_1, i;
+        var pr_Labels, _i, pr_Labels_1, label, myType, pr_Label, name_1, i;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0: return [4 /*yield*/, GetPRTitle(octokit, pr_No)];
@@ -149,6 +149,11 @@ function LabelExistOnPullRequest(octokit, pr_No, labelsToAdd) {
                 case 2:
                     pr_Labels = _a.sent();
                     if (pr_Labels.length > 0) {
+                        for (_i = 0, pr_Labels_1 = pr_Labels; _i < pr_Labels_1.length; _i++) {
+                            label = pr_Labels_1[_i];
+                            myType = typeof (label) === "string" ? label : label.name;
+                            console.log("This is myType: " + myType);
+                        }
                         console.log("This PR has labels, checking...");
                         for (pr_Label in pr_Labels) {
                             name_1 = pr_Labels[pr_Label];

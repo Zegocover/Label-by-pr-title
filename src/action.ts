@@ -89,6 +89,8 @@ async function AddLabel(octokit :OctokitType, prNumber :number, labelsToAdd :str
 	console.log("Labels added");
 }
 
+
+
 /* If pull request has label that is in labelsToAdd then remove
 *  it from labelsToAdd
 *  Return: labelsToAdd
@@ -97,6 +99,13 @@ async function LabelExistOnPullRequest(octokit : OctokitType, pr_No :number , la
 	const pr_Labels  = await (await GetPRTitle(octokit,pr_No)).labels
 
 	if (pr_Labels.length > 0) {
+
+		for (let label of pr_Labels) {
+			let myType = typeof(label) ===  "string" ? label: label.name;
+			console.log(`This is myType: ${myType}`);
+
+		}	
+
 		console.log("This PR has labels, checking...");
 		for (let pr_Label in pr_Labels) {
 

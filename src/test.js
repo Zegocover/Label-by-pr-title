@@ -41,10 +41,10 @@ function run() {
     return __awaiter(this, void 0, void 0, function () {
         var labels, _i, labels_2, labelCriteria;
         return __generator(this, function (_a) {
-            labels = labels_1.TestDefineLabelMatches();
+            labels = labels_1.DefineLabelMatches();
             for (_i = 0, labels_2 = labels; _i < labels_2.length; _i++) {
                 labelCriteria = labels_2[_i];
-                console.log("The label is: " + labelCriteria.label + " and its criteria is: " + labelCriteria.criteria);
+                console.log("The label is: " + labelCriteria.name + " and its criteria is: " + labelCriteria.criteria);
             }
             return [2 /*return*/];
         });

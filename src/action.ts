@@ -31,7 +31,6 @@ async function run() {
 	const pr_Title     = (await GetPRData(octokit, pr_No)).title;
 	let   labelsToAdd  = MatchLabelsWithTitle(pr_Title, labels);
 	const outputLabels = LabelsToOutput(labels);
-	console.log(`Output the following labels: ${outputLabels}`);
 
 	core.setOutput("Labels",outputLabels);
 
@@ -98,7 +97,6 @@ async function LabelExistOnPullRequest(octokit : OctokitType, pr_No :number , la
 				console.log(`Label ${name} already added to PR`);
 				RemoveFromArray(labelsToAdd, name);
 			}
-
 		}
 	}
 
@@ -134,8 +132,7 @@ function LabelsToOutput(labelAndMatchCriteria :LabelAndCriteria []) {
 	const outputLabels = [];
 
 	for (const labelData of labelAndMatchCriteria) {
-		console.log(`Adding output label: ${labelData.label} with value ${labelData.criteria}`)
-		outputLabels.push(labelData.label);
+		outputLabels.push(labelData.name);
 	}
 	return outputLabels.join(',');
 }
@@ -151,15 +148,10 @@ function GetLabelsFromFile(yamlFileContent:any) {
 
 	for (const tag in yamlFileContent) {
 		if (typeof yamlFileContent[tag] === "string") {
-			let strtempLabels = yamlFileContent[tag];
-			let tempLabels = [tag, yamlFileContent[tag]];
-			//labels.push(tempLabels);
-			labels.push({label:tag, criteria:yamlFileContent[tag]});
+			labels.push({name:tag, criteria:yamlFileContent[tag]});
 		} else if (Array.isArray([yamlFileContent[tag]])) {
-			let tempLabels :any[] = yamlFileContent[tag].toString().split(',');
-			tempLabels.unshift(tag);
-			//labels.push(tempLabels);
-			labels.push({label: tag, criteria: tempLabels})
+			let labelCriteria :any[] = yamlFileContent[tag].toString().split(',');
+			labels.push({name: tag, criteria: labelCriteria})
 		} else {
 			console.log(`Unknown value type for label ${tag}. Expecting string or array of globs)`);
 		}
@@ -239,29 +231,15 @@ function MatchLabelsWithTitle(pr_Title :string, labels :LabelAndCriteria[]) {
 	let matchedLabels : string[] = [];
 
 	console.log(`Matching label criteria with PR title: ${pr_Title}`);
-	for (let label of labels)
+	for (let labelData of labels)
 	{
-		if (Str_Match(pr_Title,label.label)) {
-			console.log(`Matched... Add Label: [${label.label}] to pull request`);
-			matchedLabels.push(label.label);
+		if (Str_Match(pr_Title,labelData.name)) {
+			console.log(`Matched... Add Label: [${labelData.name}] to pull request`);
+			matchedLabels.push(labelData.name);
 			return matchedLabels;
 		}
 	}
-	/*for (let i = 0; i < labels.length; i++) {
-		// get the size of the inner array
-		var innerArrayLength = labels[i].criteria.length;
-		// loop the inner array
 
-		for (let j = 1; j < innerArrayLength; j++) {
-			var lbl = labels[i][j];
-
-			if (Str_Match(pr_Title,lbl)) {
-				console.log(`Matched... Add Label: [${labels[i][0]}] to pull request`);
-				matchedLabels.push(labels[i][0]);
-				return matchedLabels;
-			}
-		}
-	}*/
 	//only reach here if no label is matched
 	return matchedLabels;
 }

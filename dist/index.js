@@ -10198,7 +10198,6 @@ function run() {
                     pr_Title = (_a.sent()).title;
                     labelsToAdd = MatchLabelsWithTitle(pr_Title, labels);
                     outputLabels = LabelsToOutput(labels);
-                    console.log("Output the following labels: " + outputLabels);
                     core.setOutput("Labels", outputLabels);
                     if (!(labelsToAdd.length > 0)) return [3 /*break*/, 8];
                     console.log("Validate label with repo");
@@ -10321,8 +10320,7 @@ function LabelsToOutput(labelAndMatchCriteria) {
     var outputLabels = [];
     for (var _i = 0, labelAndMatchCriteria_1 = labelAndMatchCriteria; _i < labelAndMatchCriteria_1.length; _i++) {
         var labelData = labelAndMatchCriteria_1[_i];
-        console.log("Adding output label: " + labelData.label + " with value " + labelData.criteria);
-        outputLabels.push(labelData.label);
+        outputLabels.push(labelData.name);
     }
     return outputLabels.join(',');
 }
@@ -10335,16 +10333,11 @@ function GetLabelsFromFile(yamlFileContent) {
     var labels = [];
     for (var tag in yamlFileContent) {
         if (typeof yamlFileContent[tag] === "string") {
-            var strtempLabels = yamlFileContent[tag];
-            var tempLabels = [tag, yamlFileContent[tag]];
-            //labels.push(tempLabels);
-            labels.push({ label: tag, criteria: yamlFileContent[tag] });
+            labels.push({ name: tag, criteria: yamlFileContent[tag] });
         }
         else if (Array.isArray([yamlFileContent[tag]])) {
-            var tempLabels = yamlFileContent[tag].toString().split(',');
-            tempLabels.unshift(tag);
-            //labels.push(tempLabels);
-            labels.push({ label: tag, criteria: tempLabels });
+            var labelCriteria = yamlFileContent[tag].toString().split(',');
+            labels.push({ name: tag, criteria: labelCriteria });
         }
         else {
             console.log("Unknown value type for label " + tag + ". Expecting string or array of globs)");
@@ -10440,28 +10433,13 @@ function MatchLabelsWithTitle(pr_Title, labels) {
     var matchedLabels = [];
     console.log("Matching label criteria with PR title: " + pr_Title);
     for (var _i = 0, labels_2 = labels; _i < labels_2.length; _i++) {
-        var label = labels_2[_i];
-        if (Str_Match(pr_Title, label.label)) {
-            console.log("Matched... Add Label: [" + label.label + "] to pull request");
-            matchedLabels.push(label.label);
+        var labelData = labels_2[_i];
+        if (Str_Match(pr_Title, labelData.name)) {
+            console.log("Matched... Add Label: [" + labelData.name + "] to pull request");
+            matchedLabels.push(labelData.name);
             return matchedLabels;
         }
     }
-    /*for (let i = 0; i < labels.length; i++) {
-        // get the size of the inner array
-        var innerArrayLength = labels[i].criteria.length;
-        // loop the inner array
-
-        for (let j = 1; j < innerArrayLength; j++) {
-            var lbl = labels[i][j];
-
-            if (Str_Match(pr_Title,lbl)) {
-                console.log(`Matched... Add Label: [${labels[i][0]}] to pull request`);
-                matchedLabels.push(labels[i][0]);
-                return matchedLabels;
-            }
-        }
-    }*/
     //only reach here if no label is matched
     return matchedLabels;
 }
@@ -10510,18 +10488,17 @@ run();
 "use strict";
 
 exports.__esModule = true;
-exports.DefineLabelMatches2 = exports.DefineLabelMatches = void 0;
-/* Define the array of labels and their matching string as: array[array[]]
-*  [['labelname1','matchword1','matchword2'], ['labelname2','matchword3','matchword4']]
-*  return: array[array[]]
+exports.DefineLabelMatches = void 0;
+/* Define labels and their matching criteria as type LabelAndCriteria]
+*  return: An array labels and their matching criteria
 */
 function DefineLabelMatches() {
     //Label associations
-    var bugFix = { label: 'bugfix', criteria: ['bugfix1'] };
-    var feat = { label: 'feat', criteria: ['feat'] };
-    var hotFix = { label: 'hotfix', criteria: ['hotfix'] };
-    var refactor = { label: 'refactor', criteria: ['refactor'] };
-    var chore = { label: 'chore', criteria: ['chore'] };
+    var bugFix = { name: 'bugfix', criteria: ['bugfix'] };
+    var feat = { name: 'feat', criteria: ['feat'] };
+    var hotFix = { name: 'hotfix', criteria: ['hotfix'] };
+    var refactor = { name: 'refactor', criteria: ['refactor'] };
+    var chore = { name: 'chore', criteria: ['chore'] };
     var labels = [];
     labels.push(bugFix);
     labels.push(feat);
@@ -10531,26 +10508,6 @@ function DefineLabelMatches() {
     return labels;
 }
 exports.DefineLabelMatches = DefineLabelMatches;
-/* Define the array of labels and their matching string as: array[array[]]
-*  [['labelname1','matchword1','matchword2'], ['labelname2','matchword3','matchword4']]
-*  return: array[array[]]
-*/
-function DefineLabelMatches2() {
-    //Label associations
-    var bugFixLabel = ['bugfix', 'bugfix'];
-    var featLabel = ['feat', 'feat'];
-    var hotFixLabel = ['hotfix', 'hotfix'];
-    var refactorLabel = ['refactor', 'refactor'];
-    var choreLabel = ['chore', 'chore'];
-    var labels = [];
-    labels.push(bugFixLabel);
-    labels.push(featLabel);
-    labels.push(hotFixLabel);
-    labels.push(refactorLabel);
-    labels.push(choreLabel);
-    return bugFixLabel;
-}
-exports.DefineLabelMatches2 = DefineLabelMatches2;
 
 
 /***/ }),

@@ -22,7 +22,6 @@ async function run() {
 	console.log("PR number is: " + pr_No);
 
 	UseDefaultLabels = configPath === "N/A";
-	console.log(`Using default: ${UseDefaultLabels}`);
 	if (!UseDefaultLabels) {
 		console.log(`Get label config file: ${configPath}`);
 	}
@@ -111,13 +110,13 @@ async function GetLabels(octokit :OctokitType, configPath :string) {
 	let labels :LabelAndCriteria[] = [];
 
 	if (UseDefaultLabels) {
+		labels = DefineLabelMatches();
+	}
+	else {
 		const configContent : any      = await GetConfigContent(octokit, configPath);
 		let   encodedFileContent : any = Buffer.from(configContent.data.content, configContent.data.encoding);
 		const yamlFileContent          = yaml.load(encodedFileContent);
 		labels                         = GetLabelsFromFile(yamlFileContent);
-	}
-	else {
-		labels = DefineLabelMatches();
 	}
 
 	return labels;

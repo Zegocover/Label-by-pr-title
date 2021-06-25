@@ -60,7 +60,6 @@ function run() {
                     }
                     console.log("PR number is: " + pr_No);
                     UseDefaultLabels = configPath === "N/A";
-                    console.log("Using default: " + UseDefaultLabels);
                     if (!UseDefaultLabels) {
                         console.log("Get label config file: " + configPath);
                     }
@@ -171,16 +170,15 @@ function GetLabels(octokit, configPath) {
             switch (_a.label) {
                 case 0:
                     labels = [];
-                    if (!UseDefaultLabels) return [3 /*break*/, 2];
-                    return [4 /*yield*/, GetConfigContent(octokit, configPath)];
-                case 1:
+                    if (!UseDefaultLabels) return [3 /*break*/, 1];
+                    labels = labels_1.DefineLabelMatches();
+                    return [3 /*break*/, 3];
+                case 1: return [4 /*yield*/, GetConfigContent(octokit, configPath)];
+                case 2:
                     configContent = _a.sent();
                     encodedFileContent = Buffer.from(configContent.data.content, configContent.data.encoding);
                     yamlFileContent = yaml.load(encodedFileContent);
                     labels = GetLabelsFromFile(yamlFileContent);
-                    return [3 /*break*/, 3];
-                case 2:
-                    labels = labels_1.DefineLabelMatches();
                     _a.label = 3;
                 case 3: return [2 /*return*/, labels];
             }

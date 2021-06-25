@@ -107,7 +107,11 @@ async function LabelExistOnPullRequest(octokit : OctokitType, pr_No :number , la
 			console.log(`1strigify this label to : ${yamlFileContent}`);
 			console.log(`This is string `);
 
-			const name = pr_Labels[pr_Label];
+			const name :any = pr_Labels[pr_Label];
+			for (let i in name)
+			{
+				console.log(`the properties of this name is: ${name[i]}`);
+			}
 			console.log(`This is name string ${name}`);
 
 

@@ -10268,7 +10268,7 @@ function AddLabel(octokit, prNumber, labelsToAdd) {
 */
 function LabelExistOnPullRequest(octokit, pr_No, labelsToAdd) {
     return __awaiter(this, void 0, void 0, function () {
-        var pr_Labels, pr_Label, encodedFileContent, yamlFileContent, name_1;
+        var pr_Labels, pr_Label, encodedFileContent, yamlFileContent, name_1, i;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0: return [4 /*yield*/, GetPRTitle(octokit, pr_No)];
@@ -10284,6 +10284,9 @@ function LabelExistOnPullRequest(octokit, pr_No, labelsToAdd) {
                             console.log("1strigify this label to : " + yamlFileContent);
                             console.log("This is string ");
                             name_1 = pr_Labels[pr_Label];
+                            for (i in name_1) {
+                                console.log("the properties of this name is: " + name_1[i]);
+                            }
                             console.log("This is name string " + name_1);
                             /*if (Arr_Match(labelsToAdd, pr_Label.name)) {
                                 console.log(`Label ${pr_Label.name} already added to PR`);

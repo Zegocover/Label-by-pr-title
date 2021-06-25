@@ -4,7 +4,7 @@ import * as yaml from "js-yaml";
 import {DefineLabelMatches} from "./labels";
 import {LabelAndCriteria} from "./labels";
 
-const AreLabelsInFile = false;
+let UseDefaultLabels = false;
 type  OctokitType     = ReturnType<typeof github.getOctokit>;
 
 async function run() {
@@ -12,19 +12,18 @@ async function run() {
     	const GITHUB_TOKEN             = core.getInput('GITHUB_TOKEN');
     	const configPath               = core.getInput('config');
     	const octokit                  = github.getOctokit(GITHUB_TOKEN);
-    	const context                  = github.context;
-    	const pull_request             = context.payload;
-    	const pr_No :number|undefined  = pull_request.number;
+    	const pr_No :number|undefined  = github.context.payload.pull_request?.number;
 
-	// ensure pr_No is type number
+	// ensure pr_No is not undefined type
 	if (!pr_No) {
-		console.log("Failed retrieve PR number from payload");
+		console.log("Failed to retrieve PR number from payload");
 		return;
 	}
-
 	console.log("PR number is: " + pr_No);
-	if (AreLabelsInFile) { 
-		console.log(`Get label config file: ${configPath}`); 
+
+	UseDefaultLabels = configPath === "N/A";
+	if (!UseDefaultLabels) {
+		console.log(`Get label config file: ${configPath}`);
 	}
 
 	const labels       = await GetLabels(octokit, configPath);
@@ -77,8 +76,7 @@ async function AddLabel(octokit :OctokitType, prNumber :number, labelsToAdd :str
 	console.log("Labels added");
 }
 
-/* If pull request has label that is in labelsToAdd then remove
-*  it from labelsToAdd
+/* Remove labels from labelsToAdd if they exist on pull request
 *  Return: labelsToAdd
 */
 async function LabelExistOnPullRequest(octokit : OctokitType, pr_No :number , labelsToAdd :string[]) {
@@ -105,13 +103,13 @@ async function LabelExistOnPullRequest(octokit : OctokitType, pr_No :number , la
 
 /* Get the labels and their matching criteria from a file
 *  or function.
-*  Return the array of labels and their matching criteria
+*  Return Labels and matching criteria as LabelAndCriteria[]
 */
 async function GetLabels(octokit :OctokitType, configPath :string) {
 
 	let labels :LabelAndCriteria[] = [];
 
-	if (AreLabelsInFile) {
+	if (UseDefaultLabels) {
 		const configContent : any      = await GetConfigContent(octokit, configPath);
 		let   encodedFileContent : any = Buffer.from(configContent.data.content, configContent.data.encoding);
 		const yamlFileContent          = yaml.load(encodedFileContent);
@@ -126,6 +124,7 @@ async function GetLabels(octokit :OctokitType, configPath :string) {
 
 
 /* Define the labels to output
+*  Return string of labels
 */
 function LabelsToOutput(labelAndMatchCriteria :LabelAndCriteria []) {
 
@@ -141,6 +140,7 @@ function LabelsToOutput(labelAndMatchCriteria :LabelAndCriteria []) {
 *  from yamlFileContent: [object Object]
 *  return the array of labels and their matching criteria
 *  E.g. Array of [[label1,'matchA','matchB'],['label2','matchC'],...]
+*  Return Labels and matching criteria as LabelAndCriteria[]
 */
 function GetLabelsFromFile(yamlFileContent:any) {
 
@@ -162,6 +162,7 @@ function GetLabelsFromFile(yamlFileContent:any) {
 /* Validate labels to add to PR with
 *  repository defined labels.
 *  I.e. We dont want to create new labels
+*  Return True|False
 */
 function AreLabelsValid(labelsToAdd :string[], repo_Labels :string[]) {
 
@@ -176,7 +177,7 @@ function AreLabelsValid(labelsToAdd :string[], repo_Labels :string[]) {
 
 /* Request content from github repo from the path
 *  containing pr_label_config.yml
-*  Return the loaded yaml content
+*  Return the octokit response
 */
 async function GetConfigContent(octokit :OctokitType, path :string) {
 
@@ -191,6 +192,7 @@ async function GetConfigContent(octokit :OctokitType, path :string) {
 }
 
 /* Get the PR Title from PR number
+* Return pull request data property
 */
 async function GetPRData(octokit :OctokitType, pr_No : number) {
 
@@ -204,7 +206,7 @@ async function GetPRData(octokit :OctokitType, pr_No : number) {
 
 
 /* Request labels data from repository
-*  and return an Array of label names
+*  Return string[] of label names
 */
 async function GetAllLabelsFromRepo(octokit :OctokitType) {
 
@@ -224,7 +226,8 @@ async function GetAllLabelsFromRepo(octokit :OctokitType) {
 
 /* Match the first word in pr_Title with the label's matching
 *  criteria.
-*  Return array containing label if matched, otherwise empty array
+*  Return string[] of matched labels, otherwise empty
+* Remarks - Return is currently limited to first match
 */
 function MatchLabelsWithTitle(pr_Title :string, labels :LabelAndCriteria[]) {
 

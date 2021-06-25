@@ -226,7 +226,7 @@ function ValidateLabels(labelsToAdd, repo_Labels) {
     for (var _i = 0, labelsToAdd_1 = labelsToAdd; _i < labelsToAdd_1.length; _i++) {
         var lbl = labelsToAdd_1[_i];
         if (!Arr_Match(repo_Labels, lbl)) {
-            throw new Error("Trying to add invalid label [" + lbl + "] to repo. Valid repo labels are: \n\t " + repo_Labels.toString());
+            throw new Error("Label [" + lbl + "] does not exist on repo. Ensure the following labels are available on repo: \n\t " + labelsToAdd.join(","));
         }
     }
 }

@@ -9,8 +9,13 @@ Add label given string match of PR title.
 
 ### `config`
 
-**Required** The labels and their matching criteria
+**Optional** The labels and their matching criteria
 
+## Outputs
+
+### `Labels`
+
+The labels defined in config or defaulted in code.
 
 ## Example usage
 

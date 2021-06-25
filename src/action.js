@@ -77,7 +77,9 @@ function run() {
                     return [4 /*yield*/, GetAllLabelsFromRepo(octokit)];
                 case 3:
                     repo_Labels = _a.sent();
-                    ValidateLabels(labelsToAdd, repo_Labels);
+                    if (!AreLabelsValid(labelsToAdd, repo_Labels)) {
+                        throw new Error("Label does not exist on repo. Ensure the following labels are available on repo: \n\t \n\t\t\t\t" + outputLabels);
+                    }
                     console.log("Label " + labelsToAdd.toString() + " is valid for this repo");
                     return [4 /*yield*/, LabelExistOnPullRequest(octokit, pr_No, labelsToAdd)];
                 case 4:
@@ -222,13 +224,14 @@ function GetLabelsFromFile(yamlFileContent) {
 *  repository defined labels.
 *  I.e. We dont want to create new labels
 */
-function ValidateLabels(labelsToAdd, repo_Labels) {
+function AreLabelsValid(labelsToAdd, repo_Labels) {
     for (var _i = 0, labelsToAdd_1 = labelsToAdd; _i < labelsToAdd_1.length; _i++) {
         var lbl = labelsToAdd_1[_i];
         if (!Arr_Match(repo_Labels, lbl)) {
-            throw new Error("Label [" + lbl + "] does not exist on repo. Ensure the following labels are available on repo: \n\t " + labelsToAdd.join(","));
+            return false;
         }
     }
+    return true;
 }
 /* Request content from github repo from the path
 *  containing pr_label_config.yml

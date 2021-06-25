@@ -36,7 +36,11 @@ async function run() {
 	if (labelsToAdd.length > 0) {
 		console.log("Validate label with repo");
 		const repo_Labels = await GetAllLabelsFromRepo(octokit);
-		ValidateLabels(labelsToAdd, repo_Labels);
+		if (!AreLabelsValid(labelsToAdd, repo_Labels)){
+			throw new Error(
+				`Label does not exist on repo. Ensure the following labels are available on repo: \n\t 
+				${outputLabels}`);
+		}
 		console.log(`Label ${labelsToAdd.toString()} is valid for this repo`);
 
 		//Is the label on the pull request already?
@@ -163,13 +167,15 @@ function GetLabelsFromFile(yamlFileContent:any) {
 *  repository defined labels.
 *  I.e. We dont want to create new labels
 */
-function ValidateLabels(labelsToAdd :string[], repo_Labels :string[]) {
+function AreLabelsValid(labelsToAdd :string[], repo_Labels :string[]) {
 
 	for (let lbl of labelsToAdd) {
 		if (!Arr_Match(repo_Labels, lbl)) {
-			throw new Error(`Label [${lbl}] does not exist on repo. Ensure the following labels are available on repo: \n\t ${labelsToAdd.join(",")}`);
+			return false;
 		}
 	}
+
+	return true;
 }
 
 /* Request content from github repo from the path

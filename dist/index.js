@@ -10170,11 +10170,11 @@ var labels_1 = __nccwpck_require__(9234);
 var AreLabelsInFile = false;
 function run() {
     return __awaiter(this, void 0, void 0, function () {
-        var GITHUB_TOKEN, configPath, octokit, context, pull_request, pr_No, pullRequest, labels, pr_Title, labelsToAdd, outputLabels, repo_Labels, error_1;
+        var GITHUB_TOKEN, configPath, octokit, context, pull_request, pr_No, labels, pr_Title, labelsToAdd, outputLabels, repo_Labels, error_1;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
-                    _a.trys.push([0, 12, , 13]);
+                    _a.trys.push([0, 10, , 11]);
                     GITHUB_TOKEN = core.getInput('GITHUB_TOKEN');
                     configPath = core.getInput('config');
                     octokit = github.getOctokit(GITHUB_TOKEN);
@@ -10186,56 +10186,48 @@ function run() {
                         console.log("Failed retrieve PR number from payload");
                         return [2 /*return*/];
                     }
-                    console.log("Got me PR number");
-                    return [4 /*yield*/, octokit.rest.issues.get({
-                            owner: github.context.repo.owner,
-                            repo: github.context.repo.repo,
-                            issue_number: pr_No
-                        })];
-                case 1:
-                    pullRequest = _a.sent();
-                    pullRequest.data.title;
                     console.log("PR number is: " + pr_No);
-                    console.log("Get label config file: " + configPath);
+                    if (AreLabelsInFile) {
+                        console.log("Get label config file: " + configPath);
+                    }
                     return [4 /*yield*/, GetLabels(octokit, configPath)];
-                case 2:
+                case 1:
                     labels = _a.sent();
-                    return [4 /*yield*/, GetPRTitle(octokit, pr_No)];
-                case 3: return [4 /*yield*/, (_a.sent()).title];
-                case 4:
-                    pr_Title = _a.sent();
+                    return [4 /*yield*/, GetPRData(octokit, pr_No)];
+                case 2:
+                    pr_Title = (_a.sent()).title;
                     labelsToAdd = MatchLabelsWithTitle(pr_Title, labels);
                     outputLabels = LabelsToOutput(labels);
                     core.setOutput("Labels", outputLabels);
-                    if (!(labelsToAdd.length > 0)) return [3 /*break*/, 10];
+                    if (!(labelsToAdd.length > 0)) return [3 /*break*/, 8];
                     console.log("Validate label with repo");
                     return [4 /*yield*/, GetAllLabelsFromRepo(octokit)];
-                case 5:
+                case 3:
                     repo_Labels = _a.sent();
                     ValidateLabels(labelsToAdd, repo_Labels);
                     console.log("Label " + labelsToAdd.toString() + " is valid for this repo");
                     return [4 /*yield*/, LabelExistOnPullRequest(octokit, pr_No, labelsToAdd)];
-                case 6:
+                case 4:
                     //Is the label on the pull request already?
                     labelsToAdd = _a.sent();
-                    if (!(labelsToAdd.length > 0)) return [3 /*break*/, 8];
+                    if (!(labelsToAdd.length > 0)) return [3 /*break*/, 6];
                     return [4 /*yield*/, AddLabel(octokit, pr_No, labelsToAdd)];
-                case 7:
+                case 5:
                     _a.sent();
-                    return [3 /*break*/, 9];
-                case 8:
+                    return [3 /*break*/, 7];
+                case 6:
                     console.log("No new labels added to PR");
+                    _a.label = 7;
+                case 7: return [3 /*break*/, 9];
+                case 8:
+                    console.log("No labels to add to PR");
                     _a.label = 9;
                 case 9: return [3 /*break*/, 11];
                 case 10:
-                    console.log("No labels to add to PR");
-                    _a.label = 11;
-                case 11: return [3 /*break*/, 13];
-                case 12:
                     error_1 = _a.sent();
                     core.setFailed(error_1.message);
-                    return [3 /*break*/, 13];
-                case 13: return [2 /*return*/];
+                    return [3 /*break*/, 11];
+                case 11: return [2 /*return*/];
             }
         });
     });
@@ -10271,10 +10263,9 @@ function LabelExistOnPullRequest(octokit, pr_No, labelsToAdd) {
         var pr_Labels, _i, pr_Labels_1, label, name_1;
         return __generator(this, function (_a) {
             switch (_a.label) {
-                case 0: return [4 /*yield*/, GetPRTitle(octokit, pr_No)];
-                case 1: return [4 /*yield*/, (_a.sent()).labels];
-                case 2:
-                    pr_Labels = _a.sent();
+                case 0: return [4 /*yield*/, GetPRData(octokit, pr_No)];
+                case 1:
+                    pr_Labels = (_a.sent()).labels;
                     if (pr_Labels.length > 0) {
                         console.log("This PR has labels, checking...");
                         for (_i = 0, pr_Labels_1 = pr_Labels; _i < pr_Labels_1.length; _i++) {
@@ -10288,10 +10279,6 @@ function LabelExistOnPullRequest(octokit, pr_No, labelsToAdd) {
                                 RemoveFromArray(labelsToAdd, name_1);
                             }
                         }
-                        /*if (Arr_Match(labelsToAdd, pr_Label.name)) {
-                            console.log(`Label ${pr_Label.name} already added to PR`);
-                            RemoveFromArray(labelsToAdd, pr_Label.name);
-                        }*/
                     }
                     return [2 /*return*/, labelsToAdd];
             }
@@ -10394,7 +10381,7 @@ function GetConfigContent(octokit, path) {
 }
 /* Get the PR Title from PR number
 */
-function GetPRTitle(octokit, pr_No) {
+function GetPRData(octokit, pr_No) {
     return __awaiter(this, void 0, void 0, function () {
         var pullRequest;
         return __generator(this, function (_a) {
@@ -10442,7 +10429,6 @@ function GetAllLabelsFromRepo(octokit) {
 *  Return array containing label if matched, otherwise empty array
 */
 function MatchLabelsWithTitle(pr_Title, labels) {
-    //const pr_Title :string      = pull_request?.title;
     var matchedLabels = [];
     console.log("Matching label criteria with PR title: " + pr_Title);
     for (var i = 0; i < labels.length; i++) {
@@ -10494,25 +10480,6 @@ function Arr_Match(arrBase, strMatch) {
         }
     }
     return false;
-}
-/* Define the array of labels and their matching string as: array[array[]]
-*  [['labelname1','matchword1','matchword2'], ['labelname2','matchword3','matchword4']]
-*  return: array[array[]]
-*/
-function DefineLabelMatches2() {
-    //Label associations
-    var bugFixLabel = ['bugfix', 'bugfix'];
-    var featLabel = ['feat', 'feat'];
-    var hotFixLabel = ['hotfix', 'hotfix'];
-    var refactorLabel = ['refactor', 'refactor'];
-    var choreLabel = ['chore', 'chore'];
-    var labels = [];
-    labels.push(bugFixLabel);
-    labels.push(featLabel);
-    labels.push(hotFixLabel);
-    labels.push(refactorLabel);
-    labels.push(choreLabel);
-    return labels;
 }
 run();
 

@@ -59,6 +59,7 @@ function run() {
                         return [2 /*return*/];
                     }
                     console.log("PR number is: " + pr_No);
+                    console.log("Get label config file: " + configPath);
                     UseDefaultLabels = configPath === "N/A";
                     if (!UseDefaultLabels) {
                         console.log("Get label config file: " + configPath);

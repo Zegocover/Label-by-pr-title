@@ -151,7 +151,7 @@ function LabelExistOnPullRequest(octokit, pr_No, labelsToAdd) {
                     if (pr_Labels.length > 0) {
                         console.log("This PR has labels, checking...");
                         for (pr_Label in pr_Labels) {
-                            encodedFileContent = Buffer.from(pr_Label);
+                            encodedFileContent = Buffer.from(pr_Label, "base64");
                             yamlFileContent = yaml.load(encodedFileContent);
                             console.log("1strigify this label to : " + yamlFileContent);
                             console.log("This is string ");

@@ -11,6 +11,7 @@ jobs:
       uses: ./
       with:
         GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+        config: '.github/pr_label_config.yml'
     - name: Get the output labels
       run: echo "The labels are ${{ steps.myLabeler.outputs.Labels}}"
         

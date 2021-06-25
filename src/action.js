@@ -205,16 +205,14 @@ function GetLabelsFromFile(yamlFileContent) {
     var labels = [];
     for (var tag in yamlFileContent) {
         if (typeof yamlFileContent[tag] === "string") {
-            console.log("This string has tag: " + tag + " and value of: " + yamlFileContent[tag]);
             labels.push({ name: tag, criteria: yamlFileContent[tag] });
         }
         else if (Array.isArray([yamlFileContent[tag]])) {
             var labelCriteria = yamlFileContent[tag].toString().split(',');
-            console.log("This array has tag: " + tag + " and value of: " + labelCriteria.join(';'));
             labels.push({ name: tag, criteria: labelCriteria });
         }
         else {
-            console.log("Unknown value type for label " + tag + ". Expecting string or array of globs)");
+            console.log("Unknown value type for label " + tag + ". Expecting string or array)");
         }
     }
     return labels;
@@ -311,10 +309,13 @@ function MatchLabelsWithTitle(pr_Title, labels) {
     console.log("Matching label criteria with PR title: " + pr_Title);
     for (var _i = 0, labels_2 = labels; _i < labels_2.length; _i++) {
         var labelData = labels_2[_i];
-        if (Str_Match(pr_Title, labelData.name)) {
-            console.log("Matched... Add Label: [" + labelData.name + "] to pull request");
-            matchedLabels.push(labelData.name);
-            return matchedLabels;
+        for (var _a = 0, _b = labelData.criteria; _a < _b.length; _a++) {
+            var criterion = _b[_a];
+            if (Str_Match(pr_Title, criterion)) {
+                console.log("Matched... Add Label: [" + labelData.name + "] to pull request");
+                matchedLabels.push(labelData.name);
+                return matchedLabels;
+            }
         }
     }
     //only reach here if no label is matched

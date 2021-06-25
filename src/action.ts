@@ -145,14 +145,12 @@ function GetLabelsFromFile(yamlFileContent:any) {
 
 	for (const tag in yamlFileContent) {
 		if (typeof yamlFileContent[tag] === "string") {
-			console.log(`This string has tag: ${tag} and value of: ${yamlFileContent[tag]}`);
 			labels.push({name:tag, criteria:yamlFileContent[tag]});
 		} else if (Array.isArray([yamlFileContent[tag]])) {
 			let labelCriteria :any[] = yamlFileContent[tag].toString().split(',');
-			console.log(`This array has tag: ${tag} and value of: ${labelCriteria.join(';')}`);
 			labels.push({name: tag, criteria: labelCriteria})
 		} else {
-			console.log(`Unknown value type for label ${tag}. Expecting string or array of globs)`);
+			console.log(`Unknown value type for label ${tag}. Expecting string or array)`);
 		}
 	}
 	return labels;
@@ -235,10 +233,12 @@ function MatchLabelsWithTitle(pr_Title :string, labels :LabelAndCriteria[]) {
 	console.log(`Matching label criteria with PR title: ${pr_Title}`);
 	for (let labelData of labels)
 	{
-		if (Str_Match(pr_Title,labelData.name)) {
-			console.log(`Matched... Add Label: [${labelData.name}] to pull request`);
-			matchedLabels.push(labelData.name);
-			return matchedLabels;
+		for (let criterion of labelData.criteria){
+			if (Str_Match(pr_Title,criterion)) {
+				console.log(`Matched... Add Label: [${labelData.name}] to pull request`);
+				matchedLabels.push(labelData.name);
+				return matchedLabels;
+			}
 		}
 	}
 

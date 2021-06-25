@@ -21,8 +21,8 @@ async function run() {
 	}
 	console.log("PR number is: " + pr_No);
 
-		console.log(`Get label config file: ${configPath}`);
 	UseDefaultLabels = configPath === "N/A";
+	console.log(`Using default: ${UseDefaultLabels}`);
 	if (!UseDefaultLabels) {
 		console.log(`Get label config file: ${configPath}`);
 	}

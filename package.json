@@ -2,7 +2,7 @@
   "name": "label-by-pr-title",
   "version": "1.0.0",
   "description": "Add label given string match of PR title",
-  "main": "index.js",
+  "main": "dist/index.js",
   "scripts": {
     "distts": "ncc build src/action.js -o dist",
     "buildts": "tsc src/action.ts && npm run distts",

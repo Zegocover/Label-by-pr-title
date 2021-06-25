@@ -2,8 +2,6 @@ import * as core from '@actions/core';
 import * as github from '@actions/github';
 import * as yaml from "js-yaml";
 import {DefineLabelMatches} from "./labels";
-import {WebhookPayload} from '@actions/github/lib/interfaces';
-
 
 const AreLabelsInFile = false;
 type OctokitType = ReturnType<typeof github.getOctokit>;
@@ -40,8 +38,8 @@ async function run()
 	console.log(`Get label config file: ${configPath}`);
 
 	const labels       = await GetLabels(octokit, configPath);
-	const pr_data     = await GetPRTitle(octokit, pr_No);
-	let   labelsToAdd  = MatchLabelsWithTitle(pr_data.title, labels);
+	const pr_Title     = await (await GetPRTitle(octokit, pr_No)).title;
+	let   labelsToAdd  = MatchLabelsWithTitle(pr_Title, labels);
 	const outputLabels = LabelsToOutput(labels);
 
 	core.setOutput("Labels",outputLabels);
@@ -54,7 +52,7 @@ async function run()
 		console.log(`Label ${labelsToAdd.toString()} is valid for this repo`);
 
 		//Is the label on the pull request already?
-		labelsToAdd = LabelExistOnPullRequest(pr_data.labels, labelsToAdd);
+		labelsToAdd = await LabelExistOnPullRequest(octokit, pr_No, labelsToAdd);
 
 		if (labelsToAdd.length > 0)
 		{
@@ -94,37 +92,25 @@ async function AddLabel(octokit :OctokitType, prNumber :number, labelsToAdd :str
 *  it from labelsToAdd
 *  Return: labelsToAdd
 */
-function LabelExistOnPullRequest(pr_Labels : (string | {
-	id?: number | undefined;
-	node_id?: string | undefined;
-	url?: string | undefined;
-	name?: string | undefined;
-	description?: string | null | undefined;
-	color?: string | null | undefined;
-	default?: boolean | undefined;
-    })[]  , labelsToAdd :string[]) {
-	
+async function LabelExistOnPullRequest(octokit : OctokitType, pr_No :number , labelsToAdd :string[]) {
+	const pr_Labels  = await (await GetPRTitle(octokit,pr_No)).labels
 
 	if (pr_Labels.length > 0) {
 		console.log("This PR has labels, checking...");
-		for (let pr_Label of pr_Labels) {
-			let tag = pr_Label;
-			console.log(`pre I hope this tag ${tag.toString()} and value is ${tag.valueOf()}`);
-			if (!tag)
+		for (let pr_Label in pr_Labels) {
+			console.log(`This is string `);
+			if (typeof pr_Labels[pr_Label] === "string") {
 			{
-				continue;
-			}
-			console.log(`I hope this tag ${tag}`);
-			if (tag === "name")
-			{
-				console.log(`I hope this is the label name`);
+				console.log(`This is the string for pr labels: ${pr_Labels[pr_Label]}`)
 			}
 
+			console.log(`strigify this label to : ${JSON.stringify(pr_Labels[pr_Label])}`);
 
-			/*if (Arr_Match(labelsToAdd, pr_Label.name?)) {
+
+			/*if (Arr_Match(labelsToAdd, pr_Label.name)) {
 				console.log(`Label ${pr_Label.name} already added to PR`);
-				RemoveFromArray(labelsToAdd, pr_Label.name);
-			}*/
+				RemoveFromArray(labelsToAdd, pr_Label.name);*/
+			}
 		}
 	}
 

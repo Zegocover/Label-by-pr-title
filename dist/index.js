@@ -10170,11 +10170,11 @@ var labels_1 = __nccwpck_require__(9234);
 var AreLabelsInFile = false;
 function run() {
     return __awaiter(this, void 0, void 0, function () {
-        var GITHUB_TOKEN, configPath, octokit, context, pull_request, pr_No, pullRequest, labels, pr_data, labelsToAdd, outputLabels, repo_Labels, error_1;
+        var GITHUB_TOKEN, configPath, octokit, context, pull_request, pr_No, pullRequest, labels, pr_Title, labelsToAdd, outputLabels, repo_Labels, error_1;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
-                    _a.trys.push([0, 10, , 11]);
+                    _a.trys.push([0, 12, , 13]);
                     GITHUB_TOKEN = core.getInput('GITHUB_TOKEN');
                     configPath = core.getInput('config');
                     octokit = github.getOctokit(GITHUB_TOKEN);
@@ -10201,38 +10201,41 @@ function run() {
                 case 2:
                     labels = _a.sent();
                     return [4 /*yield*/, GetPRTitle(octokit, pr_No)];
-                case 3:
-                    pr_data = _a.sent();
-                    labelsToAdd = MatchLabelsWithTitle(pr_data.title, labels);
+                case 3: return [4 /*yield*/, (_a.sent()).title];
+                case 4:
+                    pr_Title = _a.sent();
+                    labelsToAdd = MatchLabelsWithTitle(pr_Title, labels);
                     outputLabels = LabelsToOutput(labels);
                     core.setOutput("Labels", outputLabels);
-                    if (!(labelsToAdd.length > 0)) return [3 /*break*/, 8];
+                    if (!(labelsToAdd.length > 0)) return [3 /*break*/, 10];
                     console.log("Validate label with repo");
                     return [4 /*yield*/, GetAllLabelsFromRepo(octokit)];
-                case 4:
+                case 5:
                     repo_Labels = _a.sent();
                     ValidateLabels(labelsToAdd, repo_Labels);
                     console.log("Label " + labelsToAdd.toString() + " is valid for this repo");
-                    //Is the label on the pull request already?
-                    labelsToAdd = LabelExistOnPullRequest(pr_data.labels, labelsToAdd);
-                    if (!(labelsToAdd.length > 0)) return [3 /*break*/, 6];
-                    return [4 /*yield*/, AddLabel(octokit, pr_No, labelsToAdd)];
-                case 5:
-                    _a.sent();
-                    return [3 /*break*/, 7];
+                    return [4 /*yield*/, LabelExistOnPullRequest(octokit, pr_No, labelsToAdd)];
                 case 6:
-                    console.log("No new labels added to PR");
-                    _a.label = 7;
-                case 7: return [3 /*break*/, 9];
+                    //Is the label on the pull request already?
+                    labelsToAdd = _a.sent();
+                    if (!(labelsToAdd.length > 0)) return [3 /*break*/, 8];
+                    return [4 /*yield*/, AddLabel(octokit, pr_No, labelsToAdd)];
+                case 7:
+                    _a.sent();
+                    return [3 /*break*/, 9];
                 case 8:
-                    console.log("No labels to add to PR");
+                    console.log("No new labels added to PR");
                     _a.label = 9;
                 case 9: return [3 /*break*/, 11];
                 case 10:
+                    console.log("No labels to add to PR");
+                    _a.label = 11;
+                case 11: return [3 /*break*/, 13];
+                case 12:
                     error_1 = _a.sent();
                     core.setFailed(error_1.message);
-                    return [3 /*break*/, 11];
-                case 11: return [2 /*return*/];
+                    return [3 /*break*/, 13];
+                case 13: return [2 /*return*/];
             }
         });
     });
@@ -10263,27 +10266,34 @@ function AddLabel(octokit, prNumber, labelsToAdd) {
 *  it from labelsToAdd
 *  Return: labelsToAdd
 */
-function LabelExistOnPullRequest(pr_Labels, labelsToAdd) {
-    if (pr_Labels.length > 0) {
-        console.log("This PR has labels, checking...");
-        for (var _i = 0, pr_Labels_1 = pr_Labels; _i < pr_Labels_1.length; _i++) {
-            var pr_Label = pr_Labels_1[_i];
-            var tag = pr_Label;
-            console.log("pre I hope this tag " + tag.toString() + " and value is " + tag.valueOf());
-            if (!tag) {
-                continue;
+function LabelExistOnPullRequest(octokit, pr_No, labelsToAdd) {
+    return __awaiter(this, void 0, void 0, function () {
+        var pr_Labels, pr_Label;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0: return [4 /*yield*/, GetPRTitle(octokit, pr_No)];
+                case 1: return [4 /*yield*/, (_a.sent()).labels];
+                case 2:
+                    pr_Labels = _a.sent();
+                    if (pr_Labels.length > 0) {
+                        console.log("This PR has labels, checking...");
+                        for (pr_Label in pr_Labels) {
+                            console.log("This is string ");
+                            if (typeof pr_Labels[pr_Label] === "string") {
+                                {
+                                    console.log("This is the string for pr labels: " + pr_Labels[pr_Label]);
+                                }
+                                console.log("strigify this label to : " + JSON.stringify(pr_Labels[pr_Label]));
+                                /*if (Arr_Match(labelsToAdd, pr_Label.name)) {
+                                    console.log(`Label ${pr_Label.name} already added to PR`);
+                                    RemoveFromArray(labelsToAdd, pr_Label.name);*/
+                            }
+                        }
+                    }
+                    return [2 /*return*/, labelsToAdd];
             }
-            console.log("I hope this tag " + tag);
-            if (tag === "name") {
-                console.log("I hope this is the label name");
-            }
-            /*if (Arr_Match(labelsToAdd, pr_Label.name?)) {
-                console.log(`Label ${pr_Label.name} already added to PR`);
-                RemoveFromArray(labelsToAdd, pr_Label.name);
-            }*/
-        }
-    }
-    return labelsToAdd;
+        });
+    });
 }
 /* Get the labels and their matching criteria from a file
 *  or function.

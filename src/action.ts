@@ -132,7 +132,8 @@ function LabelsToOutput(labelAndMatchCriteria : string[]) {
 
 	const outputLabels = [];
 
-	for (const arr of labelAndMatchCriteria) {
+	for (const arr in labelAndMatchCriteria) {
+		console.log(`Adding output label: ${arr} with value ${labelAndMatchCriteria[arr]}`)
 		outputLabels.push(arr);
 	}
 	return outputLabels.join(',');

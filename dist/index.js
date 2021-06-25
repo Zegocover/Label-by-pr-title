@@ -10319,8 +10319,8 @@ function GetLabels(octokit, configPath) {
 */
 function LabelsToOutput(labelAndMatchCriteria) {
     var outputLabels = [];
-    for (var _i = 0, labelAndMatchCriteria_1 = labelAndMatchCriteria; _i < labelAndMatchCriteria_1.length; _i++) {
-        var arr = labelAndMatchCriteria_1[_i];
+    for (var arr in labelAndMatchCriteria) {
+        console.log("Adding output label: " + arr + " with value " + labelAndMatchCriteria[arr]);
         outputLabels.push(arr);
     }
     return outputLabels.join(',');

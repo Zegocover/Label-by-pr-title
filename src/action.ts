@@ -145,9 +145,11 @@ function GetLabelsFromFile(yamlFileContent:any) {
 
 	for (const tag in yamlFileContent) {
 		if (typeof yamlFileContent[tag] === "string") {
+			console.log(`This string has tag: ${tag} and value of: ${yamlFileContent[tag]}`);
 			labels.push({name:tag, criteria:yamlFileContent[tag]});
 		} else if (Array.isArray([yamlFileContent[tag]])) {
 			let labelCriteria :any[] = yamlFileContent[tag].toString().split(',');
+			console.log(`This array has tag: ${tag} and value of: ${labelCriteria.join(';')}`);
 			labels.push({name: tag, criteria: labelCriteria})
 		} else {
 			console.log(`Unknown value type for label ${tag}. Expecting string or array of globs)`);

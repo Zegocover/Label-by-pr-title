@@ -30,6 +30,7 @@ async function run() {
 	const pr_Title     = (await GetPRData(octokit, pr_No)).title;
 	let   labelsToAdd  = MatchLabelsWithTitle(pr_Title, labels);
 	const outputLabels = LabelsToOutput(labels);
+	console.log(`Output the following labels: ${outputLabels}`);
 
 	core.setOutput("Labels",outputLabels);
 
@@ -37,9 +38,7 @@ async function run() {
 		console.log("Validate label with repo");
 		const repo_Labels = await GetAllLabelsFromRepo(octokit);
 		if (!AreLabelsValid(labelsToAdd, repo_Labels)){
-			throw new Error(
-				`Label does not exist on repo. Ensure the following labels are available on repo: \n\t 
-				${outputLabels}`);
+			throw new Error( `Label does not exist on repo. Ensure the following labels are available on repo: \n\t ${outputLabels}`);
 		}
 		console.log(`Label ${labelsToAdd.toString()} is valid for this repo`);
 

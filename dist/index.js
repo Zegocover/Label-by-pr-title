@@ -10198,6 +10198,7 @@ function run() {
                     pr_Title = (_a.sent()).title;
                     labelsToAdd = MatchLabelsWithTitle(pr_Title, labels);
                     outputLabels = LabelsToOutput(labels);
+                    console.log("Output the following labels: " + outputLabels);
                     core.setOutput("Labels", outputLabels);
                     if (!(labelsToAdd.length > 0)) return [3 /*break*/, 8];
                     console.log("Validate label with repo");
@@ -10205,7 +10206,7 @@ function run() {
                 case 3:
                     repo_Labels = _a.sent();
                     if (!AreLabelsValid(labelsToAdd, repo_Labels)) {
-                        throw new Error("Label does not exist on repo. Ensure the following labels are available on repo: \n\t \n\t\t\t\t" + outputLabels);
+                        throw new Error("Label does not exist on repo. Ensure the following labels are available on repo: \n\t " + outputLabels);
                     }
                     console.log("Label " + labelsToAdd.toString() + " is valid for this repo");
                     return [4 /*yield*/, LabelExistOnPullRequest(octokit, pr_No, labelsToAdd)];

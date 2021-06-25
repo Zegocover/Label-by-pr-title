@@ -9,7 +9,8 @@ Add label given string match of PR title.
 
 ### `config`
 
-**Optional** Provide path to *.yml file containing the labels and their matching criteria or ommit to use the actions default labels: bug,feat,hotfix,bugfix,refactor,chore
+**Optional** Provide path to *.yml file containing the labels and their matching criteria or ommit to use the actions default labels:\n
+  bug,feat,hotfix,bugfix,refactor,chore\n
 Note: Default labels criteria is the same as label name.
 
 
@@ -23,7 +24,7 @@ The labels defined in config or defaulted in code.
 
 on: [pull_request]
 
-jobs:
+jobs:\n
   label_my_pr_job:
     runs-on: ubuntu-latest
     steps:

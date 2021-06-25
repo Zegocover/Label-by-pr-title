@@ -1,7 +1,7 @@
 
 export type LabelAndCriteria = {
 	name: string,
-	criteria: string[]	
+	criteria: string[]
 }
 
 
@@ -15,7 +15,7 @@ export function DefineLabelMatches() : LabelAndCriteria[]{
 	const hotFix : LabelAndCriteria   = {name:'hotfix', criteria:['hotfix']};
 	const refactor : LabelAndCriteria = {name:'refactor', criteria:['refactor']};
 	const chore : LabelAndCriteria    = {name:'chore', criteria:['chore']};
-	
+
 	const labels : LabelAndCriteria[] = [];
 	labels.push(bugFix);
 	labels.push(feat);

@@ -9,7 +9,9 @@ Add label given string match of PR title.
 
 ### `config`
 
-**Optional** The labels and their matching criteria
+**Optional** Provide path to *.yml file containing the labels and their matching criteria or ommit to use the actions default labels: bug,feat,hotfix,bugfix,refactor,chore
+Note: Default labels criteria is the same as label name.
+
 
 ## Outputs
 

@@ -4,15 +4,15 @@ import * as yaml from "js-yaml";
 import {DefineLabelMatches} from "./labels";
 import {LabelAndCriteria} from "./labels";
 
-let UseDefaultLabels = false;
 type  OctokitType     = ReturnType<typeof github.getOctokit>;
 
 async function run() {
   try {
-    	const GITHUB_TOKEN             = core.getInput('GITHUB_TOKEN');
-    	const configPath               = core.getInput('config');
-    	const octokit                  = github.getOctokit(GITHUB_TOKEN);
-    	const pr_No :number|undefined  = github.context.payload.pull_request?.number;
+    	const GITHUB_TOKEN            = core.getInput('GITHUB_TOKEN');
+    	const configPath              = core.getInput('config');
+    	const octokit                 = github.getOctokit(GITHUB_TOKEN);
+    	const pr_No :number|undefined = github.context.payload.pull_request?.number;
+    	let   useDefaultLabels        = configPath ===  "N/A";
 
 	// ensure pr_No is not undefined type
 	if (!pr_No) {
@@ -21,12 +21,7 @@ async function run() {
 	}
 	console.log("PR number is: " + pr_No);
 
-	UseDefaultLabels = configPath === "N/A";
-	if (!UseDefaultLabels) {
-		console.log(`Get label config file: ${configPath}`);
-	}
-
-	const labels       = await GetLabels(octokit, configPath);
+	const labels       = await GetLabels(octokit, configPath, useDefaultLabels);
 	const pr_Title     = (await GetPRData(octokit, pr_No)).title;
 	let   labelsToAdd  = MatchLabelsWithTitle(pr_Title, labels);
 	const outputLabels = LabelsToOutput(labels);
@@ -105,14 +100,16 @@ async function LabelExistOnPullRequest(octokit : OctokitType, pr_No :number , la
 *  or function.
 *  Return Labels and matching criteria as LabelAndCriteria[]
 */
-async function GetLabels(octokit :OctokitType, configPath :string) {
+async function GetLabels(octokit :OctokitType, configPath :string, useDefaultLabels :boolean) {
 
 	let labels :LabelAndCriteria[] = [];
 
-	if (UseDefaultLabels) {
+	if (useDefaultLabels) {
+		console.log(`Get label defaults`);
 		labels = DefineLabelMatches();
 	}
 	else {
+		console.log(`Get label config file: ${configPath}`);
 		const configContent : any      = await GetConfigContent(octokit, configPath);
 		let   encodedFileContent : any = Buffer.from(configContent.data.content, configContent.data.encoding);
 		const yamlFileContent          = yaml.load(encodedFileContent);
@@ -176,7 +173,7 @@ function AreLabelsValid(labelsToAdd :string[], repo_Labels :string[]) {
 }
 
 /* Request content from github repo from the path
-*  containing pr_label_config.yml
+*  containing yml config file
 *  Return the octokit response
 */
 async function GetConfigContent(octokit :OctokitType, path :string) {

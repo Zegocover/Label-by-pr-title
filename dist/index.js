@@ -10167,11 +10167,10 @@ var core = __nccwpck_require__(2186);
 var github = __nccwpck_require__(5438);
 var yaml = __nccwpck_require__(1917);
 var labels_1 = __nccwpck_require__(9234);
-var UseDefaultLabels = false;
 function run() {
     var _a;
     return __awaiter(this, void 0, void 0, function () {
-        var GITHUB_TOKEN, configPath, octokit, pr_No, labels, pr_Title, labelsToAdd, outputLabels, repo_Labels, error_1;
+        var GITHUB_TOKEN, configPath, octokit, pr_No, useDefaultLabels, labels, pr_Title, labelsToAdd, outputLabels, repo_Labels, error_1;
         return __generator(this, function (_b) {
             switch (_b.label) {
                 case 0:
@@ -10180,17 +10179,14 @@ function run() {
                     configPath = core.getInput('config');
                     octokit = github.getOctokit(GITHUB_TOKEN);
                     pr_No = (_a = github.context.payload.pull_request) === null || _a === void 0 ? void 0 : _a.number;
+                    useDefaultLabels = configPath === "N/A";
                     // ensure pr_No is not undefined type
                     if (!pr_No) {
                         console.log("Failed to retrieve PR number from payload");
                         return [2 /*return*/];
                     }
                     console.log("PR number is: " + pr_No);
-                    UseDefaultLabels = configPath === "N/A";
-                    if (!UseDefaultLabels) {
-                        console.log("Get label config file: " + configPath);
-                    }
-                    return [4 /*yield*/, GetLabels(octokit, configPath)];
+                    return [4 /*yield*/, GetLabels(octokit, configPath, useDefaultLabels)];
                 case 1:
                     labels = _b.sent();
                     return [4 /*yield*/, GetPRData(octokit, pr_No)];
@@ -10290,17 +10286,20 @@ function LabelExistOnPullRequest(octokit, pr_No, labelsToAdd) {
 *  or function.
 *  Return Labels and matching criteria as LabelAndCriteria[]
 */
-function GetLabels(octokit, configPath) {
+function GetLabels(octokit, configPath, useDefaultLabels) {
     return __awaiter(this, void 0, void 0, function () {
         var labels, configContent, encodedFileContent, yamlFileContent;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
                     labels = [];
-                    if (!UseDefaultLabels) return [3 /*break*/, 1];
+                    if (!useDefaultLabels) return [3 /*break*/, 1];
+                    console.log("Get label defaults");
                     labels = labels_1.DefineLabelMatches();
                     return [3 /*break*/, 3];
-                case 1: return [4 /*yield*/, GetConfigContent(octokit, configPath)];
+                case 1:
+                    console.log("Get label config file: " + configPath);
+                    return [4 /*yield*/, GetConfigContent(octokit, configPath)];
                 case 2:
                     configContent = _a.sent();
                     encodedFileContent = Buffer.from(configContent.data.content, configContent.data.encoding);
@@ -10360,7 +10359,7 @@ function AreLabelsValid(labelsToAdd, repo_Labels) {
     return true;
 }
 /* Request content from github repo from the path
-*  containing pr_label_config.yml
+*  containing yml config file
 *  Return the octokit response
 */
 function GetConfigContent(octokit, path) {

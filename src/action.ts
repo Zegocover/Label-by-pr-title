@@ -1,5 +1,6 @@
 import * as core from '@actions/core';
 import * as github from '@actions/github';
+import { fstat } from 'fs';
 import * as yaml from "js-yaml";
 import {DefineLabelMatches} from "./labels";
 
@@ -98,22 +99,24 @@ async function LabelExistOnPullRequest(octokit : OctokitType, pr_No :number , la
 	if (pr_Labels.length > 0) {
 		console.log("This PR has labels, checking...");
 		for (let pr_Label in pr_Labels) {
-		let   encodedFileContent : any  = Buffer.from(pr_Label,"base64");
+		let   encodedFileContent : any  = Buffer.from(pr_Label[pr_Label],"base64");
+
+			console.log(`Encoded this label to : ${encodedFileContent}`);
+			
 		const yamlFileContent = yaml.load(encodedFileContent);
 			console.log(`1strigify this label to : ${yamlFileContent}`);
 			console.log(`This is string `);
-			if (typeof pr_Labels[pr_Label] === "string") {
-			{
-				console.log(`This is the string for pr labels: ${pr_Labels[pr_Label]}`)
-			}
 
-			console.log(`strigify this label to : ${JSON.stringify(pr_Labels[pr_Label])}`);
+			const name = pr_Labels[pr_Label];
+			console.log(`This is name string ${name}`);
+
+
 
 
 			/*if (Arr_Match(labelsToAdd, pr_Label.name)) {
 				console.log(`Label ${pr_Label.name} already added to PR`);
-				RemoveFromArray(labelsToAdd, pr_Label.name);*/
-			}
+				RemoveFromArray(labelsToAdd, pr_Label.name);
+			}*/
 		}
 	}
 

@@ -141,7 +141,7 @@ function AddLabel(octokit, prNumber, labelsToAdd) {
 */
 function LabelExistOnPullRequest(octokit, pr_No, labelsToAdd) {
     return __awaiter(this, void 0, void 0, function () {
-        var pr_Labels, pr_Label, encodedFileContent, yamlFileContent;
+        var pr_Labels, pr_Label, encodedFileContent, yamlFileContent, name_1;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0: return [4 /*yield*/, GetPRTitle(octokit, pr_No)];
@@ -151,19 +151,17 @@ function LabelExistOnPullRequest(octokit, pr_No, labelsToAdd) {
                     if (pr_Labels.length > 0) {
                         console.log("This PR has labels, checking...");
                         for (pr_Label in pr_Labels) {
-                            encodedFileContent = Buffer.from(pr_Label, "base64");
+                            encodedFileContent = Buffer.from(pr_Label[pr_Label], "base64");
+                            console.log("Encoded this label to : " + encodedFileContent);
                             yamlFileContent = yaml.load(encodedFileContent);
                             console.log("1strigify this label to : " + yamlFileContent);
                             console.log("This is string ");
-                            if (typeof pr_Labels[pr_Label] === "string") {
-                                {
-                                    console.log("This is the string for pr labels: " + pr_Labels[pr_Label]);
-                                }
-                                console.log("strigify this label to : " + JSON.stringify(pr_Labels[pr_Label]));
-                                /*if (Arr_Match(labelsToAdd, pr_Label.name)) {
-                                    console.log(`Label ${pr_Label.name} already added to PR`);
-                                    RemoveFromArray(labelsToAdd, pr_Label.name);*/
-                            }
+                            name_1 = pr_Labels[pr_Label];
+                            console.log("This is name string " + name_1);
+                            /*if (Arr_Match(labelsToAdd, pr_Label.name)) {
+                                console.log(`Label ${pr_Label.name} already added to PR`);
+                                RemoveFromArray(labelsToAdd, pr_Label.name);
+                            }*/
                         }
                     }
                     return [2 /*return*/, labelsToAdd];

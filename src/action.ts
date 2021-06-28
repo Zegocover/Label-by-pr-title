@@ -12,7 +12,7 @@ async function run() {
     	const configPath              = core.getInput('config');
     	const octokit                 = github.getOctokit(GITHUB_TOKEN);
     	const pr_No :number|undefined = github.context.payload.pull_request?.number;
-    	let   useDefaultLabels        = configPath ===  "N/A";
+    	const useDefaultLabels        = configPath ===  "N/A";
 
 	// ensure pr_No is not undefined type
 	if (!pr_No) {
@@ -23,7 +23,7 @@ async function run() {
 
 	const labels       = await GetLabels(octokit, configPath, useDefaultLabels);
 	const pr_Title     = (await GetPRData(octokit, pr_No)).title;
-	let   labelsToAdd  = MatchLabelsWithTitle(pr_Title, labels);
+	var   labelsToAdd  = MatchLabelsWithTitle(pr_Title, labels);
 	const outputLabels = LabelsToOutput(labels);
 
 	core.setOutput("Labels",outputLabels);
@@ -102,7 +102,7 @@ async function LabelExistOnPullRequest(octokit : OctokitType, pr_No :number , la
 */
 async function GetLabels(octokit :OctokitType, configPath :string, useDefaultLabels :boolean) {
 
-	let labels :LabelAndCriteria[] = [];
+	var labels :LabelAndCriteria[] = [];
 
 	if (useDefaultLabels) {
 		console.log(`Get label defaults`);
@@ -110,10 +110,10 @@ async function GetLabels(octokit :OctokitType, configPath :string, useDefaultLab
 	}
 	else {
 		console.log(`Get label config file: ${configPath}`);
-		const configContent : any      = await GetConfigContent(octokit, configPath);
-		let   encodedFileContent : any = Buffer.from(configContent.data.content, configContent.data.encoding);
-		const yamlFileContent          = yaml.load(encodedFileContent);
-		labels                         = GetLabelsFromFile(yamlFileContent);
+		let configContent : any      = await GetConfigContent(octokit, configPath);
+		let encodedFileContent : any = Buffer.from(configContent.data.content, configContent.data.encoding);
+		let yamlFileContent          = yaml.load(encodedFileContent);
+		labels	                     = GetLabelsFromFile(yamlFileContent);
 	}
 
 	return labels;
@@ -141,7 +141,7 @@ function LabelsToOutput(labelAndMatchCriteria :LabelAndCriteria []) {
 */
 function GetLabelsFromFile(yamlFileContent:any) {
 
-	let labels : LabelAndCriteria[] = [];
+	var labels : LabelAndCriteria[] = [];
 
 	for (const tag in yamlFileContent) {
 		if (typeof yamlFileContent[tag] === "string") {
@@ -178,7 +178,7 @@ function AreLabelsValid(labelsToAdd :string[], repo_Labels :string[]) {
 */
 async function GetConfigContent(octokit :OctokitType, path :string) {
 
-	let response = await octokit.rest.repos.getContent({
+	var response = await octokit.rest.repos.getContent({
 	  owner: github.context.repo.owner,
 	  repo: github.context.repo.repo,
 	  path: path,
@@ -228,7 +228,7 @@ async function GetAllLabelsFromRepo(octokit :OctokitType) {
 */
 function MatchLabelsWithTitle(pr_Title :string, labels :LabelAndCriteria[]) {
 
-	let matchedLabels : string[] = [];
+	var matchedLabels : string[] = [];
 
 	console.log(`Matching label criteria with PR title: ${pr_Title}`);
 	for (let labelData of labels)

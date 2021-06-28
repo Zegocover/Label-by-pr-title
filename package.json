@@ -4,10 +4,9 @@
   "description": "Add label given string match of PR title",
   "main": "dist/index.js",
   "scripts": {
-    "distts": "ncc build src/action.js -o dist",
-    "buildts": "tsc src/action.ts && npm run distts",
-    "build": "ncc build src/action.js -o dist",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "tsc src/action.ts && npm run buildJS",
+    "buildJS": "ncc build src/action.js -o dist",
+    "test": "tsc src/test.ts && node src/test.js"
   },
   "repository": {
     "type": "git",

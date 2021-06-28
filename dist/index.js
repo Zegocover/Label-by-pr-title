@@ -10167,35 +10167,31 @@ var core = __nccwpck_require__(2186);
 var github = __nccwpck_require__(5438);
 var yaml = __nccwpck_require__(1917);
 var labels_1 = __nccwpck_require__(9234);
-var AreLabelsInFile = false;
 function run() {
+    var _a;
     return __awaiter(this, void 0, void 0, function () {
-        var GITHUB_TOKEN, configPath, octokit, context, pull_request, pr_No, labels, pr_Title, labelsToAdd, outputLabels, repo_Labels, error_1;
-        return __generator(this, function (_a) {
-            switch (_a.label) {
+        var GITHUB_TOKEN, configPath, octokit, pr_No, useDefaultLabels, labels, pr_Title, labelsToAdd, outputLabels, repo_Labels, error_1;
+        return __generator(this, function (_b) {
+            switch (_b.label) {
                 case 0:
-                    _a.trys.push([0, 10, , 11]);
+                    _b.trys.push([0, 10, , 11]);
                     GITHUB_TOKEN = core.getInput('GITHUB_TOKEN');
                     configPath = core.getInput('config');
                     octokit = github.getOctokit(GITHUB_TOKEN);
-                    context = github.context;
-                    pull_request = context.payload;
-                    pr_No = pull_request.number;
-                    // ensure pr_No is type number
+                    pr_No = (_a = github.context.payload.pull_request) === null || _a === void 0 ? void 0 : _a.number;
+                    useDefaultLabels = configPath === "N/A";
+                    // ensure pr_No is not undefined type
                     if (!pr_No) {
-                        console.log("Failed retrieve PR number from payload");
+                        console.log("Failed to retrieve PR number from payload");
                         return [2 /*return*/];
                     }
                     console.log("PR number is: " + pr_No);
-                    if (AreLabelsInFile) {
-                        console.log("Get label config file: " + configPath);
-                    }
-                    return [4 /*yield*/, GetLabels(octokit, configPath)];
+                    return [4 /*yield*/, GetLabels(octokit, configPath, useDefaultLabels)];
                 case 1:
-                    labels = _a.sent();
+                    labels = _b.sent();
                     return [4 /*yield*/, GetPRData(octokit, pr_No)];
                 case 2:
-                    pr_Title = (_a.sent()).title;
+                    pr_Title = (_b.sent()).title;
                     labelsToAdd = MatchLabelsWithTitle(pr_Title, labels);
                     outputLabels = LabelsToOutput(labels);
                     core.setOutput("Labels", outputLabels);
@@ -10203,28 +10199,30 @@ function run() {
                     console.log("Validate label with repo");
                     return [4 /*yield*/, GetAllLabelsFromRepo(octokit)];
                 case 3:
-                    repo_Labels = _a.sent();
-                    ValidateLabels(labelsToAdd, repo_Labels);
+                    repo_Labels = _b.sent();
+                    if (!AreLabelsValid(labelsToAdd, repo_Labels)) {
+                        throw new Error("Label does not exist on repo. Ensure the following labels are available on repo: \n\t " + outputLabels);
+                    }
                     console.log("Label " + labelsToAdd.toString() + " is valid for this repo");
                     return [4 /*yield*/, LabelExistOnPullRequest(octokit, pr_No, labelsToAdd)];
                 case 4:
                     //Is the label on the pull request already?
-                    labelsToAdd = _a.sent();
+                    labelsToAdd = _b.sent();
                     if (!(labelsToAdd.length > 0)) return [3 /*break*/, 6];
                     return [4 /*yield*/, AddLabel(octokit, pr_No, labelsToAdd)];
                 case 5:
-                    _a.sent();
+                    _b.sent();
                     return [3 /*break*/, 7];
                 case 6:
                     console.log("No new labels added to PR");
-                    _a.label = 7;
+                    _b.label = 7;
                 case 7: return [3 /*break*/, 9];
                 case 8:
                     console.log("No labels to add to PR");
-                    _a.label = 9;
+                    _b.label = 9;
                 case 9: return [3 /*break*/, 11];
                 case 10:
-                    error_1 = _a.sent();
+                    error_1 = _b.sent();
                     core.setFailed(error_1.message);
                     return [3 /*break*/, 11];
                 case 11: return [2 /*return*/];
@@ -10254,8 +10252,7 @@ function AddLabel(octokit, prNumber, labelsToAdd) {
         });
     });
 }
-/* If pull request has label that is in labelsToAdd then remove
-*  it from labelsToAdd
+/* Remove labels from labelsToAdd if they exist on pull request
 *  Return: labelsToAdd
 */
 function LabelExistOnPullRequest(octokit, pr_No, labelsToAdd) {
@@ -10287,25 +10284,27 @@ function LabelExistOnPullRequest(octokit, pr_No, labelsToAdd) {
 }
 /* Get the labels and their matching criteria from a file
 *  or function.
-*  Return the array of labels and their matching criteria
+*  Return Labels and matching criteria as LabelAndCriteria[]
 */
-function GetLabels(octokit, configPath) {
+function GetLabels(octokit, configPath, useDefaultLabels) {
     return __awaiter(this, void 0, void 0, function () {
         var labels, configContent, encodedFileContent, yamlFileContent;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
                     labels = [];
-                    if (!AreLabelsInFile) return [3 /*break*/, 2];
-                    return [4 /*yield*/, GetConfigContent(octokit, configPath)];
+                    if (!useDefaultLabels) return [3 /*break*/, 1];
+                    console.log("Get label defaults");
+                    labels = labels_1.DefineLabelMatches();
+                    return [3 /*break*/, 3];
                 case 1:
+                    console.log("Get label config file: " + configPath);
+                    return [4 /*yield*/, GetConfigContent(octokit, configPath)];
+                case 2:
                     configContent = _a.sent();
                     encodedFileContent = Buffer.from(configContent.data.content, configContent.data.encoding);
                     yamlFileContent = yaml.load(encodedFileContent);
                     labels = GetLabelsFromFile(yamlFileContent);
-                    return [3 /*break*/, 3];
-                case 2:
-                    labels = labels_1.DefineLabelMatches();
                     _a.label = 3;
                 case 3: return [2 /*return*/, labels];
             }
@@ -10313,12 +10312,13 @@ function GetLabels(octokit, configPath) {
     });
 }
 /* Define the labels to output
+*  Return string of labels
 */
 function LabelsToOutput(labelAndMatchCriteria) {
     var outputLabels = [];
     for (var _i = 0, labelAndMatchCriteria_1 = labelAndMatchCriteria; _i < labelAndMatchCriteria_1.length; _i++) {
-        var arr = labelAndMatchCriteria_1[_i];
-        outputLabels.push(arr);
+        var labelData = labelAndMatchCriteria_1[_i];
+        outputLabels.push(labelData.name);
     }
     return outputLabels.join(',');
 }
@@ -10326,21 +10326,20 @@ function LabelsToOutput(labelAndMatchCriteria) {
 *  from yamlFileContent: [object Object]
 *  return the array of labels and their matching criteria
 *  E.g. Array of [[label1,'matchA','matchB'],['label2','matchC'],...]
+*  Return Labels and matching criteria as LabelAndCriteria[]
 */
 function GetLabelsFromFile(yamlFileContent) {
     var labels = [];
     for (var tag in yamlFileContent) {
         if (typeof yamlFileContent[tag] === "string") {
-            var tempLabels = [tag, yamlFileContent[tag]];
-            labels.push(tempLabels);
+            labels.push({ name: tag, criteria: yamlFileContent[tag] });
         }
         else if (Array.isArray([yamlFileContent[tag]])) {
-            var tempLabels = yamlFileContent[tag].toString().split(',');
-            tempLabels.unshift(tag);
-            labels.push(tempLabels);
+            var labelCriteria = yamlFileContent[tag].toString().split(',');
+            labels.push({ name: tag, criteria: labelCriteria });
         }
         else {
-            console.log("Unknown value type for label " + tag + ". Expecting string or array of globs)");
+            console.log("Unknown value type for label " + tag + ". Expecting string or array)");
         }
     }
     return labels;
@@ -10348,18 +10347,20 @@ function GetLabelsFromFile(yamlFileContent) {
 /* Validate labels to add to PR with
 *  repository defined labels.
 *  I.e. We dont want to create new labels
+*  Return True|False
 */
-function ValidateLabels(labelsToAdd, repo_Labels) {
+function AreLabelsValid(labelsToAdd, repo_Labels) {
     for (var _i = 0, labelsToAdd_1 = labelsToAdd; _i < labelsToAdd_1.length; _i++) {
         var lbl = labelsToAdd_1[_i];
         if (!Arr_Match(repo_Labels, lbl)) {
-            throw new Error("Trying to add invalid label [" + lbl + "] to repo. Valid repo labels are: \n\t " + repo_Labels.toString());
+            return false;
         }
     }
+    return true;
 }
 /* Request content from github repo from the path
-*  containing pr_label_config.yml
-*  Return the loaded yaml content
+*  containing yml config file
+*  Return the octokit response
 */
 function GetConfigContent(octokit, path) {
     return __awaiter(this, void 0, void 0, function () {
@@ -10380,6 +10381,7 @@ function GetConfigContent(octokit, path) {
     });
 }
 /* Get the PR Title from PR number
+* Return pull request data property
 */
 function GetPRData(octokit, pr_No) {
     return __awaiter(this, void 0, void 0, function () {
@@ -10399,7 +10401,7 @@ function GetPRData(octokit, pr_No) {
     });
 }
 /* Request labels data from repository
-*  and return an Array of label names
+*  Return string[] of label names
 */
 function GetAllLabelsFromRepo(octokit) {
     return __awaiter(this, void 0, void 0, function () {
@@ -10426,20 +10428,19 @@ function GetAllLabelsFromRepo(octokit) {
 }
 /* Match the first word in pr_Title with the label's matching
 *  criteria.
-*  Return array containing label if matched, otherwise empty array
+*  Return string[] of matched labels, otherwise empty
+* Remarks - Return is currently limited to first match
 */
 function MatchLabelsWithTitle(pr_Title, labels) {
     var matchedLabels = [];
     console.log("Matching label criteria with PR title: " + pr_Title);
-    for (var i = 0; i < labels.length; i++) {
-        // get the size of the inner array
-        var innerArrayLength = labels[i].length;
-        // loop the inner array
-        for (var j = 1; j < innerArrayLength; j++) {
-            var lbl = labels[i][j];
-            if (Str_Match(pr_Title, lbl)) {
-                console.log("Matched... Add Label: [" + labels[i][0] + "] to pull request");
-                matchedLabels.push(labels[i][0]);
+    for (var _i = 0, labels_2 = labels; _i < labels_2.length; _i++) {
+        var labelData = labels_2[_i];
+        for (var _a = 0, _b = labelData.criteria; _a < _b.length; _a++) {
+            var criterion = _b[_a];
+            if (Str_Match(pr_Title, criterion)) {
+                console.log("Matched... Add Label: [" + labelData.name + "] to pull request");
+                matchedLabels.push(labelData.name);
                 return matchedLabels;
             }
         }
@@ -10493,23 +10494,22 @@ run();
 
 exports.__esModule = true;
 exports.DefineLabelMatches = void 0;
-/* Define the array of labels and their matching string as: array[array[]]
-*  [['labelname1','matchword1','matchword2'], ['labelname2','matchword3','matchword4']]
-*  return: array[array[]]
+/* Define labels and their matching criteria as type LabelAndCriteria]
+*  return: An array labels and their matching criteria
 */
 function DefineLabelMatches() {
     //Label associations
-    var bugFixLabel = ['bugfix', 'bugfix'];
-    var featLabel = ['feat', 'feat'];
-    var hotFixLabel = ['hotfix', 'hotfix'];
-    var refactorLabel = ['refactor', 'refactor'];
-    var choreLabel = ['chore', 'chore'];
+    var bugFix = { name: 'bugfix', criteria: ['bugfix'] };
+    var feat = { name: 'feat', criteria: ['feat'] };
+    var hotFix = { name: 'hotfix', criteria: ['hotfix'] };
+    var refactor = { name: 'refactor', criteria: ['refactor'] };
+    var chore = { name: 'chore', criteria: ['chore'] };
     var labels = [];
-    labels.push(bugFixLabel);
-    labels.push(featLabel);
-    labels.push(hotFixLabel);
-    labels.push(refactorLabel);
-    labels.push(choreLabel);
+    labels.push(bugFix);
+    labels.push(feat);
+    labels.push(hotFix);
+    labels.push(refactor);
+    labels.push(chore);
     return labels;
 }
 exports.DefineLabelMatches = DefineLabelMatches;

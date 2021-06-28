@@ -2,31 +2,26 @@ import * as core from '@actions/core';
 import * as github from '@actions/github';
 import * as yaml from "js-yaml";
 import {DefineLabelMatches} from "./labels";
+import {LabelAndCriteria} from "./labels";
 
-const AreLabelsInFile = false;
 type  OctokitType     = ReturnType<typeof github.getOctokit>;
 
 async function run() {
   try {
-    	const GITHUB_TOKEN             = core.getInput('GITHUB_TOKEN');
-    	const configPath               = core.getInput('config');
-    	const octokit                  = github.getOctokit(GITHUB_TOKEN);
-    	const context                  = github.context;
-    	const pull_request             = context.payload;
-    	const pr_No :number|undefined  = pull_request.number;
+    	const GITHUB_TOKEN            = core.getInput('GITHUB_TOKEN');
+    	const configPath              = core.getInput('config');
+    	const octokit                 = github.getOctokit(GITHUB_TOKEN);
+    	const pr_No :number|undefined = github.context.payload.pull_request?.number;
+    	let   useDefaultLabels        = configPath ===  "N/A";
 
-	// ensure pr_No is type number
+	// ensure pr_No is not undefined type
 	if (!pr_No) {
-		console.log("Failed retrieve PR number from payload");
+		console.log("Failed to retrieve PR number from payload");
 		return;
 	}
-
 	console.log("PR number is: " + pr_No);
-	if (AreLabelsInFile) { 
-		console.log(`Get label config file: ${configPath}`); 
-	}
 
-	const labels       = await GetLabels(octokit, configPath);
+	const labels       = await GetLabels(octokit, configPath, useDefaultLabels);
 	const pr_Title     = (await GetPRData(octokit, pr_No)).title;
 	let   labelsToAdd  = MatchLabelsWithTitle(pr_Title, labels);
 	const outputLabels = LabelsToOutput(labels);
@@ -36,7 +31,9 @@ async function run() {
 	if (labelsToAdd.length > 0) {
 		console.log("Validate label with repo");
 		const repo_Labels = await GetAllLabelsFromRepo(octokit);
-		ValidateLabels(labelsToAdd, repo_Labels);
+		if (!AreLabelsValid(labelsToAdd, repo_Labels)){
+			throw new Error( `Label does not exist on repo. Ensure the following labels are available on repo: \n\t ${outputLabels}`);
+		}
 		console.log(`Label ${labelsToAdd.toString()} is valid for this repo`);
 
 		//Is the label on the pull request already?
@@ -74,8 +71,7 @@ async function AddLabel(octokit :OctokitType, prNumber :number, labelsToAdd :str
 	console.log("Labels added");
 }
 
-/* If pull request has label that is in labelsToAdd then remove
-*  it from labelsToAdd
+/* Remove labels from labelsToAdd if they exist on pull request
 *  Return: labelsToAdd
 */
 async function LabelExistOnPullRequest(octokit : OctokitType, pr_No :number , labelsToAdd :string[]) {
@@ -94,7 +90,6 @@ async function LabelExistOnPullRequest(octokit : OctokitType, pr_No :number , la
 				console.log(`Label ${name} already added to PR`);
 				RemoveFromArray(labelsToAdd, name);
 			}
-
 		}
 	}
 
@@ -103,20 +98,22 @@ async function LabelExistOnPullRequest(octokit : OctokitType, pr_No :number , la
 
 /* Get the labels and their matching criteria from a file
 *  or function.
-*  Return the array of labels and their matching criteria
+*  Return Labels and matching criteria as LabelAndCriteria[]
 */
-async function GetLabels(octokit :OctokitType, configPath :string) {
+async function GetLabels(octokit :OctokitType, configPath :string, useDefaultLabels :boolean) {
 
-	let labels = [];
+	let labels :LabelAndCriteria[] = [];
 
-	if (AreLabelsInFile) {
+	if (useDefaultLabels) {
+		console.log(`Get label defaults`);
+		labels = DefineLabelMatches();
+	}
+	else {
+		console.log(`Get label config file: ${configPath}`);
 		const configContent : any      = await GetConfigContent(octokit, configPath);
 		let   encodedFileContent : any = Buffer.from(configContent.data.content, configContent.data.encoding);
 		const yamlFileContent          = yaml.load(encodedFileContent);
 		labels                         = GetLabelsFromFile(yamlFileContent);
-	}
-	else {
-		labels = DefineLabelMatches();
 	}
 
 	return labels;
@@ -124,13 +121,14 @@ async function GetLabels(octokit :OctokitType, configPath :string) {
 
 
 /* Define the labels to output
+*  Return string of labels
 */
-function LabelsToOutput(labelAndMatchCriteria : string[]) {
+function LabelsToOutput(labelAndMatchCriteria :LabelAndCriteria []) {
 
 	const outputLabels = [];
 
-	for (const arr of labelAndMatchCriteria) {
-		outputLabels.push(arr);
+	for (const labelData of labelAndMatchCriteria) {
+		outputLabels.push(labelData.name);
 	}
 	return outputLabels.join(',');
 }
@@ -139,21 +137,20 @@ function LabelsToOutput(labelAndMatchCriteria : string[]) {
 *  from yamlFileContent: [object Object]
 *  return the array of labels and their matching criteria
 *  E.g. Array of [[label1,'matchA','matchB'],['label2','matchC'],...]
+*  Return Labels and matching criteria as LabelAndCriteria[]
 */
 function GetLabelsFromFile(yamlFileContent:any) {
 
-	var labels = [];
+	let labels : LabelAndCriteria[] = [];
 
 	for (const tag in yamlFileContent) {
 		if (typeof yamlFileContent[tag] === "string") {
-			let tempLabels = [tag, yamlFileContent[tag]];
-			labels.push(tempLabels);
+			labels.push({name:tag, criteria:yamlFileContent[tag]});
 		} else if (Array.isArray([yamlFileContent[tag]])) {
-			let tempLabels = yamlFileContent[tag].toString().split(',');
-			tempLabels.unshift(tag);
-			labels.push(tempLabels);
+			let labelCriteria :any[] = yamlFileContent[tag].toString().split(',');
+			labels.push({name: tag, criteria: labelCriteria})
 		} else {
-			console.log(`Unknown value type for label ${tag}. Expecting string or array of globs)`);
+			console.log(`Unknown value type for label ${tag}. Expecting string or array)`);
 		}
 	}
 	return labels;
@@ -162,19 +159,22 @@ function GetLabelsFromFile(yamlFileContent:any) {
 /* Validate labels to add to PR with
 *  repository defined labels.
 *  I.e. We dont want to create new labels
+*  Return True|False
 */
-function ValidateLabels(labelsToAdd :string[], repo_Labels :string[]) {
+function AreLabelsValid(labelsToAdd :string[], repo_Labels :string[]) {
 
 	for (let lbl of labelsToAdd) {
 		if (!Arr_Match(repo_Labels, lbl)) {
-			throw new Error(`Label [${lbl}] does not exist on repo. Ensure the following labels are available on repo: \n\t ${labelsToAdd.join(",")}`);
+			return false;
 		}
 	}
+
+	return true;
 }
 
 /* Request content from github repo from the path
-*  containing pr_label_config.yml
-*  Return the loaded yaml content
+*  containing yml config file
+*  Return the octokit response
 */
 async function GetConfigContent(octokit :OctokitType, path :string) {
 
@@ -189,6 +189,7 @@ async function GetConfigContent(octokit :OctokitType, path :string) {
 }
 
 /* Get the PR Title from PR number
+* Return pull request data property
 */
 async function GetPRData(octokit :OctokitType, pr_No : number) {
 
@@ -202,7 +203,7 @@ async function GetPRData(octokit :OctokitType, pr_No : number) {
 
 
 /* Request labels data from repository
-*  and return an Array of label names
+*  Return string[] of label names
 */
 async function GetAllLabelsFromRepo(octokit :OctokitType) {
 
@@ -222,28 +223,25 @@ async function GetAllLabelsFromRepo(octokit :OctokitType) {
 
 /* Match the first word in pr_Title with the label's matching
 *  criteria.
-*  Return array containing label if matched, otherwise empty array
+*  Return string[] of matched labels, otherwise empty
+* Remarks - Return is currently limited to first match
 */
-function MatchLabelsWithTitle(pr_Title :string, labels :string[]) {
+function MatchLabelsWithTitle(pr_Title :string, labels :LabelAndCriteria[]) {
 
 	let matchedLabels : string[] = [];
 
 	console.log(`Matching label criteria with PR title: ${pr_Title}`);
-	for (let i = 0; i < labels.length; i++) {
-		// get the size of the inner array
-		var innerArrayLength = labels[i].length;
-		// loop the inner array
-
-		for (let j = 1; j < innerArrayLength; j++) {
-			var lbl = labels[i][j];
-
-			if (Str_Match(pr_Title,lbl)) {
-				console.log(`Matched... Add Label: [${labels[i][0]}] to pull request`);
-				matchedLabels.push(labels[i][0]);
+	for (let labelData of labels)
+	{
+		for (let criterion of labelData.criteria){
+			if (Str_Match(pr_Title,criterion)) {
+				console.log(`Matched... Add Label: [${labelData.name}] to pull request`);
+				matchedLabels.push(labelData.name);
 				return matchedLabels;
 			}
 		}
 	}
+
 	//only reach here if no label is matched
 	return matchedLabels;
 }

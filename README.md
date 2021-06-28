@@ -1,5 +1,5 @@
 # Label-by-pr-title action
-Add label given string match of PR title.
+Label pull request when the title starts with a specific word
 
 ## Inputs
 
@@ -9,11 +9,39 @@ Add label given string match of PR title.
 
 ### `config`
 
-**Required** The labels and their matching criteria
+**Optional** Provide path to *.yml file containing the label configurations. The config file must specify labels and their matching criteria in the following format.
 
+```yaml
+Label1:
+  - ['word1']
+Label2:
+  - ['word2','word3']
+```
+
+If config file is not specified then the default label configuration below will be used. 
+
+```yaml
+feat:
+  - ['feat']
+hotfix:
+  - ['hotfix']
+bugfix:
+  - ['bugfix']
+refactor:
+  - ['refactor']
+chore:
+  - ['chore']
+```
+
+## Outputs
+
+### `Labels`
+
+The labels read from file or default configuration
 
 ## Example usage
 
+```
 on: [pull_request]
 
 jobs:
@@ -29,3 +57,4 @@ jobs:
         GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
     - name: Get the output labels
       run: echo "The labels are ${{ steps.myLabeler.outputs.Labels}}"
+```

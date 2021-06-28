@@ -1,5 +1,5 @@
 # Label-by-pr-title action
-Label pull request where the title starts with a specific word
+Label pull request when the title starts with a specific word
 
 ## Inputs
 
@@ -18,8 +18,8 @@ Label2:
   - ['word2','word3']
 ```
 
-If config file is not specified then the default label configuration will be used. 
-**Defaults:**
+If config file is not specified then the default label configuration below will be used. 
+
 ```yaml
 feat:
   - ['feat']
@@ -37,13 +37,13 @@ chore:
 
 ### `Labels`
 
-The labels read from config or default
+The labels read from file or default configuration
 
 ## Example usage
 
+```
 on: [pull_request]
 
-```
 jobs:
   label_my_pr_job:
     runs-on: ubuntu-latest

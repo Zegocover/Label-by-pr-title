@@ -10170,11 +10170,11 @@ var labels_1 = __nccwpck_require__(9234);
 function run() {
     var _a;
     return __awaiter(this, void 0, void 0, function () {
-        var GITHUB_TOKEN, configPath, octokit, pr_No, useDefaultLabels, labels, pr_Title, labelsToAdd, outputLabels, repo_Labels, error_1;
+        var GITHUB_TOKEN, configPath, octokit, pr_No, useDefaultLabels, labels, pr_Title, labelsToAdd, outputLabels, error_1;
         return __generator(this, function (_b) {
             switch (_b.label) {
                 case 0:
-                    _b.trys.push([0, 10, , 11]);
+                    _b.trys.push([0, 9, , 10]);
                     GITHUB_TOKEN = core.getInput('GITHUB_TOKEN');
                     configPath = core.getInput('config');
                     octokit = github.getOctokit(GITHUB_TOKEN);
@@ -10195,37 +10195,29 @@ function run() {
                     labelsToAdd = MatchLabelsWithTitle(pr_Title, labels);
                     outputLabels = LabelsToOutput(labels);
                     core.setOutput("Labels", outputLabels);
-                    if (!(labelsToAdd.length > 0)) return [3 /*break*/, 8];
-                    console.log("Validate label with repo");
-                    return [4 /*yield*/, GetAllLabelsFromRepo(octokit)];
-                case 3:
-                    repo_Labels = _b.sent();
-                    if (!AreLabelsValid(labelsToAdd, repo_Labels)) {
-                        throw new Error("Label does not exist on repo. Ensure the following labels are available on repo: \n\t " + outputLabels);
-                    }
-                    console.log("Label " + labelsToAdd.toString() + " is valid for this repo");
+                    if (!(labelsToAdd.length > 0)) return [3 /*break*/, 7];
                     return [4 /*yield*/, LabelExistOnPullRequest(octokit, pr_No, labelsToAdd)];
-                case 4:
+                case 3:
                     //Is the label on the pull request already?
                     labelsToAdd = _b.sent();
-                    if (!(labelsToAdd.length > 0)) return [3 /*break*/, 6];
+                    if (!(labelsToAdd.length > 0)) return [3 /*break*/, 5];
                     return [4 /*yield*/, AddLabel(octokit, pr_No, labelsToAdd)];
-                case 5:
+                case 4:
                     _b.sent();
-                    return [3 /*break*/, 7];
-                case 6:
+                    return [3 /*break*/, 6];
+                case 5:
                     console.log("No new labels added to PR");
-                    _b.label = 7;
-                case 7: return [3 /*break*/, 9];
-                case 8:
+                    _b.label = 6;
+                case 6: return [3 /*break*/, 8];
+                case 7:
                     console.log("No labels to add to PR");
-                    _b.label = 9;
-                case 9: return [3 /*break*/, 11];
-                case 10:
+                    _b.label = 8;
+                case 8: return [3 /*break*/, 10];
+                case 9:
                     error_1 = _b.sent();
                     core.setFailed(error_1.message);
-                    return [3 /*break*/, 11];
-                case 11: return [2 /*return*/];
+                    return [3 /*break*/, 10];
+                case 10: return [2 /*return*/];
             }
         });
     });
@@ -10344,20 +10336,6 @@ function GetLabelsFromFile(yamlFileContent) {
     }
     return labels;
 }
-/* Validate labels to add to PR with
-*  repository defined labels.
-*  I.e. We dont want to create new labels
-*  Return True|False
-*/
-function AreLabelsValid(labelsToAdd, repo_Labels) {
-    for (var _i = 0, labelsToAdd_1 = labelsToAdd; _i < labelsToAdd_1.length; _i++) {
-        var lbl = labelsToAdd_1[_i];
-        if (!Arr_Match(repo_Labels, lbl)) {
-            return false;
-        }
-    }
-    return true;
-}
 /* Request content from github repo from the path
 *  containing yml config file
 *  Return the octokit response
@@ -10396,32 +10374,6 @@ function GetPRData(octokit, pr_No) {
                 case 1:
                     pullRequest = _a.sent();
                     return [2 /*return*/, pullRequest.data];
-            }
-        });
-    });
-}
-/* Request labels data from repository
-*  Return string[] of label names
-*/
-function GetAllLabelsFromRepo(octokit) {
-    return __awaiter(this, void 0, void 0, function () {
-        var repo_Labels, lbl_obj, _i, _a, lblObj;
-        return __generator(this, function (_b) {
-            switch (_b.label) {
-                case 0:
-                    repo_Labels = [];
-                    return [4 /*yield*/, octokit.rest.issues.listLabelsForRepo({
-                            owner: github.context.repo.owner,
-                            repo: github.context.repo.repo
-                        })];
-                case 1:
-                    lbl_obj = _b.sent();
-                    for (_i = 0, _a = lbl_obj.data; _i < _a.length; _i++) {
-                        lblObj = _a[_i];
-                        //Add label name to array
-                        repo_Labels.push(lblObj.name);
-                    }
-                    return [2 /*return*/, repo_Labels];
             }
         });
     });

@@ -29,13 +29,6 @@ async function run() {
 	core.setOutput("Labels",outputLabels);
 
 	if (labelsToAdd.length > 0) {
-		console.log("Validate label with repo");
-		const repo_Labels = await GetAllLabelsFromRepo(octokit);
-		if (!AreLabelsValid(labelsToAdd, repo_Labels)){
-			throw new Error( `Label does not exist on repo. Ensure the following labels are available on repo: \n\t ${outputLabels}`);
-		}
-		console.log(`Label ${labelsToAdd.toString()} is valid for this repo`);
-
 		//Is the label on the pull request already?
 		labelsToAdd = await LabelExistOnPullRequest(octokit, pr_No, labelsToAdd);
 
@@ -156,22 +149,6 @@ function GetLabelsFromFile(yamlFileContent:any) {
 	return labels;
 }
 
-/* Validate labels to add to PR with
-*  repository defined labels.
-*  I.e. We dont want to create new labels
-*  Return True|False
-*/
-function AreLabelsValid(labelsToAdd :string[], repo_Labels :string[]) {
-
-	for (let lbl of labelsToAdd) {
-		if (!Arr_Match(repo_Labels, lbl)) {
-			return false;
-		}
-	}
-
-	return true;
-}
-
 /* Request content from github repo from the path
 *  containing yml config file
 *  Return the octokit response
@@ -199,26 +176,6 @@ async function GetPRData(octokit :OctokitType, pr_No : number) {
 		issue_number: pr_No,
 	});
 	return pullRequest.data;
-}
-
-
-/* Request labels data from repository
-*  Return string[] of label names
-*/
-async function GetAllLabelsFromRepo(octokit :OctokitType) {
-
-	const repo_Labels = [];
-
-	const lbl_obj     = await octokit.rest.issues.listLabelsForRepo({
-		owner: github.context.repo.owner,
-	  	repo: github.context.repo.repo,
-	});
-
-	for (let lblObj of lbl_obj.data) {
-		//Add label name to array
-		repo_Labels.push(lblObj.name);
-	}
-	return repo_Labels;
 }
 
 /* Match the first word in pr_Title with the label's matching

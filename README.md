@@ -1,5 +1,7 @@
 # Label-by-pr-title action
-Label pull request when the title starts with a specific word
+Label pull request when the title starts with a specific word.
+
+**Note:** If the label does not exist on the repo, it will be added to it.
 
 ## Inputs
 

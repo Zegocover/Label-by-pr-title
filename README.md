@@ -54,7 +54,7 @@ jobs:
       uses: actions/checkout@v2
     - name: Display PR title
       id: myLabeler
-      uses: ./
+      uses: Zegocover/Label-by-pr-title@v1.5
       with:
         GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
     - name: Get the output labels

@@ -3,8 +3,148 @@ import * as github from '@actions/github';
 import * as yaml from "js-yaml";
 import {DefineLabelMatches} from "./labels";
 import {LabelAndCriteria} from "./labels";
+import { Toolkit } from 'actions-toolkit';
+import { config } from 'process';
+
 
 type  OctokitType     = ReturnType<typeof github.getOctokit>;
+Toolkit.run( async tools => {
+	const GITHUB_TOKEN = tools.inputs.GITHUB_TOKEN;
+	const configPath              = tools.inputs.config;
+    	const pr_No :number|undefined = tools.context.payload.pull_request?.number;
+    	const useDefaultLabels        = configPath ===  "N/A";
+
+	if (!configPath) {
+		tools.exit.failure(`Config parameter is undefined`);
+		return;
+	}
+	if (!pr_No) {
+		tools.exit.failure(`Did not provide pr number`);
+		return;
+	}
+
+	tools.log("PR number is: " + pr_No);
+	const labels = await GetLabels(configPath, useDefaultLabels);
+	const pr_Title     = (await GetPRData(pr_No)).title;
+	var   labelsToAdd  = MatchLabelsWithTitle(pr_Title, labels);
+	const outputLabels = LabelsToOutput(labels);
+	tools.outputs.Labels = outputLabels;
+
+	if (labelsToAdd.length > 0) {
+		//Is the label on the pull request already?
+		labelsToAdd = await LabelExistOnPullRequest(pr_No, labelsToAdd);
+
+		if (labelsToAdd.length > 0) {
+			await AddLabel(pr_No, labelsToAdd);
+		}
+		else {
+			console.log("No new labels added to PR");
+		}
+	}
+	else {
+		console.log("No labels to add to PR");
+	} 
+
+	tools.exit.success("Action completed successfully");
+
+	//#region Github calls
+
+	/* Remove labels from labelsToAdd if they exist on pull request
+	*  Return: labelsToAdd
+	*/
+	async function LabelExistOnPullRequest(pr_No :number , labelsToAdd :string[]) {
+
+		const pr_Labels  = (await GetPRData(pr_No)).labels
+
+		if (pr_Labels.length > 0) {
+			console.log("This PR has labels, checking...");
+
+			for (let label of pr_Labels) {
+
+				let name = typeof(label) ===  "string" ? label: label.name;
+				if (!name) {continue;}
+
+				if (Arr_Match(labelsToAdd, name)) {
+					console.log(`Label ${name} already added to PR`);
+					RemoveFromArray(labelsToAdd, name);
+				}
+			}
+		}
+
+		return labelsToAdd;
+	}
+
+	/* Add labels to pull request.
+	*/
+	async function AddLabel(prNumber :number, labelsToAdd :string[]) {
+
+		console.log(`Label to add to PR: ${labelsToAdd}`)
+
+		await tools.github.rest.issues.addLabels({
+			owner: tools.context.repo.owner,
+			repo: tools.context.repo.repo,
+			issue_number: prNumber,
+			labels: labelsToAdd
+		});
+		console.log("Labels added");
+	}
+
+	/* Get the PR Title from PR number
+	* Return pull request data property
+	*/
+	async function GetPRData(pr_No : number) {
+
+		const pullRequest = await tools.github.rest.issues.get({
+			owner: tools.context.repo.owner,
+			repo: tools.context.repo.repo,
+			issue_number: pr_No,
+		});
+		return pullRequest.data;
+	}
+
+	/* Request content from github repo from the path
+	*  containing yml config file
+	*  Return the octokit response
+	*/
+	async function GetConfigContent(path :string) {
+
+		var response = await tools.github.repos.getContent({
+			owner: tools.context.repo.owner,
+			repo: tools.context.repo.repo,
+			path: path,
+			ref: tools.context.sha,
+		});
+
+		return response;
+	}
+	//#endregion
+
+
+	/* Get the labels and their matching criteria from a file
+	*  or function.
+	*  Return Labels and matching criteria as LabelAndCriteria[]
+	*/
+	async function GetLabels(configPath :string, useDefaultLabels :boolean) {
+
+		var labels :LabelAndCriteria[] = [];
+
+		if (useDefaultLabels) {
+			tools.log(`Get label defaults`);
+			labels = DefineLabelMatches();
+		}
+		else {
+			tools.log(`Get label config file: ${configPath}`);
+			let configContent : any      = await GetConfigContent(configPath);
+			let encodedFileContent : any = Buffer.from(configContent.data.content, configContent.data.encoding);
+			let yamlFileContent          = yaml.load(encodedFileContent);
+			labels	                     = GetLabelsFromFile(yamlFileContent);
+		}
+
+		return labels;
+	}
+
+
+});
 
 async function run() {
   try {
@@ -48,7 +188,6 @@ async function run() {
   }
 }
 
-
 /* Add labels to pull request.
 */
 async function AddLabel(octokit :OctokitType, prNumber :number, labelsToAdd :string[]) {
@@ -67,7 +206,7 @@ async function AddLabel(octokit :OctokitType, prNumber :number, labelsToAdd :str
 /* Remove labels from labelsToAdd if they exist on pull request
 *  Return: labelsToAdd
 */
-async function LabelExistOnPullRequest(octokit : OctokitType, pr_No :number , labelsToAdd :string[]) {
+async function LabelExistOnPullRequest(octokit :OctokitType, pr_No :number , labelsToAdd :string[]) {
 
 	const pr_Labels  = (await GetPRData(octokit,pr_No)).labels
 
@@ -242,4 +381,4 @@ function Arr_Match(arrBase :string[], strMatch :string) {
 	return false;
 }
 
-run()
+//run()

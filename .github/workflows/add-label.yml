@@ -1,5 +1,6 @@
+name: Label my PR
 on: 
-  [pull_request]
+  pull_request:
     types: [opened, labeled, unlabeled, synchronize]
 
 jobs:

@@ -22180,9 +22180,13 @@ actions_toolkit_1.Toolkit.run(function (tools) { return __awaiter(void 0, void 0
                         return [4 /*yield*/, GetConfigContent(configPath)];
                     case 2:
                         configContent = _a.sent();
+                        tools.log("We got the configContent?");
                         encodedFileContent = Buffer.from(configContent.data.content, configContent.data.encoding);
+                        tools.log("We got the encodedFileContent?");
                         yamlFileContent = yaml.load(encodedFileContent);
+                        tools.log("We got the yamlFileContent?");
                         labels = GetLabelsFromFile(yamlFileContent);
+                        tools.log("We got the labels?");
                         _a.label = 3;
                     case 3: return [2 /*return*/, labels];
                 }
@@ -22194,6 +22198,7 @@ actions_toolkit_1.Toolkit.run(function (tools) { return __awaiter(void 0, void 0
     return __generator(this, function (_b) {
         switch (_b.label) {
             case 0:
+                tools.log("We entered the tollkit.run?");
                 GITHUB_TOKEN = tools.inputs.GITHUB_TOKEN;
                 configPath = tools.inputs.config;
                 pr_No = (_a = tools.context.payload.pull_request) === null || _a === void 0 ? void 0 : _a.number;

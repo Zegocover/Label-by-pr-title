@@ -19726,12 +19726,11 @@ actions_toolkit_1.Toolkit.run(function (tools) { return __awaiter(void 0, void 0
         }
         return labels;
     }
-    var GITHUB_TOKEN, configPath, pr_No, useDefaultLabels, labels, outputLabels, pr_Title, labelsToAdd;
+    var configPath, pr_No, useDefaultLabels, labels, outputLabels, pr_Title, labelsToAdd;
     var _a;
     return __generator(this, function (_b) {
         switch (_b.label) {
             case 0:
-                GITHUB_TOKEN = tools.inputs.GITHUB_TOKEN;
                 configPath = tools.inputs.config;
                 pr_No = (_a = tools.context.payload.pull_request) === null || _a === void 0 ? void 0 : _a.number;
                 useDefaultLabels = configPath === "N/A";

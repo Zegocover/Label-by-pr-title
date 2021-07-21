@@ -40,6 +40,7 @@ var yaml = require("js-yaml");
 var labels_1 = require("./labels");
 var actions_toolkit_1 = require("actions-toolkit");
 actions_toolkit_1.Toolkit.run(function (tools) { return __awaiter(void 0, void 0, void 0, function () {
+    //#endregion
     //#region Github calls
     /* Remove labels from labelsToAdd if they exist on pull request
     *  Return: labelsToAdd
@@ -137,6 +138,7 @@ actions_toolkit_1.Toolkit.run(function (tools) { return __awaiter(void 0, void 0
         });
     }
     //#endregion
+    //#region Data manipulation
     /* Get the labels and their matching criteria from a file
     *  or function.
     *  Return Labels and matching criteria as LabelAndCriteria[]
@@ -255,12 +257,11 @@ actions_toolkit_1.Toolkit.run(function (tools) { return __awaiter(void 0, void 0
         }
         return labels;
     }
-    var GITHUB_TOKEN, configPath, pr_No, useDefaultLabels, labels, pr_Title, labelsToAdd, outputLabels;
+    var GITHUB_TOKEN, configPath, pr_No, useDefaultLabels, labels, outputLabels, pr_Title, labelsToAdd;
     var _a;
     return __generator(this, function (_b) {
         switch (_b.label) {
             case 0:
-                tools.log("We entered the tollkit.run?");
                 GITHUB_TOKEN = tools.inputs.GITHUB_TOKEN;
                 configPath = tools.inputs.config;
                 pr_No = (_a = tools.context.payload.pull_request) === null || _a === void 0 ? void 0 : _a.number;
@@ -277,11 +278,11 @@ actions_toolkit_1.Toolkit.run(function (tools) { return __awaiter(void 0, void 0
                 return [4 /*yield*/, GetLabels(configPath, useDefaultLabels)];
             case 1:
                 labels = _b.sent();
+                outputLabels = LabelsToOutput(labels);
                 return [4 /*yield*/, GetPRData(pr_No)];
             case 2:
                 pr_Title = (_b.sent()).title;
                 labelsToAdd = MatchLabelsWithTitle(pr_Title, labels);
-                outputLabels = LabelsToOutput(labels);
                 tools.outputs.Labels = outputLabels;
                 if (!(labelsToAdd.length > 0)) return [3 /*break*/, 7];
                 return [4 /*yield*/, LabelExistOnPullRequest(pr_No, labelsToAdd)];

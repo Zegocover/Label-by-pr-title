@@ -95,11 +95,12 @@ Toolkit.run( async tools => {
 	*/
 	async function GetPRData(pr_No : number) {
 
-		const pullRequest = await tools.github.rest.issues.get({
+		const pullRequest = await tools.github.issues.get({
 			owner: tools.context.repo.owner,
 			repo: tools.context.repo.repo,
 			issue_number: pr_No,
 		});
+		tools.log("Get pull request data");
 		return pullRequest.data;
 	}
 
@@ -136,13 +137,9 @@ Toolkit.run( async tools => {
 		else {
 			tools.log(`Get label config file: ${configPath}`);
 			let configContent : any      = await GetConfigContent(configPath);
-	tools.log("We got the configContent?");
 			let encodedFileContent : any = Buffer.from(configContent.data.content, configContent.data.encoding);
-	tools.log("We got the encodedFileContent?");
 			let yamlFileContent          = yaml.load(encodedFileContent);
-	tools.log("We got the yamlFileContent?");
 			labels	                     = GetLabelsFromFile(yamlFileContent);
-	tools.log("We got the labels?");
 		}
 
 		return labels;

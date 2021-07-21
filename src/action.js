@@ -103,13 +103,14 @@ actions_toolkit_1.Toolkit.run(function (tools) { return __awaiter(void 0, void 0
             var pullRequest;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, tools.github.rest.issues.get({
+                    case 0: return [4 /*yield*/, tools.github.issues.get({
                             owner: tools.context.repo.owner,
                             repo: tools.context.repo.repo,
                             issue_number: pr_No
                         })];
                     case 1:
                         pullRequest = _a.sent();
+                        tools.log("Get pull request data");
                         return [2 /*return*/, pullRequest.data];
                 }
             });
@@ -158,13 +159,9 @@ actions_toolkit_1.Toolkit.run(function (tools) { return __awaiter(void 0, void 0
                         return [4 /*yield*/, GetConfigContent(configPath)];
                     case 2:
                         configContent = _a.sent();
-                        tools.log("We got the configContent?");
                         encodedFileContent = Buffer.from(configContent.data.content, configContent.data.encoding);
-                        tools.log("We got the encodedFileContent?");
                         yamlFileContent = yaml.load(encodedFileContent);
-                        tools.log("We got the yamlFileContent?");
                         labels = GetLabelsFromFile(yamlFileContent);
-                        tools.log("We got the labels?");
                         _a.label = 3;
                     case 3: return [2 /*return*/, labels];
                 }

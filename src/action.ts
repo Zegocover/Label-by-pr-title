@@ -9,6 +9,7 @@ import { config } from 'process';
 
 type  OctokitType     = ReturnType<typeof github.getOctokit>;
 Toolkit.run( async tools => {
+	tools.log.info("We entered the tollkit.run?");
 	const GITHUB_TOKEN = tools.inputs.GITHUB_TOKEN;
 	const configPath              = tools.inputs.config;
     	const pr_No :number|undefined = tools.context.payload.pull_request?.number;

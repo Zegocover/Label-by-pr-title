@@ -36,8 +36,6 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 exports.__esModule = true;
-var core = require("@actions/core");
-var github = require("@actions/github");
 var yaml = require("js-yaml");
 var labels_1 = require("./labels");
 var actions_toolkit_1 = require("actions-toolkit");
@@ -168,6 +166,95 @@ actions_toolkit_1.Toolkit.run(function (tools) { return __awaiter(void 0, void 0
             });
         });
     }
+    /* Match the first word in pr_Title with the label's matching
+    *  criteria.
+    *  Return string[] of matched labels, otherwise empty
+    * Remarks - Return is currently limited to first match
+    */
+    function MatchLabelsWithTitle(pr_Title, labels) {
+        var matchedLabels = [];
+        tools.log("Matching label criteria with PR title: " + pr_Title);
+        for (var _i = 0, labels_2 = labels; _i < labels_2.length; _i++) {
+            var labelData = labels_2[_i];
+            for (var _a = 0, _b = labelData.criteria; _a < _b.length; _a++) {
+                var criterion = _b[_a];
+                if (Str_Match(pr_Title, criterion)) {
+                    tools.log("Matched... Add Label: [" + labelData.name + "] to pull request");
+                    matchedLabels.push(labelData.name);
+                    return matchedLabels;
+                }
+            }
+        }
+        //only reach here if no label is matched
+        return matchedLabels;
+    }
+    /* Remove strMatch from arr if it exists
+    */
+    function RemoveFromArray(arr, strMatch) {
+        var lowercaseArr = arr.map(function (value) {
+            return value.toLowerCase();
+        });
+        var index = lowercaseArr.indexOf(strMatch.toLowerCase());
+        if (index > -1) {
+            arr.splice(index, 1);
+        }
+    }
+    /* Given string strBase does it start with strMatch
+    *  returns: True|False
+    */
+    function Str_Match(strBase, strMatch) {
+        if (strBase.toLowerCase().startsWith(strMatch.toLowerCase())) {
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+    /* Given array arrBase for each item, does it start with strMatch
+    *  returns: True|False
+    */
+    function Arr_Match(arrBase, strMatch) {
+        for (var _i = 0, arrBase_1 = arrBase; _i < arrBase_1.length; _i++) {
+            var item = arrBase_1[_i];
+            if (Str_Match(item, strMatch)) {
+                return true;
+            }
+        }
+        return false;
+    }
+    /* Define the labels to output
+    *  Return string of labels
+    */
+    function LabelsToOutput(labelAndMatchCriteria) {
+        var outputLabels = [];
+        for (var _i = 0, labelAndMatchCriteria_1 = labelAndMatchCriteria; _i < labelAndMatchCriteria_1.length; _i++) {
+            var labelData = labelAndMatchCriteria_1[_i];
+            outputLabels.push(labelData.name);
+        }
+        return outputLabels.join(',');
+    }
+    /* Get labels and their matching criteria
+    *  from yamlFileContent: [object Object]
+    *  return the array of labels and their matching criteria
+    *  E.g. Array of [[label1,'matchA','matchB'],['label2','matchC'],...]
+    *  Return Labels and matching criteria as LabelAndCriteria[]
+    */
+    function GetLabelsFromFile(yamlFileContent) {
+        var labels = [];
+        for (var tag in yamlFileContent) {
+            if (typeof yamlFileContent[tag] === "string") {
+                labels.push({ name: tag, criteria: yamlFileContent[tag] });
+            }
+            else if (Array.isArray([yamlFileContent[tag]])) {
+                var labelCriteria = yamlFileContent[tag].toString().split(',');
+                labels.push({ name: tag, criteria: labelCriteria });
+            }
+            else {
+                tools.log("Unknown value type for label " + tag + ". Expecting string or array)");
+            }
+        }
+        return labels;
+    }
     var GITHUB_TOKEN, configPath, pr_No, useDefaultLabels, labels, pr_Title, labelsToAdd, outputLabels;
     var _a;
     return __generator(this, function (_b) {
@@ -219,271 +306,3 @@ actions_toolkit_1.Toolkit.run(function (tools) { return __awaiter(void 0, void 0
         }
     });
 }); });
-function run() {
-    var _a;
-    return __awaiter(this, void 0, void 0, function () {
-        var GITHUB_TOKEN, configPath, octokit, pr_No, useDefaultLabels, labels, pr_Title, labelsToAdd, outputLabels, error_1;
-        return __generator(this, function (_b) {
-            switch (_b.label) {
-                case 0:
-                    _b.trys.push([0, 9, , 10]);
-                    GITHUB_TOKEN = core.getInput('GITHUB_TOKEN');
-                    configPath = core.getInput('config');
-                    octokit = github.getOctokit(GITHUB_TOKEN);
-                    pr_No = (_a = github.context.payload.pull_request) === null || _a === void 0 ? void 0 : _a.number;
-                    useDefaultLabels = configPath === "N/A";
-                    // ensure pr_No is not undefined type
-                    if (!pr_No) {
-                        console.log("Failed to retrieve PR number from payload");
-                        return [2 /*return*/];
-                    }
-                    console.log("PR number is: " + pr_No);
-                    return [4 /*yield*/, GetLabels(octokit, configPath, useDefaultLabels)];
-                case 1:
-                    labels = _b.sent();
-                    return [4 /*yield*/, GetPRData(octokit, pr_No)];
-                case 2:
-                    pr_Title = (_b.sent()).title;
-                    labelsToAdd = MatchLabelsWithTitle(pr_Title, labels);
-                    outputLabels = LabelsToOutput(labels);
-                    core.setOutput("Labels", outputLabels);
-                    if (!(labelsToAdd.length > 0)) return [3 /*break*/, 7];
-                    return [4 /*yield*/, LabelExistOnPullRequest(octokit, pr_No, labelsToAdd)];
-                case 3:
-                    //Is the label on the pull request already?
-                    labelsToAdd = _b.sent();
-                    if (!(labelsToAdd.length > 0)) return [3 /*break*/, 5];
-                    return [4 /*yield*/, AddLabel(octokit, pr_No, labelsToAdd)];
-                case 4:
-                    _b.sent();
-                    return [3 /*break*/, 6];
-                case 5:
-                    console.log("No new labels added to PR");
-                    _b.label = 6;
-                case 6: return [3 /*break*/, 8];
-                case 7:
-                    console.log("No labels to add to PR");
-                    _b.label = 8;
-                case 8: return [3 /*break*/, 10];
-                case 9:
-                    error_1 = _b.sent();
-                    core.setFailed(error_1.message);
-                    return [3 /*break*/, 10];
-                case 10: return [2 /*return*/];
-            }
-        });
-    });
-}
-/* Add labels to pull request.
-*/
-function AddLabel(octokit, prNumber, labelsToAdd) {
-    return __awaiter(this, void 0, void 0, function () {
-        return __generator(this, function (_a) {
-            switch (_a.label) {
-                case 0:
-                    console.log("Label to add to PR: " + labelsToAdd);
-                    return [4 /*yield*/, octokit.rest.issues.addLabels({
-                            owner: github.context.repo.owner,
-                            repo: github.context.repo.repo,
-                            issue_number: prNumber,
-                            labels: labelsToAdd
-                        })];
-                case 1:
-                    _a.sent();
-                    console.log("Labels added");
-                    return [2 /*return*/];
-            }
-        });
-    });
-}
-/* Remove labels from labelsToAdd if they exist on pull request
-*  Return: labelsToAdd
-*/
-function LabelExistOnPullRequest(octokit, pr_No, labelsToAdd) {
-    return __awaiter(this, void 0, void 0, function () {
-        var pr_Labels, _i, pr_Labels_2, label, name_2;
-        return __generator(this, function (_a) {
-            switch (_a.label) {
-                case 0: return [4 /*yield*/, GetPRData(octokit, pr_No)];
-                case 1:
-                    pr_Labels = (_a.sent()).labels;
-                    if (pr_Labels.length > 0) {
-                        console.log("This PR has labels, checking...");
-                        for (_i = 0, pr_Labels_2 = pr_Labels; _i < pr_Labels_2.length; _i++) {
-                            label = pr_Labels_2[_i];
-                            name_2 = typeof (label) === "string" ? label : label.name;
-                            if (!name_2) {
-                                continue;
-                            }
-                            if (Arr_Match(labelsToAdd, name_2)) {
-                                console.log("Label " + name_2 + " already added to PR");
-                                RemoveFromArray(labelsToAdd, name_2);
-                            }
-                        }
-                    }
-                    return [2 /*return*/, labelsToAdd];
-            }
-        });
-    });
-}
-/* Get the labels and their matching criteria from a file
-*  or function.
-*  Return Labels and matching criteria as LabelAndCriteria[]
-*/
-function GetLabels(octokit, configPath, useDefaultLabels) {
-    return __awaiter(this, void 0, void 0, function () {
-        var labels, configContent, encodedFileContent, yamlFileContent;
-        return __generator(this, function (_a) {
-            switch (_a.label) {
-                case 0:
-                    labels = [];
-                    if (!useDefaultLabels) return [3 /*break*/, 1];
-                    console.log("Get label defaults");
-                    labels = labels_1.DefineLabelMatches();
-                    return [3 /*break*/, 3];
-                case 1:
-                    console.log("Get label config file: " + configPath);
-                    return [4 /*yield*/, GetConfigContent(octokit, configPath)];
-                case 2:
-                    configContent = _a.sent();
-                    encodedFileContent = Buffer.from(configContent.data.content, configContent.data.encoding);
-                    yamlFileContent = yaml.load(encodedFileContent);
-                    labels = GetLabelsFromFile(yamlFileContent);
-                    _a.label = 3;
-                case 3: return [2 /*return*/, labels];
-            }
-        });
-    });
-}
-/* Define the labels to output
-*  Return string of labels
-*/
-function LabelsToOutput(labelAndMatchCriteria) {
-    var outputLabels = [];
-    for (var _i = 0, labelAndMatchCriteria_1 = labelAndMatchCriteria; _i < labelAndMatchCriteria_1.length; _i++) {
-        var labelData = labelAndMatchCriteria_1[_i];
-        outputLabels.push(labelData.name);
-    }
-    return outputLabels.join(',');
-}
-/* Get labels and their matching criteria
-*  from yamlFileContent: [object Object]
-*  return the array of labels and their matching criteria
-*  E.g. Array of [[label1,'matchA','matchB'],['label2','matchC'],...]
-*  Return Labels and matching criteria as LabelAndCriteria[]
-*/
-function GetLabelsFromFile(yamlFileContent) {
-    var labels = [];
-    for (var tag in yamlFileContent) {
-        if (typeof yamlFileContent[tag] === "string") {
-            labels.push({ name: tag, criteria: yamlFileContent[tag] });
-        }
-        else if (Array.isArray([yamlFileContent[tag]])) {
-            var labelCriteria = yamlFileContent[tag].toString().split(',');
-            labels.push({ name: tag, criteria: labelCriteria });
-        }
-        else {
-            console.log("Unknown value type for label " + tag + ". Expecting string or array)");
-        }
-    }
-    return labels;
-}
-/* Request content from github repo from the path
-*  containing yml config file
-*  Return the octokit response
-*/
-function GetConfigContent(octokit, path) {
-    return __awaiter(this, void 0, void 0, function () {
-        var response;
-        return __generator(this, function (_a) {
-            switch (_a.label) {
-                case 0: return [4 /*yield*/, octokit.rest.repos.getContent({
-                        owner: github.context.repo.owner,
-                        repo: github.context.repo.repo,
-                        path: path,
-                        ref: github.context.sha
-                    })];
-                case 1:
-                    response = _a.sent();
-                    return [2 /*return*/, response];
-            }
-        });
-    });
-}
-/* Get the PR Title from PR number
-* Return pull request data property
-*/
-function GetPRData(octokit, pr_No) {
-    return __awaiter(this, void 0, void 0, function () {
-        var pullRequest;
-        return __generator(this, function (_a) {
-            switch (_a.label) {
-                case 0: return [4 /*yield*/, octokit.rest.issues.get({
-                        owner: github.context.repo.owner,
-                        repo: github.context.repo.repo,
-                        issue_number: pr_No
-                    })];
-                case 1:
-                    pullRequest = _a.sent();
-                    return [2 /*return*/, pullRequest.data];
-            }
-        });
-    });
-}
-/* Match the first word in pr_Title with the label's matching
-*  criteria.
-*  Return string[] of matched labels, otherwise empty
-* Remarks - Return is currently limited to first match
-*/
-function MatchLabelsWithTitle(pr_Title, labels) {
-    var matchedLabels = [];
-    console.log("Matching label criteria with PR title: " + pr_Title);
-    for (var _i = 0, labels_2 = labels; _i < labels_2.length; _i++) {
-        var labelData = labels_2[_i];
-        for (var _a = 0, _b = labelData.criteria; _a < _b.length; _a++) {
-            var criterion = _b[_a];
-            if (Str_Match(pr_Title, criterion)) {
-                console.log("Matched... Add Label: [" + labelData.name + "] to pull request");
-                matchedLabels.push(labelData.name);
-                return matchedLabels;
-            }
-        }
-    }
-    //only reach here if no label is matched
-    return matchedLabels;
-}
-/* Remove strMatch from arr if it exists
-*/
-function RemoveFromArray(arr, strMatch) {
-    var lowercaseArr = arr.map(function (value) {
-        return value.toLowerCase();
-    });
-    var index = lowercaseArr.indexOf(strMatch.toLowerCase());
-    if (index > -1) {
-        arr.splice(index, 1);
-    }
-}
-/* Given string strBase does it start with strMatch
-*  returns: True|False
-*/
-function Str_Match(strBase, strMatch) {
-    if (strBase.toLowerCase().startsWith(strMatch.toLowerCase())) {
-        return true;
-    }
-    else {
-        return false;
-    }
-}
-/* Given array arrBase for each item, does it start with strMatch
-*  returns: True|False
-*/
-function Arr_Match(arrBase, strMatch) {
-    for (var _i = 0, arrBase_1 = arrBase; _i < arrBase_1.length; _i++) {
-        var item = arrBase_1[_i];
-        if (Str_Match(item, strMatch)) {
-            return true;
-        }
-    }
-    return false;
-}
-//run()

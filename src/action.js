@@ -55,7 +55,7 @@ actions_toolkit_1.Toolkit.run(function (tools) { return __awaiter(void 0, void 0
                     case 1:
                         pr_Labels = (_a.sent()).labels;
                         if (pr_Labels.length > 0) {
-                            console.log("This PR has labels, checking...");
+                            tools.log("This PR has labels, checking...");
                             for (_i = 0, pr_Labels_1 = pr_Labels; _i < pr_Labels_1.length; _i++) {
                                 label = pr_Labels_1[_i];
                                 name_1 = typeof (label) === "string" ? label : label.name;
@@ -63,7 +63,7 @@ actions_toolkit_1.Toolkit.run(function (tools) { return __awaiter(void 0, void 0
                                     continue;
                                 }
                                 if (Arr_Match(labelsToAdd, name_1)) {
-                                    console.log("Label " + name_1 + " already added to PR");
+                                    tools.log("Label " + name_1 + " already added to PR");
                                     RemoveFromArray(labelsToAdd, name_1);
                                 }
                             }
@@ -80,8 +80,8 @@ actions_toolkit_1.Toolkit.run(function (tools) { return __awaiter(void 0, void 0
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
-                        console.log("Label to add to PR: " + labelsToAdd);
-                        return [4 /*yield*/, tools.github.rest.issues.addLabels({
+                        tools.log("Label to add to PR: " + labelsToAdd);
+                        return [4 /*yield*/, tools.github.issues.addLabels({
                                 owner: tools.context.repo.owner,
                                 repo: tools.context.repo.repo,
                                 issue_number: prNumber,
@@ -89,7 +89,7 @@ actions_toolkit_1.Toolkit.run(function (tools) { return __awaiter(void 0, void 0
                             })];
                     case 1:
                         _a.sent();
-                        console.log("Labels added");
+                        tools.log("Labels added");
                         return [2 /*return*/];
                 }
             });
@@ -207,11 +207,11 @@ actions_toolkit_1.Toolkit.run(function (tools) { return __awaiter(void 0, void 0
                 _b.sent();
                 return [3 /*break*/, 6];
             case 5:
-                console.log("No new labels added to PR");
+                tools.log("No new labels added to PR");
                 _b.label = 6;
             case 6: return [3 /*break*/, 8];
             case 7:
-                console.log("No labels to add to PR");
+                tools.log("No labels to add to PR");
                 _b.label = 8;
             case 8:
                 tools.exit.success("Action completed successfully");

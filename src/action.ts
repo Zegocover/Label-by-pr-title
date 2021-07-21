@@ -39,11 +39,11 @@ Toolkit.run( async tools => {
 			await AddLabel(pr_No, labelsToAdd);
 		}
 		else {
-			console.log("No new labels added to PR");
+			tools.log("No new labels added to PR");
 		}
 	}
 	else {
-		console.log("No labels to add to PR");
+		tools.log("No labels to add to PR");
 	} 
 
 	tools.exit.success("Action completed successfully");
@@ -58,7 +58,7 @@ Toolkit.run( async tools => {
 		const pr_Labels  = (await GetPRData(pr_No)).labels
 
 		if (pr_Labels.length > 0) {
-			console.log("This PR has labels, checking...");
+			tools.log("This PR has labels, checking...");
 
 			for (let label of pr_Labels) {
 
@@ -66,7 +66,7 @@ Toolkit.run( async tools => {
 				if (!name) {continue;}
 
 				if (Arr_Match(labelsToAdd, name)) {
-					console.log(`Label ${name} already added to PR`);
+					tools.log(`Label ${name} already added to PR`);
 					RemoveFromArray(labelsToAdd, name);
 				}
 			}
@@ -79,15 +79,15 @@ Toolkit.run( async tools => {
 	*/
 	async function AddLabel(prNumber :number, labelsToAdd :string[]) {
 
-		console.log(`Label to add to PR: ${labelsToAdd}`)
+		tools.log(`Label to add to PR: ${labelsToAdd}`)
 
-		await tools.github.rest.issues.addLabels({
+		await tools.github.issues.addLabels({
 			owner: tools.context.repo.owner,
 			repo: tools.context.repo.repo,
 			issue_number: prNumber,
 			labels: labelsToAdd
 		});
-		console.log("Labels added");
+		tools.log("Labels added");
 	}
 
 	/* Get the PR Title from PR number

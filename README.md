@@ -5,10 +5,10 @@ Label pull request when the title starts with a specific word.
 
 ## Inputs
 
-### `GITHUB_TOKEN`
+### `GITHUB_TOKEN` || `github_token`
 
 **Required** The secret to access repo.
-
+**CREF**[Actions/Toolkit Authentication][https://www.npmjs.com/package/actions-toolkit#toolsgithub]
 ### `config`
 
 **Optional** Provide path to *.yml file containing the label configurations. The config file must specify labels and their matching criteria in the following format.

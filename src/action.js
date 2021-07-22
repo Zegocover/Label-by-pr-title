@@ -85,12 +85,49 @@ function run() {
                 case 7:
                     console.log("No labels to add to PR");
                     _b.label = 8;
-                case 8: return [3 /*break*/, 10];
+                case 8:
+                    ValidatePRLabels(octokit, pr_No, labelsToAdd);
+                    return [3 /*break*/, 10];
                 case 9:
                     error_1 = _b.sent();
                     core.setFailed(error_1.message);
                     return [3 /*break*/, 10];
                 case 10: return [2 /*return*/];
+            }
+        });
+    });
+}
+function ValidatePRLabels(octokit, pr_No, labelsToAdd) {
+    return __awaiter(this, void 0, void 0, function () {
+        var pr_Labels, labelMatchCount, _i, pr_Labels_1, label, name_1;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    console.log("PR validation, checking...");
+                    return [4 /*yield*/, GetPRData(octokit, pr_No)];
+                case 1:
+                    pr_Labels = (_a.sent()).labels;
+                    labelMatchCount = 0;
+                    console.log("Retrieved PR labels");
+                    for (_i = 0, pr_Labels_1 = pr_Labels; _i < pr_Labels_1.length; _i++) {
+                        label = pr_Labels_1[_i];
+                        name_1 = typeof (label) === "string" ? label : label.name;
+                        if (!name_1) {
+                            continue;
+                        }
+                        if (Arr_Match(labelsToAdd, name_1)) {
+                            labelMatchCount++;
+                            console.log("Label " + name_1 + " already added to PR");
+                            RemoveFromArray(labelsToAdd, name_1);
+                        }
+                    }
+                    if (labelMatchCount != 1) {
+                        console.error("Expecting only one label to match");
+                    }
+                    else {
+                        console.log("Only 1 label matched as expected.");
+                    }
+                    return [2 /*return*/];
             }
         });
     });
@@ -122,7 +159,7 @@ function AddLabel(octokit, prNumber, labelsToAdd) {
 */
 function LabelExistOnPullRequest(octokit, pr_No, labelsToAdd) {
     return __awaiter(this, void 0, void 0, function () {
-        var pr_Labels, _i, pr_Labels_1, label, name_1;
+        var pr_Labels, _i, pr_Labels_2, label, name_2;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0: return [4 /*yield*/, GetPRData(octokit, pr_No)];
@@ -130,15 +167,15 @@ function LabelExistOnPullRequest(octokit, pr_No, labelsToAdd) {
                     pr_Labels = (_a.sent()).labels;
                     if (pr_Labels.length > 0) {
                         console.log("This PR has labels, checking...");
-                        for (_i = 0, pr_Labels_1 = pr_Labels; _i < pr_Labels_1.length; _i++) {
-                            label = pr_Labels_1[_i];
-                            name_1 = typeof (label) === "string" ? label : label.name;
-                            if (!name_1) {
+                        for (_i = 0, pr_Labels_2 = pr_Labels; _i < pr_Labels_2.length; _i++) {
+                            label = pr_Labels_2[_i];
+                            name_2 = typeof (label) === "string" ? label : label.name;
+                            if (!name_2) {
                                 continue;
                             }
-                            if (Arr_Match(labelsToAdd, name_1)) {
-                                console.log("Label " + name_1 + " already added to PR");
-                                RemoveFromArray(labelsToAdd, name_1);
+                            if (Arr_Match(labelsToAdd, name_2)) {
+                                console.log("Label " + name_2 + " already added to PR");
+                                RemoveFromArray(labelsToAdd, name_2);
                             }
                         }
                     }

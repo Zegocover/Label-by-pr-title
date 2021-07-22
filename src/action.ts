@@ -42,10 +42,45 @@ async function run() {
 	else {
 		console.log("No labels to add to PR");
 	}
+	ValidatePRLabels(octokit, pr_No, labelsToAdd);
 
   } catch (error) {
     core.setFailed(error.message)
   }
+}
+
+
+async function ValidatePRLabels(octokit : OctokitType, pr_No :number , labelsToAdd :string[]) {
+
+	console.log("PR validation, checking...");
+	const pr_Labels  = (await GetPRData(octokit,pr_No)).labels
+	var labelMatchCount = 0;
+
+	console.log("Retrieved PR labels");
+
+	for (let label of pr_Labels) {
+
+		let name = typeof(label) ===  "string" ? label: label.name;
+		if (!name) {continue;}
+
+		if (Arr_Match(labelsToAdd, name)) {
+			labelMatchCount++;
+
+			console.log(`Label ${name} already added to PR`);
+			RemoveFromArray(labelsToAdd, name);
+		}
+	}
+
+	if (labelMatchCount != 1)
+	{
+		console.error("Expecting only one label to match");
+	}
+	else {
+		console.log("Only 1 label matched as expected.")
+	}
+
+
+
 }
 
 

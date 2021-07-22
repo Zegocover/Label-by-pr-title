@@ -6,7 +6,7 @@ import { Toolkit } from 'actions-toolkit';
 Toolkit.run( async tools => {
 	//#region Main code
 	const configPath              = tools.inputs.config;
-	const PRLabelCheck	      = tools.inputs.pr_label_check;
+	const PRLabelCheck 	      = !!tools.inputs.pr_label_check;
 	const pr_No :number|undefined = tools.context.payload.pull_request?.number;
     	const useDefaultLabels        = configPath ===  "N/A";
 
@@ -61,26 +61,34 @@ Toolkit.run( async tools => {
 
 		const pr_Labels  = (await GetPRData(pr_No)).labels;
 		const configLabels : string[] = outputLabels.split(',').map((i) => i.trim());
+		var configLabelMatch = false;
 
-		if (pr_Labels.length > 0) {
-			tools.log("This PR has labels, checking...");
+		if (pr_Labels.length<1)
+		{
+			tools.exit.failure("PR has no labels");
+		}
 
-			for (let label of pr_Labels) {
+		for (let label of pr_Labels) {
 
-				let name = typeof(label) ===  "string" ? label: label.name;
-				if (!name) {continue;}
+			let name = typeof(label) ===  "string" ? label: label.name;
+			if (!name) {continue;}
 
-				//Match PR labels with the config labels
-				if (Arr_Match(configLabels, name)) {
-					if (labelAdded[0] != name)
-					{
-						tools.exit.failure(`Only one label should be added from the config labels list.
-						\n Expected ${labelAdded}\n Actual: ${name}.`)
-					}
-					tools.log(`Label ${name} already added to PR`);
-					RemoveFromArray(labelsToAdd, name);
+			tools.log(`Check pr label ${name} matches what we added ${labelAdded[0]}`);
+
+			//Match PR labels with the config labels
+			if (Arr_Match(configLabels, name)) {
+				configLabelMatch = true;
+				if (labelAdded[0] != name)
+				{
+					tools.exit.failure(`Only one label should be added from the config labels list.
+					\n Expected ${labelAdded}\n Actual: ${name}.`);
 				}
 			}
+		}
+
+		if (configLabelMatch == false)
+		{
+			tools.exit.failure("No labels from config added to PR");
 		}
 	}
 

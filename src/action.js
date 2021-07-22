@@ -47,30 +47,34 @@ actions_toolkit_1.Toolkit.run(function (tools) { return __awaiter(void 0, void 0
     */
     function ValidatePRLabel(pr_No, labelAdded, outputLabels) {
         return __awaiter(this, void 0, void 0, function () {
-            var pr_Labels, configLabels, _i, pr_Labels_1, label, name_1;
+            var pr_Labels, configLabels, configLabelMatch, _i, pr_Labels_1, label, name_1;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0: return [4 /*yield*/, GetPRData(pr_No)];
                     case 1:
                         pr_Labels = (_a.sent()).labels;
                         configLabels = outputLabels.split(',').map(function (i) { return i.trim(); });
-                        if (pr_Labels.length > 0) {
-                            tools.log("This PR has labels, checking...");
-                            for (_i = 0, pr_Labels_1 = pr_Labels; _i < pr_Labels_1.length; _i++) {
-                                label = pr_Labels_1[_i];
-                                name_1 = typeof (label) === "string" ? label : label.name;
-                                if (!name_1) {
-                                    continue;
-                                }
-                                //Match PR labels with the config labels
-                                if (Arr_Match(configLabels, name_1)) {
-                                    if (labelAdded[0] != name_1) {
-                                        tools.exit.failure("Only one label should be added from the config labels list.\n\t\t\t\t\t\t\n Expected " + labelAdded + "\n Actual: " + name_1 + ".");
-                                    }
-                                    tools.log("Label " + name_1 + " already added to PR");
-                                    RemoveFromArray(labelsToAdd, name_1);
+                        configLabelMatch = false;
+                        if (pr_Labels.length < 1) {
+                            tools.exit.failure("PR has no labels");
+                        }
+                        for (_i = 0, pr_Labels_1 = pr_Labels; _i < pr_Labels_1.length; _i++) {
+                            label = pr_Labels_1[_i];
+                            name_1 = typeof (label) === "string" ? label : label.name;
+                            if (!name_1) {
+                                continue;
+                            }
+                            tools.log("Check pr label " + name_1 + " matches what we added " + labelAdded[0]);
+                            //Match PR labels with the config labels
+                            if (Arr_Match(configLabels, name_1)) {
+                                configLabelMatch = true;
+                                if (labelAdded[0] != name_1) {
+                                    tools.exit.failure("Only one label should be added from the config labels list.\n\t\t\t\t\t\n Expected " + labelAdded + "\n Actual: " + name_1 + ".");
                                 }
                             }
+                        }
+                        if (configLabelMatch == false) {
+                            tools.exit.failure("No labels from config added to PR");
                         }
                         return [2 /*return*/];
                 }
@@ -298,7 +302,7 @@ actions_toolkit_1.Toolkit.run(function (tools) { return __awaiter(void 0, void 0
         switch (_b.label) {
             case 0:
                 configPath = tools.inputs.config;
-                PRLabelCheck = tools.inputs.pr_label_check;
+                PRLabelCheck = !!tools.inputs.pr_label_check;
                 pr_No = (_a = tools.context.payload.pull_request) === null || _a === void 0 ? void 0 : _a.number;
                 useDefaultLabels = configPath === "N/A";
                 if (!configPath) {

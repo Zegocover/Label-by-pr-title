@@ -88,7 +88,7 @@ actions_toolkit_1.Toolkit.run(function (tools) { return __awaiter(void 0, void 0
         return __awaiter(this, void 0, void 0, function () {
             var checkedLabels, _i, pr_Labels_1, label, name_2;
             return __generator(this, function (_a) {
-                checkedLabels = [];
+                checkedLabels = labelsToAdd.slice();
                 if (pr_Labels.length > 0) {
                     tools.log("This PR has labels, checking...");
                     for (_i = 0, pr_Labels_1 = pr_Labels; _i < pr_Labels_1.length; _i++) {
@@ -99,10 +99,7 @@ actions_toolkit_1.Toolkit.run(function (tools) { return __awaiter(void 0, void 0
                         }
                         if (Arr_Match(labelsToAdd, name_2)) {
                             tools.log("Label " + name_2 + " already added to PR");
-                            //RemoveFromArray(checkedLabels, name);
-                        }
-                        else {
-                            checkedLabels.push(name_2);
+                            RemoveFromArray(checkedLabels, name_2);
                         }
                     }
                 }
@@ -318,6 +315,7 @@ actions_toolkit_1.Toolkit.run(function (tools) { return __awaiter(void 0, void 0
             case 1:
                 labels = _b.sent();
                 outputLabels = LabelsToOutput(labels);
+                tools.log("Config labels: " + outputLabels);
                 return [4 /*yield*/, GetPRData(pr_No)];
             case 2:
                 pr_Data = (_b.sent());
@@ -329,7 +327,6 @@ actions_toolkit_1.Toolkit.run(function (tools) { return __awaiter(void 0, void 0
                 return [4 /*yield*/, LabelExistOnPullRequest(pr_No, labelsToAdd, pr_Labels)];
             case 3:
                 addLabelToPR = _b.sent();
-                tools.log("Add label to pr " + addLabelToPR.join(';') + " and labels to add " + labelsToAdd.join(';'));
                 if (!(addLabelToPR.length > 0)) return [3 /*break*/, 5];
                 return [4 /*yield*/, AddLabel(pr_No, addLabelToPR)];
             case 4:
@@ -346,7 +343,7 @@ actions_toolkit_1.Toolkit.run(function (tools) { return __awaiter(void 0, void 0
                 _b.label = 8;
             case 8:
                 if (!PRLabelCheck) return [3 /*break*/, 10];
-                tools.log("Checking PR to ensure only one label of config labels below has been added.\n " + outputLabels);
+                tools.log("Checking PR to ensure only one label of config labels below has been added.");
                 return [4 /*yield*/, ValidatePRLabel(pr_No, labelsToAdd, outputLabels)];
             case 9:
                 _b.sent();

@@ -22,6 +22,8 @@ Toolkit.run( async tools => {
 	tools.log("PR number is: " + pr_No);
 	const labels               = await GetLabels(configPath, useDefaultLabels);
 	const outputLabels         = LabelsToOutput(labels);
+	tools.log(`Config labels: ${outputLabels}`);
+
 	const pr_Data		   = (await GetPRData(pr_No));
 	const pr_Title             = pr_Data.title;
 	const pr_Labels		   = pr_Data.labels;
@@ -31,7 +33,6 @@ Toolkit.run( async tools => {
 	if (labelsToAdd.length > 0) {
 		//Is the label on the pull request already?
 		const addLabelToPR = await LabelExistOnPullRequest(pr_No, labelsToAdd, pr_Labels);
-		tools.log(`Add label to pr ${addLabelToPR.join(';')} and labels to add ${labelsToAdd.join(';')}`)
 
 		if (addLabelToPR.length > 0) {
 			await AddLabel(pr_No, addLabelToPR);
@@ -47,7 +48,7 @@ Toolkit.run( async tools => {
 	}
 
 	if (PRLabelCheck) {
-		tools.log(`Checking PR to ensure only one label of config labels below has been added.\n ${outputLabels}`)
+		tools.log("Checking PR to ensure only one label of config labels below has been added.")
 		await ValidatePRLabel(pr_No, labelsToAdd, outputLabels)
 	}
 	tools.exit.success("Action complete");
@@ -103,7 +104,7 @@ Toolkit.run( async tools => {
 		default: boolean;
 	    }[]) {
 
-		const checkedLabels = [];
+		const checkedLabels = labelsToAdd.slice();
 
 		if (pr_Labels.length > 0) {
 			tools.log("This PR has labels, checking...");
@@ -115,9 +116,7 @@ Toolkit.run( async tools => {
 
 				if (Arr_Match(labelsToAdd, name)) {
 					tools.log(`Label ${name} already added to PR`);
-					//RemoveFromArray(checkedLabels, name);
-				} else {
-					checkedLabels.push(name);
+					RemoveFromArray(checkedLabels, name);
 				}
 			}
 		}

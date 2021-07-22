@@ -323,9 +323,12 @@ actions_toolkit_1.Toolkit.run(function (tools) { return __awaiter(void 0, void 0
                 labelsToAdd = MatchLabelsWithTitle(pr_Title, labels);
                 tools.outputs.Labels = outputLabels;
                 if (!(labelsToAdd.length > 0)) return [3 /*break*/, 7];
+                //Is the label on the pull request already?
+                tools.log("Labels to add " + labelsToAdd.join(';'));
                 return [4 /*yield*/, LabelExistOnPullRequest(pr_No, labelsToAdd, pr_Labels)];
             case 3:
                 addLabelToPR = _b.sent();
+                tools.log("Add label to pr " + addLabelToPR.join(';') + " and labels to add " + labelsToAdd.join(';'));
                 if (!(addLabelToPR.length > 0)) return [3 /*break*/, 5];
                 return [4 /*yield*/, AddLabel(pr_No, addLabelToPR)];
             case 4:
@@ -342,6 +345,7 @@ actions_toolkit_1.Toolkit.run(function (tools) { return __awaiter(void 0, void 0
                 _b.label = 8;
             case 8:
                 if (!PRLabelCheck) return [3 /*break*/, 10];
+                tools.log("2Labels to add " + labelsToAdd.join(';'));
                 tools.log("Checking PR to ensure only one label of config labels below has been added.\n " + outputLabels);
                 return [4 /*yield*/, ValidatePRLabel(pr_No, labelsToAdd, outputLabels)];
             case 9:

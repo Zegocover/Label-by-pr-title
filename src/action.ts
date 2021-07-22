@@ -30,7 +30,9 @@ Toolkit.run( async tools => {
 
 	if (labelsToAdd.length > 0) {
 		//Is the label on the pull request already?
+		tools.log(`Labels to add ${labelsToAdd.join(';')}`)
 		const addLabelToPR = await LabelExistOnPullRequest(pr_No, labelsToAdd, pr_Labels);
+		tools.log(`Add label to pr ${addLabelToPR.join(';')} and labels to add ${labelsToAdd.join(';')}`)
 
 		if (addLabelToPR.length > 0) {
 			await AddLabel(pr_No, addLabelToPR);
@@ -46,6 +48,7 @@ Toolkit.run( async tools => {
 	}
 
 	if (PRLabelCheck) {
+		tools.log(`2Labels to add ${labelsToAdd.join(';')}`)
 		tools.log(`Checking PR to ensure only one label of config labels below has been added.\n ${outputLabels}`)
 		await ValidatePRLabel(pr_No, labelsToAdd, outputLabels)
 	}

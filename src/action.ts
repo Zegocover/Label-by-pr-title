@@ -30,10 +30,10 @@ Toolkit.run( async tools => {
 
 	if (labelsToAdd.length > 0) {
 		//Is the label on the pull request already?
-		labelsToAdd = await LabelExistOnPullRequest(pr_No, labelsToAdd, pr_Labels);
+		const addLabelToPR = await LabelExistOnPullRequest(pr_No, labelsToAdd, pr_Labels);
 
-		if (labelsToAdd.length > 0) {
-			await AddLabel(pr_No, labelsToAdd);
+		if (addLabelToPR.length > 0) {
+			await AddLabel(pr_No, addLabelToPR);
 		}
 		else {
 			//Label already exists on PR
@@ -47,7 +47,7 @@ Toolkit.run( async tools => {
 
 	if (PRLabelCheck) {
 		tools.log(`Checking PR to ensure only one label of config labels below has been added.\n ${outputLabels}`)
-		await ValidatePRLabel(pr_No,labelsToAdd, outputLabels)
+		await ValidatePRLabel(pr_No, labelsToAdd, outputLabels)
 	}
 	tools.exit.success("Action complete");
 
@@ -58,7 +58,7 @@ Toolkit.run( async tools => {
 	/*
 	* Ensure PR has only one config label
 	*/
-	async function ValidatePRLabel(pr_No :number , labelAdded :string[], outputLabels :string) {
+	async function ValidatePRLabel(pr_No :number, labelAdded :string[], outputLabels :string) {
 		const pr_Labels               = (await GetPRData(pr_No)).labels;
 		const configLabels : string[] = outputLabels.split(',').map((i) => i.trim());
 		var   labelMatchCount         =  0;

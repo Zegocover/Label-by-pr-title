@@ -295,7 +295,7 @@ actions_toolkit_1.Toolkit.run(function (tools) { return __awaiter(void 0, void 0
         }
         return labels;
     }
-    var configPath, PRLabelCheck, pr_No, useDefaultLabels, labels, outputLabels, pr_Data, pr_Title, pr_Labels, labelsToAdd;
+    var configPath, PRLabelCheck, pr_No, useDefaultLabels, labels, outputLabels, pr_Data, pr_Title, pr_Labels, labelsToAdd, addLabelToPR;
     var _a;
     return __generator(this, function (_b) {
         switch (_b.label) {
@@ -327,10 +327,9 @@ actions_toolkit_1.Toolkit.run(function (tools) { return __awaiter(void 0, void 0
                 if (!(labelsToAdd.length > 0)) return [3 /*break*/, 7];
                 return [4 /*yield*/, LabelExistOnPullRequest(pr_No, labelsToAdd, pr_Labels)];
             case 3:
-                //Is the label on the pull request already?
-                labelsToAdd = _b.sent();
-                if (!(labelsToAdd.length > 0)) return [3 /*break*/, 5];
-                return [4 /*yield*/, AddLabel(pr_No, labelsToAdd)];
+                addLabelToPR = _b.sent();
+                if (!(addLabelToPR.length > 0)) return [3 /*break*/, 5];
+                return [4 /*yield*/, AddLabel(pr_No, addLabelToPR)];
             case 4:
                 _b.sent();
                 return [3 /*break*/, 6];

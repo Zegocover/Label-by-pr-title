@@ -25,7 +25,7 @@ Toolkit.run( async tools => {
 	const pr_Data		   = (await GetPRData(pr_No));
 	const pr_Title             = pr_Data.title;
 	const pr_Labels		   = pr_Data.labels;
-	var   labelsToAdd          = MatchLabelsWithTitle(pr_Title, labels);
+	const labelsToAdd          = MatchLabelsWithTitle(pr_Title, labels);
 	tools.outputs.Labels 	   = outputLabels;
 
 	if (labelsToAdd.length > 0) {
@@ -59,19 +59,22 @@ Toolkit.run( async tools => {
 	* Ensure PR has only one config label
 	*/
 	async function ValidatePRLabel(pr_No :number, labelAdded :string[], outputLabels :string) {
-		const pr_Labels               = (await GetPRData(pr_No)).labels;
-		const configLabels : string[] = outputLabels.split(',').map((i) => i.trim());
-		var   labelMatchCount         =  0;
+		const pr_LabelsData            = (await GetPRData(pr_No)).labels;
+		const configLabels : string[]  = outputLabels.split(',').map((i) => i.trim());
+		var   labelMatchCount          = 0;
+		var   pr_LabelNames : string[] = [];
 
 		if (pr_Labels.length<1) {
 			tools.exit.failure("PR has no labels");
 			return;
 		}
 
-		for (let label of pr_Labels) {
+		for (let label of pr_LabelsData) {
 
 			let name = typeof(label) ===  "string" ? label: label.name;
 			if (!name) {continue;}
+
+			pr_LabelNames.push(name);
 
 			//Match PR labels with the config labels
 			if (Arr_Match(configLabels, name)) {
@@ -81,7 +84,7 @@ Toolkit.run( async tools => {
 
 		if (labelMatchCount != 1) {
 			tools.exit.failure(`Only one config label expected.
-			\n Expected: ${labelAdded.join(',')}\n Actual: ${labelAdded.join(',')}`);
+			\n Expected: ${labelAdded.join(',')}\n Actual: ${pr_LabelNames.join(',')}`);
 			return;
 		}
 	}
@@ -99,6 +102,8 @@ Toolkit.run( async tools => {
 		default: boolean;
 	    }[]) {
 
+		let checkedLabels = labelsToAdd;
+
 		if (pr_Labels.length > 0) {
 			tools.log("This PR has labels, checking...");
 
@@ -107,14 +112,14 @@ Toolkit.run( async tools => {
 				let name = typeof(label) ===  "string" ? label: label.name;
 				if (!name) {continue;}
 
-				if (Arr_Match(labelsToAdd, name)) {
+				if (Arr_Match(checkedLabels, name)) {
 					tools.log(`Label ${name} already added to PR`);
-					RemoveFromArray(labelsToAdd, name);
+					RemoveFromArray(checkedLabels, name);
 				}
 			}
 		}
 
-		return labelsToAdd;
+		return checkedLabels;
 	}
 
 	/* Add labels to pull request.

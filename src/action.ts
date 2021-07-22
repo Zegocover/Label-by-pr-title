@@ -2,6 +2,7 @@ import * as yaml from "js-yaml";
 import {DefineLabelMatches} from "./labels";
 import {LabelAndCriteria} from "./labels";
 import { Toolkit } from 'actions-toolkit';
+import { assert } from "console";
 
 Toolkit.run( async tools => {
 	//#region Main code
@@ -33,18 +34,52 @@ Toolkit.run( async tools => {
 			await AddLabel(pr_No, labelsToAdd);
 		}
 		else {
+			//Label already exists on PR
 			tools.log("No new labels added to PR");
 		}
 	}
 	else {
+		// no label criteria matched with PR Title
 		tools.log("No labels to add to PR");
 	}
 
-	tools.exit.success("Action completed successfully");
+	ValidatePRLabel(pr_No,labelsToAdd, outputLabels)
+
+	tools.exit.success("Action complete");
 
 	//#endregion
 
 	//#region Github calls
+
+	/*
+	* Check PR labels to ensure only one of the defined labels has been added to it
+	*/
+	async function ValidatePRLabel(pr_No :number , labelAdded :string[], outputLabels :string) {
+
+		const pr_Labels  = (await GetPRData(pr_No)).labels;
+		const definedLabels : string[] = outputLabels.split(',').map((i) => i.trim());
+
+		if (pr_Labels.length > 0) {
+			tools.log("This PR has labels, checking...");
+
+			for (let label of pr_Labels) {
+
+				let name = typeof(label) ===  "string" ? label: label.name;
+				if (!name) {continue;}
+
+				//Match PR labels with the defined labels
+				if (Arr_Match(definedLabels, name)) {
+					if (labelAdded[0] != name)
+					{
+						tools.exit.failure(`Only one label should be added from the defined labels list.
+						\n Expected ${labelAdded}\n Actual: ${name}.`)
+					}
+					tools.log(`Label ${name} already added to PR`);
+					RemoveFromArray(labelsToAdd, name);
+				}
+			}
+		}
+	}
 
 	/* Remove labels from labelsToAdd if they exist on pull request
 	*  Return: labelsToAdd
@@ -145,7 +180,7 @@ Toolkit.run( async tools => {
 	/* Match the first word in pr_Title with the label's matching
 	*  criteria.
 	*  Return string[] of matched labels, otherwise empty
-	* Remarks - Return is currently limited to first match
+	* Remarks - Return is currently limited to first match	
 	*/
 	function MatchLabelsWithTitle(pr_Title :string, labels :LabelAndCriteria[]) {
 
@@ -243,10 +278,3 @@ Toolkit.run( async tools => {
 	}
 	//#endregion
 });
-
-
-
-
-
-
-

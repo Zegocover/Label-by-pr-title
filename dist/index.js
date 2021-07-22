@@ -19511,17 +19511,18 @@ var actions_toolkit_1 = __nccwpck_require__(7045);
 actions_toolkit_1.Toolkit.run(function (tools) { return __awaiter(void 0, void 0, void 0, function () {
     //#endregion
     //#region Github calls
-    /* Remove labels from labelsToAdd if they exist on pull request
-    *  Return: labelsToAdd
+    /*
+    * Check PR labels to ensure only one of the defined labels has been added to it
     */
-    function LabelExistOnPullRequest(pr_No, labelsToAdd) {
+    function ValidatePRLabel(pr_No, labelAdded, outputLabels) {
         return __awaiter(this, void 0, void 0, function () {
-            var pr_Labels, _i, pr_Labels_1, label, name_1;
+            var pr_Labels, definedLabels, _i, pr_Labels_1, label, name_1;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0: return [4 /*yield*/, GetPRData(pr_No)];
                     case 1:
                         pr_Labels = (_a.sent()).labels;
+                        definedLabels = outputLabels.split(',').map(function (i) { return i.trim(); });
                         if (pr_Labels.length > 0) {
                             tools.log("This PR has labels, checking...");
                             for (_i = 0, pr_Labels_1 = pr_Labels; _i < pr_Labels_1.length; _i++) {
@@ -19530,9 +19531,43 @@ actions_toolkit_1.Toolkit.run(function (tools) { return __awaiter(void 0, void 0
                                 if (!name_1) {
                                     continue;
                                 }
-                                if (Arr_Match(labelsToAdd, name_1)) {
+                                //Match PR labels with the defined labels
+                                if (Arr_Match(definedLabels, name_1)) {
+                                    if (labelAdded[0] != name_1) {
+                                        tools.exit.failure("Only one label should be added from the defined labels list.\n\t\t\t\t\t\t\n Expected " + labelAdded + "\n Actual: " + name_1 + ".");
+                                    }
                                     tools.log("Label " + name_1 + " already added to PR");
                                     RemoveFromArray(labelsToAdd, name_1);
+                                }
+                            }
+                        }
+                        return [2 /*return*/];
+                }
+            });
+        });
+    }
+    /* Remove labels from labelsToAdd if they exist on pull request
+    *  Return: labelsToAdd
+    */
+    function LabelExistOnPullRequest(pr_No, labelsToAdd) {
+        return __awaiter(this, void 0, void 0, function () {
+            var pr_Labels, _i, pr_Labels_2, label, name_2;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, GetPRData(pr_No)];
+                    case 1:
+                        pr_Labels = (_a.sent()).labels;
+                        if (pr_Labels.length > 0) {
+                            tools.log("This PR has labels, checking...");
+                            for (_i = 0, pr_Labels_2 = pr_Labels; _i < pr_Labels_2.length; _i++) {
+                                label = pr_Labels_2[_i];
+                                name_2 = typeof (label) === "string" ? label : label.name;
+                                if (!name_2) {
+                                    continue;
+                                }
+                                if (Arr_Match(labelsToAdd, name_2)) {
+                                    tools.log("Label " + name_2 + " already added to PR");
+                                    RemoveFromArray(labelsToAdd, name_2);
                                 }
                             }
                         }
@@ -19763,14 +19798,17 @@ actions_toolkit_1.Toolkit.run(function (tools) { return __awaiter(void 0, void 0
                 _b.sent();
                 return [3 /*break*/, 6];
             case 5:
+                //Label already exists on PR
                 tools.log("No new labels added to PR");
                 _b.label = 6;
             case 6: return [3 /*break*/, 8];
             case 7:
+                // no label criteria matched with PR Title
                 tools.log("No labels to add to PR");
                 _b.label = 8;
             case 8:
-                tools.exit.success("Action completed successfully");
+                ValidatePRLabel(pr_No, labelsToAdd, outputLabels);
+                tools.exit.success("Action complete");
                 return [2 /*return*/];
         }
     });

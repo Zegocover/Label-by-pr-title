@@ -2,8 +2,6 @@ import * as yaml from "js-yaml";
 import {DefineLabelMatches} from "./labels";
 import {LabelAndCriteria} from "./labels";
 import { Toolkit } from 'actions-toolkit';
-import * as github from '@actions/github';
-type  OctokitType     = ReturnType<typeof github.getOctokit>;
 
 Toolkit.run( async tools => {
 	//#region Main code
@@ -11,7 +9,6 @@ Toolkit.run( async tools => {
 	const PRLabelCheck 	      = !!tools.inputs.pr_label_check;
 	const pr_No :number|undefined = tools.context.payload.pull_request?.number;
     	const useDefaultLabels        = configPath ===  "N/A";
-	const octokit                 = github.getOctokit(tools.token);
 
 	if (!configPath) {
 		tools.exit.failure(`Config parameter is undefined`);
@@ -48,10 +45,9 @@ Toolkit.run( async tools => {
 		tools.log("No labels to add to PR");
 	}
 
-	if (PRLabelCheck)
-	{
+	if (PRLabelCheck) {
 		tools.log(`Checking PR to ensure only one label of config labels below has been added.\n ${outputLabels}`)
-		await ValidatePRLabel(pr_No,labelsToAdd, outputLabels, octokit)
+		await ValidatePRLabel(pr_No,labelsToAdd, outputLabels)
 	}
 	tools.exit.success("Action complete");
 
@@ -60,21 +56,14 @@ Toolkit.run( async tools => {
 	//#region Github calls
 
 	/*
-	* Check PR labels to ensure only one of the config labels has been added to it
+	* Ensure PR has only one config label
 	*/
-	async function ValidatePRLabel(pr_No :number , labelAdded :string[], outputLabels :string, octokit : OctokitType) {
-console.log("Entering PR label check");
-		//const pr_Labels  = (await GetPRData(pr_No)).labels;
-		const pr_Labels = (await OctoGetPRData(octokit,pr_No)).labels;
-		console.log("Go it all labels from PR");
+	async function ValidatePRLabel(pr_No :number , labelAdded :string[], outputLabels :string) {
+		const pr_Labels               = (await GetPRData(pr_No)).labels;
 		const configLabels : string[] = outputLabels.split(',').map((i) => i.trim());
-		console.log("covert labels string to array");
-		var configLabelMatch = false;
+		var   labelMatchCount         =  0;
 
-		console.log(`labels from output are: ${configLabels.join(';')}`)
-
-		if (pr_Labels.length<1)
-		{
+		if (pr_Labels.length<1) {
 			tools.exit.failure("PR has no labels");
 			return;
 		}
@@ -84,25 +73,23 @@ console.log("Entering PR label check");
 			let name = typeof(label) ===  "string" ? label: label.name;
 			if (!name) {continue;}
 
-			console.log(`Check pr label ${name} matches what we added ${labelAdded[0]}`);
-
 			//Match PR labels with the config labels
 			if (Arr_Match(configLabels, name)) {
-				configLabelMatch = true;
+				labelMatchCount++;
 				if (labelAdded[0] != name)
 				{
 					tools.exit.failure(`Only one label should be added from the config labels list.
-					\n Expected ${labelAdded}\n Actual: ${name}.`);
+					\n Expected: ${labelAdded}\n Actual: ${name}`);
 					return;
 				}
 			}
 		}
 
-		if (configLabelMatch == false)
-		{
-			tools.exit.failure("No labels from config added to PR");
+		if (labelMatchCount != 1) {
+			tools.exit.failure(`Only one config label expected.
+			\n Expected: ${labelAdded.join(',')}\n Actual: ${labelAdded.join(',')}`);
+			return;
 		}
-			console.log(`Was this check run?`);
 	}
 
 	/* Remove labels from labelsToAdd if they exist on pull request
@@ -166,8 +153,6 @@ console.log("Entering PR label check");
 		return pullRequest.data;
 	}
 
-
-
 	/* Request content from github repo from the path
 	*  containing yml config file
 	*  Return the octokit response
@@ -184,6 +169,7 @@ console.log("Entering PR label check");
 		return response;
 	}
 	//#endregion
+
 
 	//#region Data manipulation
 
@@ -312,16 +298,3 @@ console.log("Entering PR label check");
 	//#endregion
 });
 
-
-/* Get the PR Title from PR number
-* Return pull request data property
-*/
-async function OctoGetPRData(octokit :OctokitType, pr_No : number) {
-console.log("Req octo pr data");
-	const pullRequest = await octokit.rest.issues.get({
-		owner: github.context.repo.owner,
-		repo: github.context.repo.repo,
-		issue_number: pr_No,
-	});
-	return pullRequest.data;
-}

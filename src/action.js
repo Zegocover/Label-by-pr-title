@@ -39,28 +39,22 @@ exports.__esModule = true;
 var yaml = require("js-yaml");
 var labels_1 = require("./labels");
 var actions_toolkit_1 = require("actions-toolkit");
-var github = require("@actions/github");
 actions_toolkit_1.Toolkit.run(function (tools) { return __awaiter(void 0, void 0, void 0, function () {
     //#endregion
     //#region Github calls
     /*
-    * Check PR labels to ensure only one of the config labels has been added to it
+    * Ensure PR has only one config label
     */
-    function ValidatePRLabel(pr_No, labelAdded, outputLabels, octokit) {
+    function ValidatePRLabel(pr_No, labelAdded, outputLabels) {
         return __awaiter(this, void 0, void 0, function () {
-            var pr_Labels, configLabels, configLabelMatch, _i, pr_Labels_1, label, name_1;
+            var pr_Labels, configLabels, labelMatchCount, _i, pr_Labels_1, label, name_1;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0:
-                        console.log("Entering PR label check");
-                        return [4 /*yield*/, OctoGetPRData(octokit, pr_No)];
+                    case 0: return [4 /*yield*/, GetPRData(pr_No)];
                     case 1:
                         pr_Labels = (_a.sent()).labels;
-                        console.log("Go it all labels from PR");
                         configLabels = outputLabels.split(',').map(function (i) { return i.trim(); });
-                        console.log("covert labels string to array");
-                        configLabelMatch = false;
-                        console.log("labels from output are: " + configLabels.join(';'));
+                        labelMatchCount = 0;
                         if (pr_Labels.length < 1) {
                             tools.exit.failure("PR has no labels");
                             return [2 /*return*/];
@@ -71,20 +65,19 @@ actions_toolkit_1.Toolkit.run(function (tools) { return __awaiter(void 0, void 0
                             if (!name_1) {
                                 continue;
                             }
-                            console.log("Check pr label " + name_1 + " matches what we added " + labelAdded[0]);
                             //Match PR labels with the config labels
                             if (Arr_Match(configLabels, name_1)) {
-                                configLabelMatch = true;
+                                labelMatchCount++;
                                 if (labelAdded[0] != name_1) {
-                                    tools.exit.failure("Only one label should be added from the config labels list.\n\t\t\t\t\t\n Expected " + labelAdded + "\n Actual: " + name_1 + ".");
+                                    tools.exit.failure("Only one label should be added from the config labels list.\n\t\t\t\t\t\n Expected: " + labelAdded + "\n Actual: " + name_1);
                                     return [2 /*return*/];
                                 }
                             }
                         }
-                        if (configLabelMatch == false) {
-                            tools.exit.failure("No labels from config added to PR");
+                        if (labelMatchCount != 1) {
+                            tools.exit.failure("Only one config label expected.\n\t\t\t\n Expected: " + labelAdded.join(',') + "\n Actual: " + labelAdded.join(','));
+                            return [2 /*return*/];
                         }
-                        console.log("Was this check run?");
                         return [2 /*return*/];
                 }
             });
@@ -302,7 +295,7 @@ actions_toolkit_1.Toolkit.run(function (tools) { return __awaiter(void 0, void 0
         }
         return labels;
     }
-    var configPath, PRLabelCheck, pr_No, useDefaultLabels, octokit, labels, outputLabels, pr_Data, pr_Title, pr_Labels, labelsToAdd;
+    var configPath, PRLabelCheck, pr_No, useDefaultLabels, labels, outputLabels, pr_Data, pr_Title, pr_Labels, labelsToAdd;
     var _a;
     return __generator(this, function (_b) {
         switch (_b.label) {
@@ -311,7 +304,6 @@ actions_toolkit_1.Toolkit.run(function (tools) { return __awaiter(void 0, void 0
                 PRLabelCheck = !!tools.inputs.pr_label_check;
                 pr_No = (_a = tools.context.payload.pull_request) === null || _a === void 0 ? void 0 : _a.number;
                 useDefaultLabels = configPath === "N/A";
-                octokit = github.getOctokit(tools.token);
                 if (!configPath) {
                     tools.exit.failure("Config parameter is undefined");
                     return [2 /*return*/];
@@ -354,7 +346,7 @@ actions_toolkit_1.Toolkit.run(function (tools) { return __awaiter(void 0, void 0
             case 8:
                 if (!PRLabelCheck) return [3 /*break*/, 10];
                 tools.log("Checking PR to ensure only one label of config labels below has been added.\n " + outputLabels);
-                return [4 /*yield*/, ValidatePRLabel(pr_No, labelsToAdd, outputLabels, octokit)];
+                return [4 /*yield*/, ValidatePRLabel(pr_No, labelsToAdd, outputLabels)];
             case 9:
                 _b.sent();
                 _b.label = 10;
@@ -364,25 +356,3 @@ actions_toolkit_1.Toolkit.run(function (tools) { return __awaiter(void 0, void 0
         }
     });
 }); });
-/* Get the PR Title from PR number
-* Return pull request data property
-*/
-function OctoGetPRData(octokit, pr_No) {
-    return __awaiter(this, void 0, void 0, function () {
-        var pullRequest;
-        return __generator(this, function (_a) {
-            switch (_a.label) {
-                case 0:
-                    console.log("Req octo pr data");
-                    return [4 /*yield*/, octokit.rest.issues.get({
-                            owner: github.context.repo.owner,
-                            repo: github.context.repo.repo,
-                            issue_number: pr_No
-                        })];
-                case 1:
-                    pullRequest = _a.sent();
-                    return [2 /*return*/, pullRequest.data];
-            }
-        });
-    });
-}

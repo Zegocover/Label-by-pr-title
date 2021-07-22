@@ -50,10 +50,14 @@ actions_toolkit_1.Toolkit.run(function (tools) { return __awaiter(void 0, void 0
             var pr_Labels, configLabels, configLabelMatch, _i, pr_Labels_1, label, name_1;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, GetPRData(pr_No)];
+                    case 0:
+                        console.log("Entering PR label check");
+                        return [4 /*yield*/, GetPRData(pr_No)];
                     case 1:
                         pr_Labels = (_a.sent()).labels;
+                        console.log("Goit all labels from PR");
                         configLabels = outputLabels.split(',').map(function (i) { return i.trim(); });
+                        console.log("covert labels string to array");
                         configLabelMatch = false;
                         console.log("labels from output are: " + configLabels.join(';'));
                         if (pr_Labels.length < 1) {
@@ -347,10 +351,10 @@ actions_toolkit_1.Toolkit.run(function (tools) { return __awaiter(void 0, void 0
                 _b.label = 8;
             case 8:
                 if (PRLabelCheck) {
-                    tools.log("Checking PR to ensure only one label of config labels below has been added.\n " + outputLabels);
+                    tools.log("123Checking PR to ensure only one label of config labels below has been added.\n " + outputLabels);
                     ValidatePRLabel(pr_No, labelsToAdd, outputLabels);
                 }
-                tools.exit.success("Action complete");
+                tools.exit.success("Action complete123");
                 return [2 /*return*/];
         }
     });

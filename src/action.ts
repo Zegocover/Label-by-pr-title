@@ -45,10 +45,10 @@ Toolkit.run( async tools => {
 
 	if (PRLabelCheck)
 	{
-		tools.log(`Checking PR to ensure only one label of config labels below has been added.\n ${outputLabels}`)
+		tools.log(`123Checking PR to ensure only one label of config labels below has been added.\n ${outputLabels}`)
 		ValidatePRLabel(pr_No,labelsToAdd, outputLabels)
 	}
-	tools.exit.success("Action complete");
+	tools.exit.success("Action complete123");
 
 	//#endregion
 
@@ -58,9 +58,11 @@ Toolkit.run( async tools => {
 	* Check PR labels to ensure only one of the config labels has been added to it
 	*/
 	async function ValidatePRLabel(pr_No :number , labelAdded :string[], outputLabels :string) {
-
+console.log("Entering PR label check");
 		const pr_Labels  = (await GetPRData(pr_No)).labels;
+		console.log("Goit all labels from PR");
 		const configLabels : string[] = outputLabels.split(',').map((i) => i.trim());
+		console.log("covert labels string to array");
 		var configLabelMatch = false;
 
 		console.log(`labels from output are: ${configLabels.join(';')}`)

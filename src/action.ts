@@ -28,7 +28,7 @@ Toolkit.run( async tools => {
 
 	if (labelsToAdd.length > 0) {
 		//Is the label on the pull request already?
-		labelsToAdd = await LabelExistOnPullRequest(pr_No, labelsToAdd);
+		//labelsToAdd = await LabelExistOnPullRequest(pr_No, labelsToAdd);
 
 		if (labelsToAdd.length > 0) {
 			await AddLabel(pr_No, labelsToAdd);
@@ -149,7 +149,7 @@ console.log("Entering PR label check");
 			repo: tools.context.repo.repo,
 			issue_number: pr_No,
 		});
-		tools.log("Get pull request data");
+		tools.log("Got pull request data");
 		return pullRequest.data;
 	}
 

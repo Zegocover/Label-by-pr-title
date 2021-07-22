@@ -19626,7 +19626,7 @@ actions_toolkit_1.Toolkit.run(function (tools) { return __awaiter(void 0, void 0
                             })];
                     case 1:
                         pullRequest = _a.sent();
-                        tools.log("Get pull request data");
+                        tools.log("Got pull request data");
                         return [2 /*return*/, pullRequest.data];
                 }
             });
@@ -19801,26 +19801,22 @@ actions_toolkit_1.Toolkit.run(function (tools) { return __awaiter(void 0, void 0
                 pr_Title = (_b.sent()).title;
                 labelsToAdd = MatchLabelsWithTitle(pr_Title, labels);
                 tools.outputs.Labels = outputLabels;
-                if (!(labelsToAdd.length > 0)) return [3 /*break*/, 7];
-                return [4 /*yield*/, LabelExistOnPullRequest(pr_No, labelsToAdd)];
-            case 3:
-                //Is the label on the pull request already?
-                labelsToAdd = _b.sent();
-                if (!(labelsToAdd.length > 0)) return [3 /*break*/, 5];
+                if (!(labelsToAdd.length > 0)) return [3 /*break*/, 6];
+                if (!(labelsToAdd.length > 0)) return [3 /*break*/, 4];
                 return [4 /*yield*/, AddLabel(pr_No, labelsToAdd)];
-            case 4:
+            case 3:
                 _b.sent();
-                return [3 /*break*/, 6];
-            case 5:
+                return [3 /*break*/, 5];
+            case 4:
                 //Label already exists on PR
                 tools.log("No new labels added to PR");
-                _b.label = 6;
-            case 6: return [3 /*break*/, 8];
-            case 7:
+                _b.label = 5;
+            case 5: return [3 /*break*/, 7];
+            case 6:
                 // no label criteria matched with PR Title
                 tools.log("No labels to add to PR");
-                _b.label = 8;
-            case 8:
+                _b.label = 7;
+            case 7:
                 if (PRLabelCheck) {
                     tools.log("Checking PR to ensure only one label of config labels below has been added.\n " + outputLabels);
                     ValidatePRLabel(pr_No, labelsToAdd, outputLabels);

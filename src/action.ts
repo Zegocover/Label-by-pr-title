@@ -8,6 +8,7 @@ type  OctokitType     = ReturnType<typeof github.getOctokit>;
 
 async function run() {
   try {
+	  
     	const GITHUB_TOKEN            = core.getInput('GITHUB_TOKEN');
     	const configPath              = core.getInput('config');
     	const octokit                 = github.getOctokit(GITHUB_TOKEN);

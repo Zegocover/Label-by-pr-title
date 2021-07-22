@@ -91,30 +91,25 @@ actions_toolkit_1.Toolkit.run(function (tools) { return __awaiter(void 0, void 0
     /* Remove labels from labelsToAdd if they exist on pull request
     *  Return: labelsToAdd
     */
-    function LabelExistOnPullRequest(pr_No, labelsToAdd) {
+    function LabelExistOnPullRequest(pr_No, labelsToAdd, pr_Labels) {
         return __awaiter(this, void 0, void 0, function () {
-            var pr_Labels, _i, pr_Labels_2, label, name_2;
+            var _i, pr_Labels_2, label, name_2;
             return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0: return [4 /*yield*/, GetPRData(pr_No)];
-                    case 1:
-                        pr_Labels = (_a.sent()).labels;
-                        if (pr_Labels.length > 0) {
-                            tools.log("This PR has labels, checking...");
-                            for (_i = 0, pr_Labels_2 = pr_Labels; _i < pr_Labels_2.length; _i++) {
-                                label = pr_Labels_2[_i];
-                                name_2 = typeof (label) === "string" ? label : label.name;
-                                if (!name_2) {
-                                    continue;
-                                }
-                                if (Arr_Match(labelsToAdd, name_2)) {
-                                    tools.log("Label " + name_2 + " already added to PR");
-                                    RemoveFromArray(labelsToAdd, name_2);
-                                }
-                            }
+                if (pr_Labels.length > 0) {
+                    tools.log("This PR has labels, checking...");
+                    for (_i = 0, pr_Labels_2 = pr_Labels; _i < pr_Labels_2.length; _i++) {
+                        label = pr_Labels_2[_i];
+                        name_2 = typeof (label) === "string" ? label : label.name;
+                        if (!name_2) {
+                            continue;
                         }
-                        return [2 /*return*/, labelsToAdd];
+                        if (Arr_Match(labelsToAdd, name_2)) {
+                            tools.log("Label " + name_2 + " already added to PR");
+                            RemoveFromArray(labelsToAdd, name_2);
+                        }
+                    }
                 }
+                return [2 /*return*/, labelsToAdd];
             });
         });
     }
@@ -305,7 +300,7 @@ actions_toolkit_1.Toolkit.run(function (tools) { return __awaiter(void 0, void 0
         }
         return labels;
     }
-    var configPath, PRLabelCheck, pr_No, useDefaultLabels, labels, outputLabels, pr_Title, labelsToAdd;
+    var configPath, PRLabelCheck, pr_No, useDefaultLabels, labels, outputLabels, pr_Data, pr_Title, pr_Labels, labelsToAdd;
     var _a;
     return __generator(this, function (_b) {
         switch (_b.label) {
@@ -329,25 +324,31 @@ actions_toolkit_1.Toolkit.run(function (tools) { return __awaiter(void 0, void 0
                 outputLabels = LabelsToOutput(labels);
                 return [4 /*yield*/, GetPRData(pr_No)];
             case 2:
-                pr_Title = (_b.sent()).title;
+                pr_Data = (_b.sent());
+                pr_Title = pr_Data.title;
+                pr_Labels = pr_Data.labels;
                 labelsToAdd = MatchLabelsWithTitle(pr_Title, labels);
                 tools.outputs.Labels = outputLabels;
-                if (!(labelsToAdd.length > 0)) return [3 /*break*/, 6];
-                if (!(labelsToAdd.length > 0)) return [3 /*break*/, 4];
-                return [4 /*yield*/, AddLabel(pr_No, labelsToAdd)];
+                if (!(labelsToAdd.length > 0)) return [3 /*break*/, 7];
+                return [4 /*yield*/, LabelExistOnPullRequest(pr_No, labelsToAdd, pr_Labels)];
             case 3:
-                _b.sent();
-                return [3 /*break*/, 5];
+                //Is the label on the pull request already?
+                labelsToAdd = _b.sent();
+                if (!(labelsToAdd.length > 0)) return [3 /*break*/, 5];
+                return [4 /*yield*/, AddLabel(pr_No, labelsToAdd)];
             case 4:
+                _b.sent();
+                return [3 /*break*/, 6];
+            case 5:
                 //Label already exists on PR
                 tools.log("No new labels added to PR");
-                _b.label = 5;
-            case 5: return [3 /*break*/, 7];
-            case 6:
+                _b.label = 6;
+            case 6: return [3 /*break*/, 8];
+            case 7:
                 // no label criteria matched with PR Title
                 tools.log("No labels to add to PR");
-                _b.label = 7;
-            case 7:
+                _b.label = 8;
+            case 8:
                 if (PRLabelCheck) {
                     tools.log("Checking PR to ensure only one label of config labels below has been added.\n " + outputLabels);
                     ValidatePRLabel(pr_No, labelsToAdd, outputLabels);

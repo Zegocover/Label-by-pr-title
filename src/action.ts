@@ -22,13 +22,15 @@ Toolkit.run( async tools => {
 	tools.log("PR number is: " + pr_No);
 	const labels               = await GetLabels(configPath, useDefaultLabels);
 	const outputLabels         = LabelsToOutput(labels);
-	const pr_Title             = (await GetPRData(pr_No)).title;
+	const pr_Data		   = (await GetPRData(pr_No));
+	const pr_Title             = pr_Data.title;
+	const pr_Labels		   = pr_Data.labels;
 	var   labelsToAdd          = MatchLabelsWithTitle(pr_Title, labels);
 	tools.outputs.Labels 	   = outputLabels;
 
 	if (labelsToAdd.length > 0) {
 		//Is the label on the pull request already?
-		//labelsToAdd = await LabelExistOnPullRequest(pr_No, labelsToAdd);
+		labelsToAdd = await LabelExistOnPullRequest(pr_No, labelsToAdd, pr_Labels);
 
 		if (labelsToAdd.length > 0) {
 			await AddLabel(pr_No, labelsToAdd);
@@ -101,9 +103,15 @@ console.log("Entering PR label check");
 	/* Remove labels from labelsToAdd if they exist on pull request
 	*  Return: labelsToAdd
 	*/
-	async function LabelExistOnPullRequest(pr_No :number , labelsToAdd :string[]) {
-
-		const pr_Labels  = (await GetPRData(pr_No)).labels
+	async function LabelExistOnPullRequest(pr_No :number , labelsToAdd :string[], pr_Labels : {
+		id: number;
+		node_id: string;
+		url: string;
+		name: string;
+		description: string;
+		color: string;
+		default: boolean;
+	    }[]) {
 
 		if (pr_Labels.length > 0) {
 			tools.log("This PR has labels, checking...");

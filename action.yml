@@ -10,7 +10,7 @@ inputs:
     default: 'N/A'
     required: false
   pr_label_check:
-    description: `Check PR has only one of config labels added. Default to true.`
+    description: 'Check PR has only one of config labels added. Default to true.'
     default: true
     required: false
 outputs:

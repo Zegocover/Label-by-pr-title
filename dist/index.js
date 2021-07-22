@@ -19539,6 +19539,7 @@ actions_toolkit_1.Toolkit.run(function (tools) { return __awaiter(void 0, void 0
                                 configLabelMatch = true;
                                 if (labelAdded[0] != name_1) {
                                     tools.exit.failure("Only one label should be added from the config labels list.\n\t\t\t\t\t\n Expected " + labelAdded + "\n Actual: " + name_1 + ".");
+                                    return [2 /*return*/];
                                 }
                             }
                         }

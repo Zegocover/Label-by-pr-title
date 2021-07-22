@@ -51,7 +51,7 @@ Toolkit.run( async tools => {
 	if (PRLabelCheck)
 	{
 		tools.log(`Checking PR to ensure only one label of config labels below has been added.\n ${outputLabels}`)
-		ValidatePRLabel(pr_No,labelsToAdd, outputLabels, octokit)
+		await ValidatePRLabel(pr_No,labelsToAdd, outputLabels, octokit)
 	}
 	tools.exit.success("Action complete");
 
@@ -76,6 +76,7 @@ console.log("Entering PR label check");
 		if (pr_Labels.length<1)
 		{
 			tools.exit.failure("PR has no labels");
+			return;
 		}
 
 		for (let label of pr_Labels) {

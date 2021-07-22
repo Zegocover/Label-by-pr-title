@@ -63,6 +63,7 @@ actions_toolkit_1.Toolkit.run(function (tools) { return __awaiter(void 0, void 0
                         console.log("labels from output are: " + configLabels.join(';'));
                         if (pr_Labels.length < 1) {
                             tools.exit.failure("PR has no labels");
+                            return [2 /*return*/];
                         }
                         for (_i = 0, pr_Labels_1 = pr_Labels; _i < pr_Labels_1.length; _i++) {
                             label = pr_Labels_1[_i];
@@ -351,10 +352,13 @@ actions_toolkit_1.Toolkit.run(function (tools) { return __awaiter(void 0, void 0
                 tools.log("No labels to add to PR");
                 _b.label = 8;
             case 8:
-                if (PRLabelCheck) {
-                    tools.log("Checking PR to ensure only one label of config labels below has been added.\n " + outputLabels);
-                    ValidatePRLabel(pr_No, labelsToAdd, outputLabels, octokit);
-                }
+                if (!PRLabelCheck) return [3 /*break*/, 10];
+                tools.log("Checking PR to ensure only one label of config labels below has been added.\n " + outputLabels);
+                return [4 /*yield*/, ValidatePRLabel(pr_No, labelsToAdd, outputLabels, octokit)];
+            case 9:
+                _b.sent();
+                _b.label = 10;
+            case 10:
                 tools.exit.success("Action complete");
                 return [2 /*return*/];
         }

@@ -159,26 +159,6 @@ actions_toolkit_1.Toolkit.run(function (tools) { return __awaiter(void 0, void 0
             });
         });
     }
-    /* Get the PR Title from PR number
-    * Return pull request data property
-    */
-    function OctoGetPRData(octokit, pr_No) {
-        return __awaiter(this, void 0, void 0, function () {
-            var pullRequest;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0: return [4 /*yield*/, octokit.rest.issues.get({
-                            owner: github.context.repo.owner,
-                            repo: github.context.repo.repo,
-                            issue_number: pr_No
-                        })];
-                    case 1:
-                        pullRequest = _a.sent();
-                        return [2 /*return*/, pullRequest.data];
-                }
-            });
-        });
-    }
     /* Request content from github repo from the path
     *  containing yml config file
     *  Return the octokit response
@@ -380,3 +360,25 @@ actions_toolkit_1.Toolkit.run(function (tools) { return __awaiter(void 0, void 0
         }
     });
 }); });
+/* Get the PR Title from PR number
+* Return pull request data property
+*/
+function OctoGetPRData(octokit, pr_No) {
+    return __awaiter(this, void 0, void 0, function () {
+        var pullRequest;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    console.log("Req octo pr data");
+                    return [4 /*yield*/, octokit.rest.issues.get({
+                            owner: github.context.repo.owner,
+                            repo: github.context.repo.repo,
+                            issue_number: pr_No
+                        })];
+                case 1:
+                    pullRequest = _a.sent();
+                    return [2 /*return*/, pullRequest.data];
+            }
+        });
+    });
+}

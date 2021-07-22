@@ -166,18 +166,6 @@ console.log("Entering PR label check");
 	}
 
 
-/* Get the PR Title from PR number
-* Return pull request data property
-*/
-async function OctoGetPRData(octokit :OctokitType, pr_No : number) {
-
-	const pullRequest = await octokit.rest.issues.get({
-		owner: github.context.repo.owner,
-		repo: github.context.repo.repo,
-		issue_number: pr_No,
-	});
-	return pullRequest.data;
-}
 
 	/* Request content from github repo from the path
 	*  containing yml config file
@@ -322,3 +310,17 @@ async function OctoGetPRData(octokit :OctokitType, pr_No : number) {
 	}
 	//#endregion
 });
+
+
+/* Get the PR Title from PR number
+* Return pull request data property
+*/
+async function OctoGetPRData(octokit :OctokitType, pr_No : number) {
+console.log("Req octo pr data");
+	const pullRequest = await octokit.rest.issues.get({
+		owner: github.context.repo.owner,
+		repo: github.context.repo.repo,
+		issue_number: pr_No,
+	});
+	return pullRequest.data;
+}

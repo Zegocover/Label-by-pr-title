@@ -19617,11 +19617,13 @@ actions_toolkit_1.Toolkit.run(function (tools) { return __awaiter(void 0, void 0
             var pullRequest;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, tools.github.issues.get({
-                            owner: tools.context.repo.owner,
-                            repo: tools.context.repo.repo,
-                            issue_number: pr_No
-                        })];
+                    case 0:
+                        console.log("getting PR data");
+                        return [4 /*yield*/, tools.github.issues.get({
+                                owner: tools.context.repo.owner,
+                                repo: tools.context.repo.repo,
+                                issue_number: pr_No
+                            })];
                     case 1:
                         pullRequest = _a.sent();
                         tools.log("Get pull request data");
@@ -19820,10 +19822,10 @@ actions_toolkit_1.Toolkit.run(function (tools) { return __awaiter(void 0, void 0
                 _b.label = 8;
             case 8:
                 if (PRLabelCheck) {
-                    tools.log("123Checking PR to ensure only one label of config labels below has been added.\n " + outputLabels);
+                    tools.log("Checking PR to ensure only one label of config labels below has been added.\n " + outputLabels);
                     ValidatePRLabel(pr_No, labelsToAdd, outputLabels);
                 }
-                tools.exit.success("Action complete123");
+                tools.exit.success("Action complete");
                 return [2 /*return*/];
         }
     });

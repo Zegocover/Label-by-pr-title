@@ -45,10 +45,10 @@ Toolkit.run( async tools => {
 
 	if (PRLabelCheck)
 	{
-		tools.log(`123Checking PR to ensure only one label of config labels below has been added.\n ${outputLabels}`)
+		tools.log(`Checking PR to ensure only one label of config labels below has been added.\n ${outputLabels}`)
 		ValidatePRLabel(pr_No,labelsToAdd, outputLabels)
 	}
-	tools.exit.success("Action complete123");
+	tools.exit.success("Action complete");
 
 	//#endregion
 
@@ -142,6 +142,7 @@ console.log("Entering PR label check");
 	* Return pull request data property
 	*/
 	async function GetPRData(pr_No : number) {
+		console.log("getting PR data");
 
 		const pullRequest = await tools.github.issues.get({
 			owner: tools.context.repo.owner,

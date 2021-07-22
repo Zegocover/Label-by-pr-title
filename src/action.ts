@@ -76,12 +76,6 @@ Toolkit.run( async tools => {
 			//Match PR labels with the config labels
 			if (Arr_Match(configLabels, name)) {
 				labelMatchCount++;
-				if (labelAdded[0] != name)
-				{
-					tools.exit.failure(`Only one label should be added from the config labels list.
-					\n Expected: ${labelAdded}\n Actual: ${name}`);
-					return;
-				}
 			}
 		}
 
@@ -142,14 +136,13 @@ Toolkit.run( async tools => {
 	* Return pull request data property
 	*/
 	async function GetPRData(pr_No : number) {
-		console.log("getting PR data");
-
+		tools.log("Get pull request data");
 		const pullRequest = await tools.github.issues.get({
 			owner: tools.context.repo.owner,
 			repo: tools.context.repo.repo,
 			issue_number: pr_No,
 		});
-		tools.log("Got pull request data");
+
 		return pullRequest.data;
 	}
 

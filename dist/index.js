@@ -19537,10 +19537,6 @@ actions_toolkit_1.Toolkit.run(function (tools) { return __awaiter(void 0, void 0
                             //Match PR labels with the config labels
                             if (Arr_Match(configLabels, name_1)) {
                                 labelMatchCount++;
-                                if (labelAdded[0] != name_1) {
-                                    tools.exit.failure("Only one label should be added from the config labels list.\n\t\t\t\t\t\n Expected: " + labelAdded + "\n Actual: " + name_1);
-                                    return [2 /*return*/];
-                                }
                             }
                         }
                         if (labelMatchCount != 1) {
@@ -19608,7 +19604,7 @@ actions_toolkit_1.Toolkit.run(function (tools) { return __awaiter(void 0, void 0
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
-                        console.log("getting PR data");
+                        tools.log("Get pull request data");
                         return [4 /*yield*/, tools.github.issues.get({
                                 owner: tools.context.repo.owner,
                                 repo: tools.context.repo.repo,
@@ -19616,7 +19612,6 @@ actions_toolkit_1.Toolkit.run(function (tools) { return __awaiter(void 0, void 0
                             })];
                     case 1:
                         pullRequest = _a.sent();
-                        tools.log("Got pull request data");
                         return [2 /*return*/, pullRequest.data];
                 }
             });

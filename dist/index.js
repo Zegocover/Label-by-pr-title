@@ -19779,12 +19779,12 @@ actions_toolkit_1.Toolkit.run(function (tools) { return __awaiter(void 0, void 0
                     tools.exit.failure("Did not provide pr number");
                     return [2 /*return*/];
                 }
-                tools.log("PR number is: " + pr_No);
+                tools.log.note("PR number is: " + pr_No);
                 return [4 /*yield*/, GetLabels(configPath, useDefaultLabels)];
             case 1:
                 labels = _b.sent();
                 outputLabels = LabelsToOutput(labels);
-                tools.log("Config labels: " + outputLabels);
+                tools.log.note("Config labels: " + outputLabels);
                 return [4 /*yield*/, GetPRData(pr_No)];
             case 2:
                 pr_Data = (_b.sent());
@@ -19812,7 +19812,7 @@ actions_toolkit_1.Toolkit.run(function (tools) { return __awaiter(void 0, void 0
                 _b.label = 8;
             case 8:
                 if (!PRLabelCheck) return [3 /*break*/, 10];
-                tools.log("Checking PR to ensure only one label of config labels below has been added.");
+                tools.log("Checking PR to ensure only one config label has been added");
                 return [4 /*yield*/, ValidatePRLabel(pr_No, labelsToAdd, outputLabels)];
             case 9:
                 _b.sent();

@@ -19,10 +19,10 @@ Toolkit.run( async tools => {
 		return;
 	}
 
-	tools.log("PR number is: " + pr_No);
+	tools.log.note("PR number is: " + pr_No);
 	const labels               = await GetLabels(configPath, useDefaultLabels);
 	const outputLabels         = LabelsToOutput(labels);
-	tools.log(`Config labels: ${outputLabels}`);
+	tools.log.note(`Config labels: ${outputLabels}`);
 
 	const pr_Data		   = (await GetPRData(pr_No));
 	const pr_Title             = pr_Data.title;
@@ -48,7 +48,7 @@ Toolkit.run( async tools => {
 	}
 
 	if (PRLabelCheck) {
-		tools.log("Checking PR to ensure only one label of config labels below has been added.")
+		tools.log("Checking PR to ensure only one config label has been added")
 		await ValidatePRLabel(pr_No, labelsToAdd, outputLabels)
 	}
 	tools.exit.success("Action complete");

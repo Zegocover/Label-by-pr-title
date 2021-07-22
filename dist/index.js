@@ -19505,9 +19505,9 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 exports.__esModule = true;
+var actions_toolkit_1 = __nccwpck_require__(7045);
 var yaml = __nccwpck_require__(1917);
 var labels_1 = __nccwpck_require__(9234);
-var actions_toolkit_1 = __nccwpck_require__(7045);
 actions_toolkit_1.Toolkit.run(function (tools) { return __awaiter(void 0, void 0, void 0, function () {
     //#endregion
     //#region Github calls

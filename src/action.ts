@@ -1,7 +1,7 @@
+import { Toolkit } from 'actions-toolkit';
 import * as yaml from "js-yaml";
 import {DefineLabelMatches} from "./labels";
 import {LabelAndCriteria} from "./labels";
-import { Toolkit } from 'actions-toolkit';
 
 Toolkit.run( async tools => {
 	//#region Main code

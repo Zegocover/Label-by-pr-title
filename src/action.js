@@ -36,9 +36,9 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 exports.__esModule = true;
+var actions_toolkit_1 = require("actions-toolkit");
 var yaml = require("js-yaml");
 var labels_1 = require("./labels");
-var actions_toolkit_1 = require("actions-toolkit");
 actions_toolkit_1.Toolkit.run(function (tools) { return __awaiter(void 0, void 0, void 0, function () {
     //#endregion
     //#region Github calls

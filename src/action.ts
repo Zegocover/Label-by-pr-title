@@ -63,6 +63,8 @@ Toolkit.run( async tools => {
 		const configLabels : string[] = outputLabels.split(',').map((i) => i.trim());
 		var configLabelMatch = false;
 
+		console.log(`labels from output are: ${configLabels.join(';')}`)
+
 		if (pr_Labels.length<1)
 		{
 			tools.exit.failure("PR has no labels");
@@ -73,7 +75,7 @@ Toolkit.run( async tools => {
 			let name = typeof(label) ===  "string" ? label: label.name;
 			if (!name) {continue;}
 
-			tools.log(`Check pr label ${name} matches what we added ${labelAdded[0]}`);
+			console.log(`Check pr label ${name} matches what we added ${labelAdded[0]}`);
 
 			//Match PR labels with the config labels
 			if (Arr_Match(configLabels, name)) {
@@ -91,6 +93,7 @@ Toolkit.run( async tools => {
 		{
 			tools.exit.failure("No labels from config added to PR");
 		}
+			console.log(`Was this check run?`);
 	}
 
 	/* Remove labels from labelsToAdd if they exist on pull request

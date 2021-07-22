@@ -19524,6 +19524,7 @@ actions_toolkit_1.Toolkit.run(function (tools) { return __awaiter(void 0, void 0
                         pr_Labels = (_a.sent()).labels;
                         configLabels = outputLabels.split(',').map(function (i) { return i.trim(); });
                         configLabelMatch = false;
+                        console.log("labels from output are: " + configLabels.join(';'));
                         if (pr_Labels.length < 1) {
                             tools.exit.failure("PR has no labels");
                         }
@@ -19533,7 +19534,7 @@ actions_toolkit_1.Toolkit.run(function (tools) { return __awaiter(void 0, void 0
                             if (!name_1) {
                                 continue;
                             }
-                            tools.log("Check pr label " + name_1 + " matches what we added " + labelAdded[0]);
+                            console.log("Check pr label " + name_1 + " matches what we added " + labelAdded[0]);
                             //Match PR labels with the config labels
                             if (Arr_Match(configLabels, name_1)) {
                                 configLabelMatch = true;
@@ -19546,6 +19547,7 @@ actions_toolkit_1.Toolkit.run(function (tools) { return __awaiter(void 0, void 0
                         if (configLabelMatch == false) {
                             tools.exit.failure("No labels from config added to PR");
                         }
+                        console.log("Was this check run?");
                         return [2 /*return*/];
                 }
             });

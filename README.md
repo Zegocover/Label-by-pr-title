@@ -36,6 +36,10 @@ chore:
   - ['chore']
 ```
 
+### `pr_label_check`
+
+**Optional** At the end of this action, check PR contains only one label from the config labels. Default is true.
+
 ## Outputs
 
 ### `Labels`

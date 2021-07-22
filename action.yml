@@ -6,8 +6,12 @@ inputs:
     description: 'GitHub token'
     required: true
   config:
-    description: 'Path to Label configuration. N/A to use default'
+    description: 'Path to Label configuration. Leave to use default.'
     default: 'N/A'
+    required: false
+  pr_label_check:
+    description: `Check PR has only one of config labels added. Default to true.`
+    default: true
     required: false
 outputs:
   Labels: # id of output

@@ -2,11 +2,11 @@ import * as yaml from "js-yaml";
 import {DefineLabelMatches} from "./labels";
 import {LabelAndCriteria} from "./labels";
 import { Toolkit } from 'actions-toolkit';
-import { assert } from "console";
 
 Toolkit.run( async tools => {
 	//#region Main code
 	const configPath              = tools.inputs.config;
+	const PRLabelCheck	      = tools.inputs.pr_label_check;
 	const pr_No :number|undefined = tools.context.payload.pull_request?.number;
     	const useDefaultLabels        = configPath ===  "N/A";
 
@@ -43,8 +43,11 @@ Toolkit.run( async tools => {
 		tools.log("No labels to add to PR");
 	}
 
-	ValidatePRLabel(pr_No,labelsToAdd, outputLabels)
-
+	if (PRLabelCheck)
+	{
+		tools.log(`Checking PR to ensure only one label of config labels below has been added.\n ${outputLabels}`)
+		ValidatePRLabel(pr_No,labelsToAdd, outputLabels)
+	}
 	tools.exit.success("Action complete");
 
 	//#endregion
@@ -52,12 +55,12 @@ Toolkit.run( async tools => {
 	//#region Github calls
 
 	/*
-	* Check PR labels to ensure only one of the defined labels has been added to it
+	* Check PR labels to ensure only one of the config labels has been added to it
 	*/
 	async function ValidatePRLabel(pr_No :number , labelAdded :string[], outputLabels :string) {
 
 		const pr_Labels  = (await GetPRData(pr_No)).labels;
-		const definedLabels : string[] = outputLabels.split(',').map((i) => i.trim());
+		const configLabels : string[] = outputLabels.split(',').map((i) => i.trim());
 
 		if (pr_Labels.length > 0) {
 			tools.log("This PR has labels, checking...");
@@ -67,11 +70,11 @@ Toolkit.run( async tools => {
 				let name = typeof(label) ===  "string" ? label: label.name;
 				if (!name) {continue;}
 
-				//Match PR labels with the defined labels
-				if (Arr_Match(definedLabels, name)) {
+				//Match PR labels with the config labels
+				if (Arr_Match(configLabels, name)) {
 					if (labelAdded[0] != name)
 					{
-						tools.exit.failure(`Only one label should be added from the defined labels list.
+						tools.exit.failure(`Only one label should be added from the config labels list.
 						\n Expected ${labelAdded}\n Actual: ${name}.`)
 					}
 					tools.log(`Label ${name} already added to PR`);
@@ -180,7 +183,7 @@ Toolkit.run( async tools => {
 	/* Match the first word in pr_Title with the label's matching
 	*  criteria.
 	*  Return string[] of matched labels, otherwise empty
-	* Remarks - Return is currently limited to first match	
+	* Remarks - Return is currently limited to first match
 	*/
 	function MatchLabelsWithTitle(pr_Title :string, labels :LabelAndCriteria[]) {
 

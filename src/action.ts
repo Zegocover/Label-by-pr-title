@@ -82,6 +82,7 @@ Toolkit.run( async tools => {
 				{
 					tools.exit.failure(`Only one label should be added from the config labels list.
 					\n Expected ${labelAdded}\n Actual: ${name}.`);
+					return;
 				}
 			}
 		}

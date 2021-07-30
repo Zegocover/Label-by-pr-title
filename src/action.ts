@@ -1,245 +1,300 @@
-import * as core from '@actions/core';
-import * as github from '@actions/github';
+import { Toolkit } from 'actions-toolkit';
 import * as yaml from "js-yaml";
 import {DefineLabelMatches} from "./labels";
 import {LabelAndCriteria} from "./labels";
 
-type  OctokitType     = ReturnType<typeof github.getOctokit>;
-
-async function run() {
-  try {
-    	const GITHUB_TOKEN            = core.getInput('GITHUB_TOKEN');
-    	const configPath              = core.getInput('config');
-    	const octokit                 = github.getOctokit(GITHUB_TOKEN);
-    	const pr_No :number|undefined = github.context.payload.pull_request?.number;
+Toolkit.run( async tools => {
+	//#region Main code
+	const configPath              = tools.inputs.config;
+	const PRLabelCheck 	      = !!tools.inputs.pr_label_check;
+	const pr_No :number|undefined = tools.context.payload.pull_request?.number;
     	const useDefaultLabels        = configPath ===  "N/A";
 
-	// ensure pr_No is not undefined type
-	if (!pr_No) {
-		console.log("Failed to retrieve PR number from payload");
+	if (!configPath) {
+		tools.exit.failure(`Config parameter is undefined`);
 		return;
 	}
-	console.log("PR number is: " + pr_No);
+	if (!pr_No) {
+		tools.exit.failure(`Did not provide pr number`);
+		return;
+	}
 
-	const labels       = await GetLabels(octokit, configPath, useDefaultLabels);
-	const pr_Title     = (await GetPRData(octokit, pr_No)).title;
-	var   labelsToAdd  = MatchLabelsWithTitle(pr_Title, labels);
-	const outputLabels = LabelsToOutput(labels);
+	tools.log.note("PR number is: " + pr_No);
+	const labels               = await GetLabels(configPath, useDefaultLabels);
+	const outputLabels         = LabelsToOutput(labels);
+	tools.log.note(`Config labels: ${outputLabels}`);
 
-	core.setOutput("Labels",outputLabels);
+	const pr_Data		   = (await GetPRData(pr_No));
+	const pr_Title             = pr_Data.title;
+	const pr_Labels		   = pr_Data.labels;
+	const labelsToAdd          = MatchLabelsWithTitle(pr_Title, labels);
+	tools.outputs.Labels 	   = outputLabels;
 
 	if (labelsToAdd.length > 0) {
 		//Is the label on the pull request already?
-		labelsToAdd = await LabelExistOnPullRequest(octokit, pr_No, labelsToAdd);
+		const addLabelToPR = await LabelExistOnPullRequest(pr_No, labelsToAdd, pr_Labels);
 
-		if (labelsToAdd.length > 0) {
-			await AddLabel(octokit, pr_No, labelsToAdd);
+		if (addLabelToPR.length > 0) {
+			await AddLabel(pr_No, addLabelToPR);
 		}
 		else {
-			console.log("No new labels added to PR");
+			//Label already exists on PR
+			tools.log("No new labels added to PR");
 		}
 	}
 	else {
-		console.log("No labels to add to PR");
+		// no label criteria matched with PR Title
+		tools.log("No labels to add to PR");
 	}
 
-  } catch (error) {
-    core.setFailed(error.message)
-  }
-}
+	if (PRLabelCheck) {
+		tools.log("Checking PR to ensure only one config label has been added")
+		await ValidatePRLabel(pr_No, labelsToAdd, outputLabels)
+	}
+	tools.exit.success("Action complete");
 
+	//#endregion
 
-/* Add labels to pull request.
-*/
-async function AddLabel(octokit :OctokitType, prNumber :number, labelsToAdd :string[]) {
+	//#region Github calls
 
-	console.log(`Label to add to PR: ${labelsToAdd}`)
+	/*
+	* Ensure PR has only one config label
+	*/
+	async function ValidatePRLabel(pr_No :number, labelAdded :string[], outputLabels :string) {
+		const pr_LabelsData            = (await GetPRData(pr_No)).labels;
+		const configLabels : string[]  = outputLabels.split(',').map((i) => i.trim());
+		var   labelMatchCount          = 0;
+		var   pr_LabelNames : string[] = [];
 
-	await octokit.rest.issues.addLabels({
-		owner: github.context.repo.owner,
-      		repo: github.context.repo.repo,
-		issue_number: prNumber,
-		labels: labelsToAdd
-	});
-	console.log("Labels added");
-}
+		if (pr_Labels.length<1) {
+			tools.exit.failure("PR has no labels");
+			return;
+		}
 
-/* Remove labels from labelsToAdd if they exist on pull request
-*  Return: labelsToAdd
-*/
-async function LabelExistOnPullRequest(octokit : OctokitType, pr_No :number , labelsToAdd :string[]) {
-
-	const pr_Labels  = (await GetPRData(octokit,pr_No)).labels
-
-	if (pr_Labels.length > 0) {
-		console.log("This PR has labels, checking...");
-
-		for (let label of pr_Labels) {
+		for (let label of pr_LabelsData) {
 
 			let name = typeof(label) ===  "string" ? label: label.name;
 			if (!name) {continue;}
 
-			if (Arr_Match(labelsToAdd, name)) {
-				console.log(`Label ${name} already added to PR`);
-				RemoveFromArray(labelsToAdd, name);
+			pr_LabelNames.push(name);
+
+			//Match PR labels with the config labels
+			if (Arr_Match(configLabels, name)) {
+				labelMatchCount++;
 			}
 		}
-	}
 
-	return labelsToAdd;
-}
-
-/* Get the labels and their matching criteria from a file
-*  or function.
-*  Return Labels and matching criteria as LabelAndCriteria[]
-*/
-async function GetLabels(octokit :OctokitType, configPath :string, useDefaultLabels :boolean) {
-
-	var labels :LabelAndCriteria[] = [];
-
-	if (useDefaultLabels) {
-		console.log(`Get label defaults`);
-		labels = DefineLabelMatches();
-	}
-	else {
-		console.log(`Get label config file: ${configPath}`);
-		let configContent : any      = await GetConfigContent(octokit, configPath);
-		let encodedFileContent : any = Buffer.from(configContent.data.content, configContent.data.encoding);
-		let yamlFileContent          = yaml.load(encodedFileContent);
-		labels	                     = GetLabelsFromFile(yamlFileContent);
-	}
-
-	return labels;
-}
-
-
-/* Define the labels to output
-*  Return string of labels
-*/
-function LabelsToOutput(labelAndMatchCriteria :LabelAndCriteria []) {
-
-	const outputLabels = [];
-
-	for (const labelData of labelAndMatchCriteria) {
-		outputLabels.push(labelData.name);
-	}
-	return outputLabels.join(',');
-}
-
-/* Get labels and their matching criteria
-*  from yamlFileContent: [object Object]
-*  return the array of labels and their matching criteria
-*  E.g. Array of [[label1,'matchA','matchB'],['label2','matchC'],...]
-*  Return Labels and matching criteria as LabelAndCriteria[]
-*/
-function GetLabelsFromFile(yamlFileContent:any) {
-
-	var labels : LabelAndCriteria[] = [];
-
-	for (const tag in yamlFileContent) {
-		if (typeof yamlFileContent[tag] === "string") {
-			labels.push({name:tag, criteria:yamlFileContent[tag]});
-		} else if (Array.isArray([yamlFileContent[tag]])) {
-			let labelCriteria :any[] = yamlFileContent[tag].toString().split(',');
-			labels.push({name: tag, criteria: labelCriteria})
-		} else {
-			console.log(`Unknown value type for label ${tag}. Expecting string or array)`);
+		if (labelMatchCount != 1) {
+			tools.exit.failure(`Only one config label expected.
+			\n Expected: ${labelAdded.join(',')}\n Actual: ${pr_LabelNames.join(',')}`);
+			return;
 		}
 	}
-	return labels;
-}
 
-/* Request content from github repo from the path
-*  containing yml config file
-*  Return the octokit response
-*/
-async function GetConfigContent(octokit :OctokitType, path :string) {
+	/* Remove labels from labelsToAdd if they exist on pull request
+	*  Return: labelsToAdd
+	*/
+	async function LabelExistOnPullRequest(pr_No :number , labelsToAdd :string[], pr_Labels : {
+		id: number;
+		node_id: string;
+		url: string;
+		name: string;
+		description: string;
+		color: string;
+		default: boolean;
+	    }[]) {
 
-	var response = await octokit.rest.repos.getContent({
-	  owner: github.context.repo.owner,
-	  repo: github.context.repo.repo,
-	  path: path,
-	  ref: github.context.sha,
-	});
+		const checkedLabels = labelsToAdd.slice();
 
-	return response;
-}
+		if (pr_Labels.length > 0) {
+			tools.log("This PR has labels, checking...");
 
-/* Get the PR Title from PR number
-* Return pull request data property
-*/
-async function GetPRData(octokit :OctokitType, pr_No : number) {
+			for (let label of pr_Labels) {
 
-	const pullRequest = await octokit.rest.issues.get({
-		owner: github.context.repo.owner,
-		repo: github.context.repo.repo,
-		issue_number: pr_No,
-	});
-	return pullRequest.data;
-}
+				let name = typeof(label) ===  "string" ? label: label.name;
+				if (!name) {continue;}
 
-/* Match the first word in pr_Title with the label's matching
-*  criteria.
-*  Return string[] of matched labels, otherwise empty
-* Remarks - Return is currently limited to first match
-*/
-function MatchLabelsWithTitle(pr_Title :string, labels :LabelAndCriteria[]) {
-
-	var matchedLabels : string[] = [];
-
-	console.log(`Matching label criteria with PR title: ${pr_Title}`);
-	for (let labelData of labels)
-	{
-		for (let criterion of labelData.criteria){
-			if (Str_Match(pr_Title,criterion)) {
-				console.log(`Matched... Add Label: [${labelData.name}] to pull request`);
-				matchedLabels.push(labelData.name);
-				return matchedLabels;
+				if (Arr_Match(labelsToAdd, name)) {
+					tools.log(`Label ${name} already added to PR`);
+					RemoveFromArray(checkedLabels, name);
+				}
 			}
 		}
+
+		return checkedLabels;
 	}
 
-	//only reach here if no label is matched
-	return matchedLabels;
-}
+	/* Add labels to pull request.
+	*/
+	async function AddLabel(prNumber :number, labelsToAdd :string[]) {
 
-/* Remove strMatch from arr if it exists
-*/
-function RemoveFromArray(arr :string[], strMatch :String) {
+		tools.log(`Label to add to PR: ${labelsToAdd}`)
 
-	var lowercaseArr = arr.map(function(value){
-		return value.toLowerCase();
-	});
-
-	const index = lowercaseArr.indexOf(strMatch.toLowerCase());
-
-	if (index > -1) {
-		arr.splice(index, 1);
+		await tools.github.issues.addLabels({
+			owner: tools.context.repo.owner,
+			repo: tools.context.repo.repo,
+			issue_number: prNumber,
+			labels: labelsToAdd
+		});
+		tools.log("Labels added");
 	}
-}
 
-/* Given string strBase does it start with strMatch
-*  returns: True|False
-*/
-function Str_Match(strBase :string, strMatch :string) {
+	/* Get the PR Title from PR number
+	* Return pull request data property
+	*/
+	async function GetPRData(pr_No : number) {
+		tools.log("Get pull request data");
+		const pullRequest = await tools.github.issues.get({
+			owner: tools.context.repo.owner,
+			repo: tools.context.repo.repo,
+			issue_number: pr_No,
+		});
 
-	if (strBase.toLowerCase().startsWith(strMatch.toLowerCase())) {
-		return true;
+		return pullRequest.data;
 	}
-	else { return false; }
-}
 
-/* Given array arrBase for each item, does it start with strMatch
-*  returns: True|False
-*/
-function Arr_Match(arrBase :string[], strMatch :string) {
+	/* Request content from github repo from the path
+	*  containing yml config file
+	*  Return the octokit response
+	*/
+	async function GetConfigContent(path :string) {
 
-	for (let item of arrBase) {
-		if (Str_Match(item,strMatch)) {
+		var response = await tools.github.repos.getContent({
+			owner: tools.context.repo.owner,
+			repo: tools.context.repo.repo,
+			path: path,
+			ref: tools.context.sha,
+		});
+
+		return response;
+	}
+	//#endregion
+
+
+	//#region Data manipulation
+
+	/* Get the labels and their matching criteria from a file
+	*  or function.
+	*  Return Labels and matching criteria as LabelAndCriteria[]
+	*/
+	async function GetLabels(configPath :string, useDefaultLabels :boolean) {
+
+		var labels :LabelAndCriteria[] = [];
+
+		if (useDefaultLabels) {
+			tools.log(`Get label defaults`);
+			labels = DefineLabelMatches();
+		}
+		else {
+			tools.log(`Get label config file: ${configPath}`);
+			let configContent : any      = await GetConfigContent(configPath);
+			let encodedFileContent : any = Buffer.from(configContent.data.content, configContent.data.encoding);
+			let yamlFileContent          = yaml.load(encodedFileContent);
+			labels	                     = GetLabelsFromFile(yamlFileContent);
+		}
+
+		return labels;
+	}
+
+	/* Match the first word in pr_Title with the label's matching
+	*  criteria.
+	*  Return string[] of matched labels, otherwise empty
+	* Remarks - Return is currently limited to first match
+	*/
+	function MatchLabelsWithTitle(pr_Title :string, labels :LabelAndCriteria[]) {
+
+		var matchedLabels : string[] = [];
+
+		tools.log(`Matching label criteria with PR title: ${pr_Title}`);
+		for (let labelData of labels)
+		{
+			for (let criterion of labelData.criteria){
+				if (Str_Match(pr_Title,criterion)) {
+					tools.log(`Matched... Add Label: [${labelData.name}] to pull request`);
+					matchedLabels.push(labelData.name);
+					return matchedLabels;
+				}
+			}
+		}
+
+		//only reach here if no label is matched
+		return matchedLabels;
+	}
+
+	/* Remove strMatch from arr if it exists
+	*/
+	function RemoveFromArray(arr :string[], strMatch :String) {
+
+		var lowercaseArr = arr.map(function(value){
+			return value.toLowerCase();
+		});
+
+		const index = lowercaseArr.indexOf(strMatch.toLowerCase());
+
+		if (index > -1) {
+			arr.splice(index, 1);
+		}
+	}
+
+	/* Given string strBase does it start with strMatch
+	*  returns: True|False
+	*/
+	function Str_Match(strBase :string, strMatch :string) {
+
+		if (strBase.toLowerCase().startsWith(strMatch.toLowerCase())) {
 			return true;
 		}
+		else { return false; }
 	}
-	return false;
-}
 
-run()
+	/* Given array arrBase for each item, does it start with strMatch
+	*  returns: True|False
+	*/
+	function Arr_Match(arrBase :string[], strMatch :string) {
+
+		for (let item of arrBase) {
+			if (Str_Match(item,strMatch)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/* Define the labels to output
+	*  Return string of labels
+	*/
+	function LabelsToOutput(labelAndMatchCriteria :LabelAndCriteria []) {
+
+		const outputLabels = [];
+
+		for (const labelData of labelAndMatchCriteria) {
+			outputLabels.push(labelData.name);
+		}
+		return outputLabels.join(',');
+	}
+
+	/* Get labels and their matching criteria
+	*  from yamlFileContent: [object Object]
+	*  return the array of labels and their matching criteria
+	*  E.g. Array of [[label1,'matchA','matchB'],['label2','matchC'],...]
+	*  Return Labels and matching criteria as LabelAndCriteria[]
+	*/
+	function GetLabelsFromFile(yamlFileContent:any) {
+
+		var labels : LabelAndCriteria[] = [];
+
+		for (const tag in yamlFileContent) {
+			if (typeof yamlFileContent[tag] === "string") {
+				labels.push({name:tag, criteria:yamlFileContent[tag]});
+			} else if (Array.isArray([yamlFileContent[tag]])) {
+				let labelCriteria :any[] = yamlFileContent[tag].toString().split(',');
+				labels.push({name: tag, criteria: labelCriteria})
+			} else {
+				tools.log(`Unknown value type for label ${tag}. Expecting string or array)`);
+			}
+		}
+		return labels;
+	}
+	//#endregion
+});
+

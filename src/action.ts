@@ -49,8 +49,10 @@ Toolkit.run( async tools => {
 	}
 
 	if (PRLabelCheck) {
+		console.timeLog("Time before timer");
 			tools.log("Data from PR: Update at 7 seconds: ");
-		sleep(7000);
+		sleep(5000);
+		console.time("5 sec later");
 		const pr_DebugData            = (await GetPRData(pr_No, true)).updated_at;
 			tools.log(pr_DebugData);
 			tools.log(pr_DebugData);

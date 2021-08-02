@@ -358,8 +358,10 @@ actions_toolkit_1.Toolkit.run(function (tools) { return __awaiter(void 0, void 0
                 _b.label = 8;
             case 8:
                 if (!PRLabelCheck) return [3 /*break*/, 11];
+                console.timeLog("Time before timer");
                 tools.log("Data from PR: Update at 7 seconds: ");
-                sleep(7000);
+                sleep(5000);
+                console.time("5 sec later");
                 return [4 /*yield*/, GetPRData(pr_No, true)];
             case 9:
                 pr_DebugData = (_b.sent()).updated_at;

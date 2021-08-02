@@ -1,4 +1,5 @@
 import { Toolkit } from 'actions-toolkit';
+import { SSL_OP_EPHEMERAL_RSA } from 'constants';
 import * as yaml from "js-yaml";
 import {DefineLabelMatches} from "./labels";
 import {LabelAndCriteria} from "./labels";
@@ -48,9 +49,10 @@ Toolkit.run( async tools => {
 	}
 
 	if (PRLabelCheck) {
-			tools.log("Data from PR: Update at1: ");
+			tools.log("Data from PR: Update at 7 seconds: ");
+		sleep(7000);
 		const pr_DebugData            = (await GetPRData(pr_No, true)).updated_at;
-			tools.log("Data from PR: Update at2: ");
+			tools.log(pr_DebugData);
 			tools.log(pr_DebugData);
 		tools.log("Checking PR to ensure only one config label has been added")
 		await ValidatePRLabel(pr_No, labelsToAdd, outputLabels)
@@ -58,7 +60,9 @@ Toolkit.run( async tools => {
 	tools.exit.success("Action complete");
 
 	//#endregion
-
+	function sleep(ms : number) {
+		return new Promise(resolve => setTimeout(resolve, ms));
+	      }
 	//#region Github calls
 
 	/*

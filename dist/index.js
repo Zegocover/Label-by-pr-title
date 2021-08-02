@@ -19510,6 +19510,9 @@ var yaml = __nccwpck_require__(1917);
 var labels_1 = __nccwpck_require__(9234);
 actions_toolkit_1.Toolkit.run(function (tools) { return __awaiter(void 0, void 0, void 0, function () {
     //#endregion
+    function sleep(ms) {
+        return new Promise(function (resolve) { return setTimeout(resolve, ms); });
+    }
     //#region Github calls
     /*
     * Ensure PR has only one config label
@@ -19824,11 +19827,12 @@ actions_toolkit_1.Toolkit.run(function (tools) { return __awaiter(void 0, void 0
                 _b.label = 8;
             case 8:
                 if (!PRLabelCheck) return [3 /*break*/, 11];
-                tools.log("Data from PR: Update at1: ");
+                tools.log("Data from PR: Update at 7 seconds: ");
+                sleep(7000);
                 return [4 /*yield*/, GetPRData(pr_No, true)];
             case 9:
                 pr_DebugData = (_b.sent()).updated_at;
-                tools.log("Data from PR: Update at2: ");
+                tools.log(pr_DebugData);
                 tools.log(pr_DebugData);
                 tools.log("Checking PR to ensure only one config label has been added");
                 return [4 /*yield*/, ValidatePRLabel(pr_No, labelsToAdd, outputLabels)];

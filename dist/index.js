@@ -19519,7 +19519,7 @@ actions_toolkit_1.Toolkit.run(function (tools) { return __awaiter(void 0, void 0
             var pr_LabelsData, configLabels, labelMatchCount, pr_LabelNames, _i, pr_LabelsData_1, label, name_1;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, GetPRData(pr_No)];
+                    case 0: return [4 /*yield*/, GetPRData(pr_No, true)];
                     case 1:
                         pr_LabelsData = (_a.sent()).labels;
                         configLabels = outputLabels.split(',').map(function (i) { return i.trim(); });
@@ -19601,13 +19601,14 @@ actions_toolkit_1.Toolkit.run(function (tools) { return __awaiter(void 0, void 0
     /* Get the PR Title from PR number
     * Return pull request data property
     */
-    function GetPRData(pr_No) {
+    function GetPRData(pr_No, debug) {
         return __awaiter(this, void 0, void 0, function () {
             var pullRequest;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
                         tools.log("Get pull request data");
+                        if (!(debug == false)) return [3 /*break*/, 2];
                         return [4 /*yield*/, tools.github.issues.get({
                                 owner: tools.context.repo.owner,
                                 repo: tools.context.repo.repo,
@@ -19616,7 +19617,17 @@ actions_toolkit_1.Toolkit.run(function (tools) { return __awaiter(void 0, void 0
                             })];
                     case 1:
                         pullRequest = _a.sent();
-                        return [2 /*return*/, pullRequest.data];
+                        return [3 /*break*/, 4];
+                    case 2: return [4 /*yield*/, tools.github.issues.get({
+                            owner: tools.context.repo.owner,
+                            repo: tools.context.repo.repo,
+                            issue_number: pr_No,
+                            ref: tools.context.sha
+                        })];
+                    case 3:
+                        pullRequest = _a.sent();
+                        _a.label = 4;
+                    case 4: return [2 /*return*/, pullRequest.data];
                 }
             });
         });
@@ -19763,7 +19774,7 @@ actions_toolkit_1.Toolkit.run(function (tools) { return __awaiter(void 0, void 0
         }
         return labels;
     }
-    var configPath, PRLabelCheck, pr_No, useDefaultLabels, labels, outputLabels, pr_Data, pr_Title, pr_Labels, labelsToAdd, addLabelToPR;
+    var configPath, PRLabelCheck, pr_No, useDefaultLabels, labels, outputLabels, pr_Data, pr_Title, pr_Labels, labelsToAdd, addLabelToPR, pr_DebugData;
     var _a;
     return __generator(this, function (_b) {
         switch (_b.label) {
@@ -19786,7 +19797,7 @@ actions_toolkit_1.Toolkit.run(function (tools) { return __awaiter(void 0, void 0
                 labels = _b.sent();
                 outputLabels = LabelsToOutput(labels);
                 tools.log.note("Config labels: " + outputLabels);
-                return [4 /*yield*/, GetPRData(pr_No)];
+                return [4 /*yield*/, GetPRData(pr_No, false)];
             case 2:
                 pr_Data = (_b.sent());
                 pr_Title = pr_Data.title;
@@ -19812,13 +19823,18 @@ actions_toolkit_1.Toolkit.run(function (tools) { return __awaiter(void 0, void 0
                 tools.log("No labels to add to PR");
                 _b.label = 8;
             case 8:
-                if (!PRLabelCheck) return [3 /*break*/, 10];
+                if (!PRLabelCheck) return [3 /*break*/, 11];
+                return [4 /*yield*/, GetPRData(pr_No, true)];
+            case 9:
+                pr_DebugData = (_b.sent());
+                tools.log("Data from PR: Update at: ");
+                tools.log(pr_DebugData.updated_at);
                 tools.log("Checking PR to ensure only one config label has been added");
                 return [4 /*yield*/, ValidatePRLabel(pr_No, labelsToAdd, outputLabels)];
-            case 9:
-                _b.sent();
-                _b.label = 10;
             case 10:
+                _b.sent();
+                _b.label = 11;
+            case 11:
                 tools.exit.success("Action complete");
                 return [2 /*return*/];
         }

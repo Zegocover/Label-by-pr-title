@@ -148,6 +148,7 @@ Toolkit.run( async tools => {
 			owner: tools.context.repo.owner,
 			repo: tools.context.repo.repo,
 			issue_number: pr_No,
+			ref: tools.context.sha,
 		});
 
 		return pullRequest.data;

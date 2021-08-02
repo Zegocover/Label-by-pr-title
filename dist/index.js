@@ -19611,7 +19611,8 @@ actions_toolkit_1.Toolkit.run(function (tools) { return __awaiter(void 0, void 0
                         return [4 /*yield*/, tools.github.issues.get({
                                 owner: tools.context.repo.owner,
                                 repo: tools.context.repo.repo,
-                                issue_number: pr_No
+                                issue_number: pr_No,
+                                ref: tools.context.sha
                             })];
                     case 1:
                         pullRequest = _a.sent();

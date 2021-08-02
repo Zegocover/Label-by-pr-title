@@ -19824,11 +19824,12 @@ actions_toolkit_1.Toolkit.run(function (tools) { return __awaiter(void 0, void 0
                 _b.label = 8;
             case 8:
                 if (!PRLabelCheck) return [3 /*break*/, 11];
+                tools.log("Data from PR: Update at1: ");
                 return [4 /*yield*/, GetPRData(pr_No, true)];
             case 9:
-                pr_DebugData = (_b.sent());
-                tools.log("Data from PR: Update at: ");
-                tools.log(pr_DebugData.updated_at);
+                pr_DebugData = (_b.sent()).updated_at;
+                tools.log("Data from PR: Update at2: ");
+                tools.log(pr_DebugData);
                 tools.log("Checking PR to ensure only one config label has been added");
                 return [4 /*yield*/, ValidatePRLabel(pr_No, labelsToAdd, outputLabels)];
             case 10:

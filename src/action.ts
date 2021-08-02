@@ -48,9 +48,10 @@ Toolkit.run( async tools => {
 	}
 
 	if (PRLabelCheck) {
-		const pr_DebugData            = (await GetPRData(pr_No, true));
-			tools.log("Data from PR: Update at: ");
-			tools.log(pr_DebugData.updated_at);
+			tools.log("Data from PR: Update at1: ");
+		const pr_DebugData            = (await GetPRData(pr_No, true)).updated_at;
+			tools.log("Data from PR: Update at2: ");
+			tools.log(pr_DebugData);
 		tools.log("Checking PR to ensure only one config label has been added")
 		await ValidatePRLabel(pr_No, labelsToAdd, outputLabels)
 	}

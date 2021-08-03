@@ -19516,14 +19516,18 @@ actions_toolkit_1.Toolkit.run(function (tools) { return __awaiter(void 0, void 0
             var PREvents, lastIndex, lastEvent, lastEventData, myLabels, _i, myLabels_1, label, name_1;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, tools.github.issues.listEvents({
-                            owner: tools.context.repo.owner,
-                            repo: tools.context.repo.repo,
-                            issue_number: pr_No
-                        })];
+                    case 0:
+                        tools.log("Get list of events");
+                        return [4 /*yield*/, tools.github.issues.listEvents({
+                                owner: tools.context.repo.owner,
+                                repo: tools.context.repo.repo,
+                                issue_number: pr_No
+                            })];
                     case 1:
                         PREvents = _a.sent();
+                        tools.log("Get last event");
                         lastIndex = PREvents.data.length - 1;
+                        tools.log("Index of last event is " + lastIndex);
                         lastEvent = PREvents.data[lastIndex];
                         tools.log("The event name is: " + lastEvent.event + " at " + lastEvent.created_at);
                         if (!(lastEvent.event == 'labeled')) return [3 /*break*/, 3];

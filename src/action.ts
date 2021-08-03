@@ -61,13 +61,16 @@ Toolkit.run( async tools => {
 
 	async function ListEvents(pr_No :number)
 	{
+		tools.log("Get list of events");
 		const PREvents = await tools.github.issues.listEvents({
 			owner: tools.context.repo.owner,
 			repo: tools.context.repo.repo,
 			issue_number: pr_No,
 		});
 
+		tools.log("Get last event");
 		let lastIndex = PREvents.data.length -1
+		tools.log(`Index of last event is ${lastIndex}`);
 		let lastEvent = PREvents.data[lastIndex]
 		tools.log(`The event name is: ${lastEvent.event} at ${lastEvent.created_at}`);
 

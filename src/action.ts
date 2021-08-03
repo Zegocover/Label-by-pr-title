@@ -70,7 +70,7 @@ Toolkit.run( async tools => {
 
 		tools.log("Get last event");
 		for(let event of PREvents.data) {
-			tools.log(`The event name is: ${event.event}`);	
+			tools.log(`The event name is: ${event.event} at ${event.created_at}`);	
 		}
 		let lastIndex = PREvents.data.length -1
 		tools.log(`Index of last event is ${lastIndex}`);

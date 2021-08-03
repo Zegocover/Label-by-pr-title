@@ -44,21 +44,39 @@ actions_toolkit_1.Toolkit.run(function (tools) { return __awaiter(void 0, void 0
     //#region Github calls
     function ListEvents(pr_No) {
         return __awaiter(this, void 0, void 0, function () {
-            var PREvents, _i, _a, event_1;
-            return __generator(this, function (_b) {
-                switch (_b.label) {
+            var PREvents, lastIndex, lastEvent, lastEventData, myLabels, _i, myLabels_1, label, name_1;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
                     case 0: return [4 /*yield*/, tools.github.issues.listEvents({
                             owner: tools.context.repo.owner,
                             repo: tools.context.repo.repo,
                             issue_number: pr_No
                         })];
                     case 1:
-                        PREvents = _b.sent();
-                        for (_i = 0, _a = PREvents.data; _i < _a.length; _i++) {
-                            event_1 = _a[_i];
-                            tools.log("The event name is: " + event_1.event + " at " + event_1.created_at);
+                        PREvents = _a.sent();
+                        lastIndex = PREvents.data.length - 1;
+                        lastEvent = PREvents.data[lastIndex];
+                        tools.log("The event name is: " + lastEvent.event + " at " + lastEvent.created_at);
+                        if (!(lastEvent.event == 'labeled')) return [3 /*break*/, 3];
+                        return [4 /*yield*/, tools.github.issues.getEvent({
+                                owner: tools.context.repo.owner,
+                                repo: tools.context.repo.repo,
+                                event_id: lastEvent.id
+                            })];
+                    case 2:
+                        lastEventData = _a.sent();
+                        myLabels = lastEventData.data.issue.labels;
+                        tools.log("Do we have labels?");
+                        for (_i = 0, myLabels_1 = myLabels; _i < myLabels_1.length; _i++) {
+                            label = myLabels_1[_i];
+                            name_1 = typeof (label) === "string" ? label : label.name;
+                            if (!name_1) {
+                                continue;
+                            }
+                            tools.log("PR Labels from labelled event: " + name_1);
                         }
-                        return [2 /*return*/];
+                        _a.label = 3;
+                    case 3: return [2 /*return*/];
                 }
             });
         });
@@ -68,7 +86,7 @@ actions_toolkit_1.Toolkit.run(function (tools) { return __awaiter(void 0, void 0
     */
     function ValidatePRLabel(pr_No, labelAdded, outputLabels) {
         return __awaiter(this, void 0, void 0, function () {
-            var pr_LabelsData, configLabels, labelMatchCount, pr_LabelNames, _i, _a, label, name_1;
+            var pr_LabelsData, configLabels, labelMatchCount, pr_LabelNames, _i, _a, label, name_2;
             return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0: return [4 /*yield*/, tools.github.issues.listLabelsOnIssue({
@@ -89,14 +107,14 @@ actions_toolkit_1.Toolkit.run(function (tools) { return __awaiter(void 0, void 0
                         }
                         for (_i = 0, _a = pr_LabelsData.data; _i < _a.length; _i++) {
                             label = _a[_i];
-                            name_1 = typeof (label) === "string" ? label : label.name;
-                            if (!name_1) {
+                            name_2 = typeof (label) === "string" ? label : label.name;
+                            if (!name_2) {
                                 continue;
                             }
-                            pr_LabelNames.push(name_1);
-                            tools.log("PR Label: " + name_1);
+                            pr_LabelNames.push(name_2);
+                            tools.log("PR Label: " + name_2);
                             //Match PR labels with the config labels
-                            if (Arr_Match(configLabels, name_1)) {
+                            if (Arr_Match(configLabels, name_2)) {
                                 labelMatchCount++;
                             }
                         }
@@ -114,20 +132,20 @@ actions_toolkit_1.Toolkit.run(function (tools) { return __awaiter(void 0, void 0
     */
     function LabelExistOnPullRequest(pr_No, labelsToAdd, pr_Labels) {
         return __awaiter(this, void 0, void 0, function () {
-            var checkedLabels, _i, pr_Labels_1, label, name_2;
+            var checkedLabels, _i, pr_Labels_1, label, name_3;
             return __generator(this, function (_a) {
                 checkedLabels = labelsToAdd.slice();
                 if (pr_Labels.length > 0) {
                     tools.log("This PR has labels, checking...");
                     for (_i = 0, pr_Labels_1 = pr_Labels; _i < pr_Labels_1.length; _i++) {
                         label = pr_Labels_1[_i];
-                        name_2 = typeof (label) === "string" ? label : label.name;
-                        if (!name_2) {
+                        name_3 = typeof (label) === "string" ? label : label.name;
+                        if (!name_3) {
                             continue;
                         }
-                        if (Arr_Match(labelsToAdd, name_2)) {
-                            tools.log("Label " + name_2 + " already added to PR");
-                            RemoveFromArray(checkedLabels, name_2);
+                        if (Arr_Match(labelsToAdd, name_3)) {
+                            tools.log("Label " + name_3 + " already added to PR");
+                            RemoveFromArray(checkedLabels, name_3);
                         }
                     }
                 }

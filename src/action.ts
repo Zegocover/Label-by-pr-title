@@ -67,9 +67,28 @@ Toolkit.run( async tools => {
 			issue_number: pr_No,
 		});
 
-		for(let event of PREvents.data) {
-			tools.log(`The event name is: ${event.event} at ${event.created_at}`);	
+		let lastIndex = PREvents.data.length -1
+		let lastEvent = PREvents.data[lastIndex]
+		tools.log(`The event name is: ${lastEvent.event} at ${lastEvent.created_at}`);
+
+		if (lastEvent.event == 'labeled') {
+			const lastEventData = await tools.github.issues.getEvent({
+				owner: tools.context.repo.owner,
+				repo: tools.context.repo.repo,
+				event_id: lastEvent.id
+			});
+			const myLabels = lastEventData.data.issue.labels;
+			tools.log("Do we have labels?");
+			for (let label of myLabels)
+			{
+				let name = typeof(label) ===  "string" ? label: label.name;
+				if (!name) {continue;}
+				tools.log(`PR Labels from labelled event: ${name}`);	
+			}
 		}
+
+
+
 
 	}
 

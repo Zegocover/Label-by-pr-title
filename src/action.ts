@@ -1,6 +1,7 @@
 import { Toolkit } from 'actions-toolkit';
 import { SSL_OP_EPHEMERAL_RSA } from 'constants';
 import * as yaml from "js-yaml";
+import { start } from 'repl';
 import {DefineLabelMatches} from "./labels";
 import {LabelAndCriteria} from "./labels";
 
@@ -10,6 +11,8 @@ Toolkit.run( async tools => {
 	const PRLabelCheck 	      = !!tools.inputs.pr_label_check;
 	const pr_No :number|undefined = tools.context.payload.pull_request?.number;
     	const useDefaultLabels        = configPath ===  "N/A";
+	var utcStartTime = Date.now();
+	
 
 	if (!configPath) {
 		tools.exit.failure(`Config parameter is undefined`);
@@ -49,7 +52,7 @@ Toolkit.run( async tools => {
 	}
 
 	if (PRLabelCheck) {
-		await ListEvents(pr_No);
+		await ListEvents(pr_No, utcStartTime);
 		tools.log("Checking PR to ensure only one config label has been added")
 		await ValidatePRLabel(pr_No, labelsToAdd, outputLabels)
 	}
@@ -59,7 +62,7 @@ Toolkit.run( async tools => {
 
 	//#region Github calls
 
-	async function ListEvents(pr_No :number)
+	async function ListEvents(pr_No :number, startTime :number)
 	{
 		tools.log("Get list of events");
 		var pageNo = 0;
@@ -94,13 +97,18 @@ Toolkit.run( async tools => {
 		tools.log("Get last event");
 		for(let event of PREvents.data) {
 			tools.log(`The event name is: ${event.event} at ${event.created_at}`);	
+			
 		}
+		
+
 		let lastIndex = PREvents.data.length -1
 		tools.log(`Index of last event is ${lastIndex}`);
 		let lastEvent = PREvents.data[lastIndex]
 		tools.log(`The event name is: ${lastEvent.event} at ${lastEvent.created_at}`);
+		const lastEventTime = Math.round(new Date(lastEvent.created_at).getTime()/1000)
 
-		if (lastEvent.event == 'labeled') {
+		if (lastEvent.event == 'labeled' && startTime > lastEventTime) {
+			tools.log("Caught Last time");
 			const lastEventData = await tools.github.issues.getEvent({
 				owner: tools.context.repo.owner,
 				repo: tools.context.repo.repo,

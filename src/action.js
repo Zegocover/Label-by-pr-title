@@ -42,9 +42,9 @@ var labels_1 = require("./labels");
 actions_toolkit_1.Toolkit.run(function (tools) { return __awaiter(void 0, void 0, void 0, function () {
     //#endregion
     //#region Github calls
-    function ListEvents(pr_No) {
+    function ListEvents(pr_No, startTime) {
         return __awaiter(this, void 0, void 0, function () {
-            var pageNo, link, eventList, PREvents, _i, _a, event_1, lastIndex, lastEvent, lastEventData, myLabels, _b, myLabels_1, label, name_1;
+            var pageNo, link, eventList, PREvents, _i, _a, event_1, lastIndex, lastEvent, lastEventTime, lastEventData, myLabels, _b, myLabels_1, label, name_1;
             return __generator(this, function (_c) {
                 switch (_c.label) {
                     case 0:
@@ -89,7 +89,9 @@ actions_toolkit_1.Toolkit.run(function (tools) { return __awaiter(void 0, void 0
                         tools.log("Index of last event is " + lastIndex);
                         lastEvent = PREvents.data[lastIndex];
                         tools.log("The event name is: " + lastEvent.event + " at " + lastEvent.created_at);
-                        if (!(lastEvent.event == 'labeled')) return [3 /*break*/, 7];
+                        lastEventTime = Math.round(new Date(lastEvent.created_at).getTime() / 1000);
+                        if (!(lastEvent.event == 'labeled' && startTime > lastEventTime)) return [3 /*break*/, 7];
+                        tools.log("Caught Last time");
                         return [4 /*yield*/, tools.github.issues.getEvent({
                                 owner: tools.context.repo.owner,
                                 repo: tools.context.repo.repo,
@@ -390,7 +392,7 @@ actions_toolkit_1.Toolkit.run(function (tools) { return __awaiter(void 0, void 0
         }
         return labels;
     }
-    var configPath, PRLabelCheck, pr_No, useDefaultLabels, labels, outputLabels, pr_Data, pr_Title, pr_Labels, labelsToAdd, addLabelToPR;
+    var configPath, PRLabelCheck, pr_No, useDefaultLabels, utcStartTime, labels, outputLabels, pr_Data, pr_Title, pr_Labels, labelsToAdd, addLabelToPR;
     var _a;
     return __generator(this, function (_b) {
         switch (_b.label) {
@@ -399,6 +401,7 @@ actions_toolkit_1.Toolkit.run(function (tools) { return __awaiter(void 0, void 0
                 PRLabelCheck = !!tools.inputs.pr_label_check;
                 pr_No = (_a = tools.context.payload.pull_request) === null || _a === void 0 ? void 0 : _a.number;
                 useDefaultLabels = configPath === "N/A";
+                utcStartTime = Date.now();
                 if (!configPath) {
                     tools.exit.failure("Config parameter is undefined");
                     return [2 /*return*/];
@@ -440,7 +443,7 @@ actions_toolkit_1.Toolkit.run(function (tools) { return __awaiter(void 0, void 0
                 _b.label = 8;
             case 8:
                 if (!PRLabelCheck) return [3 /*break*/, 11];
-                return [4 /*yield*/, ListEvents(pr_No)];
+                return [4 /*yield*/, ListEvents(pr_No, utcStartTime)];
             case 9:
                 _b.sent();
                 tools.log("Checking PR to ensure only one config label has been added");

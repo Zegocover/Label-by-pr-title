@@ -50,7 +50,6 @@ Toolkit.run( async tools => {
 	}
 
 	if (PRLabelCheck) {
-		//await ListEvents(pr_No, actionStartTime);
 		tools.log("Checking PR to ensure only one config label has been added")
 		await ValidatePRLabel(pr_No, labelsToAdd, outputLabels, actionStartTime)
 	}
@@ -211,20 +210,6 @@ Toolkit.run( async tools => {
 
 		if (pr_LabelsData.length > 0) {
 			labelIterator = pr_LabelsData;
-
-			for (let label of pr_LabelsData) {
-
-				let name = typeof(label) ===  "string" ? label: label.name;
-				if (!name) {continue;}
-
-				pr_LabelNames.push(name);
-				tools.log(`PR Label: ${name}`);
-
-				//Match PR labels with the config labels
-				if (Arr_Match(configLabels, name)) {
-					labelMatchCount++;
-				}
-			}
 		} else {
 			/* PR data when labels are manually removed such that no labels exist, this action will add the label
 			* but fail to retrieve labels from GetPRData(). This is a known limitation cref:

@@ -19656,12 +19656,12 @@ actions_toolkit_1.Toolkit.run(function (tools) { return __awaiter(void 0, void 0
     */
     function ValidatePRLabel(pr_No, labelAdded, outputLabels, actionStartTime) {
         return __awaiter(this, void 0, void 0, function () {
-            var pr_LabelsData, configLabels, labelMatchCount, pr_LabelNames, labelIterator, _i, pr_LabelsData_1, label, name_2, _a, labelIterator_1, label, name_3;
-            return __generator(this, function (_b) {
-                switch (_b.label) {
+            var pr_LabelsData, configLabels, labelMatchCount, pr_LabelNames, labelIterator, _i, labelIterator_1, label, name_2;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
                     case 0: return [4 /*yield*/, GetPRData(pr_No, true)];
                     case 1:
-                        pr_LabelsData = (_b.sent()).labels;
+                        pr_LabelsData = (_a.sent()).labels;
                         configLabels = outputLabels.split(',').map(function (i) { return i.trim(); });
                         labelMatchCount = 0;
                         pr_LabelNames = [];
@@ -19672,19 +19672,6 @@ actions_toolkit_1.Toolkit.run(function (tools) { return __awaiter(void 0, void 0
                         labelIterator = [];
                         if (!(pr_LabelsData.length > 0)) return [3 /*break*/, 2];
                         labelIterator = pr_LabelsData;
-                        for (_i = 0, pr_LabelsData_1 = pr_LabelsData; _i < pr_LabelsData_1.length; _i++) {
-                            label = pr_LabelsData_1[_i];
-                            name_2 = typeof (label) === "string" ? label : label.name;
-                            if (!name_2) {
-                                continue;
-                            }
-                            pr_LabelNames.push(name_2);
-                            tools.log("PR Label: " + name_2);
-                            //Match PR labels with the config labels
-                            if (Arr_Match(configLabels, name_2)) {
-                                labelMatchCount++;
-                            }
-                        }
                         return [3 /*break*/, 4];
                     case 2: return [4 /*yield*/, GetLabelsFromEvent(pr_No, actionStartTime)];
                     case 3:
@@ -19694,19 +19681,19 @@ actions_toolkit_1.Toolkit.run(function (tools) { return __awaiter(void 0, void 0
                         * workaround: Find the labeled event that was created by this action and retrieve the labels from
                         * event data.
                         */
-                        labelIterator = _b.sent();
-                        _b.label = 4;
+                        labelIterator = _a.sent();
+                        _a.label = 4;
                     case 4:
-                        for (_a = 0, labelIterator_1 = labelIterator; _a < labelIterator_1.length; _a++) {
-                            label = labelIterator_1[_a];
-                            name_3 = typeof (label) === "string" ? label : label.name;
-                            if (!name_3) {
+                        for (_i = 0, labelIterator_1 = labelIterator; _i < labelIterator_1.length; _i++) {
+                            label = labelIterator_1[_i];
+                            name_2 = typeof (label) === "string" ? label : label.name;
+                            if (!name_2) {
                                 continue;
                             }
-                            pr_LabelNames.push(name_3);
-                            tools.log("PR Label: " + name_3);
+                            pr_LabelNames.push(name_2);
+                            tools.log("PR Label: " + name_2);
                             //Match PR labels with the config labels
-                            if (Arr_Match(configLabels, name_3)) {
+                            if (Arr_Match(configLabels, name_2)) {
                                 labelMatchCount++;
                             }
                         }
@@ -19724,20 +19711,20 @@ actions_toolkit_1.Toolkit.run(function (tools) { return __awaiter(void 0, void 0
     */
     function LabelExistOnPullRequest(pr_No, labelsToAdd, pr_Labels) {
         return __awaiter(this, void 0, void 0, function () {
-            var checkedLabels, _i, pr_Labels_1, label, name_4;
+            var checkedLabels, _i, pr_Labels_1, label, name_3;
             return __generator(this, function (_a) {
                 checkedLabels = labelsToAdd.slice();
                 if (pr_Labels.length > 0) {
                     tools.log("This PR has labels, checking...");
                     for (_i = 0, pr_Labels_1 = pr_Labels; _i < pr_Labels_1.length; _i++) {
                         label = pr_Labels_1[_i];
-                        name_4 = typeof (label) === "string" ? label : label.name;
-                        if (!name_4) {
+                        name_3 = typeof (label) === "string" ? label : label.name;
+                        if (!name_3) {
                             continue;
                         }
-                        if (Arr_Match(labelsToAdd, name_4)) {
-                            tools.log("Label " + name_4 + " already added to PR");
-                            RemoveFromArray(checkedLabels, name_4);
+                        if (Arr_Match(labelsToAdd, name_3)) {
+                            tools.log("Label " + name_3 + " already added to PR");
+                            RemoveFromArray(checkedLabels, name_3);
                         }
                     }
                 }
@@ -20001,7 +19988,6 @@ actions_toolkit_1.Toolkit.run(function (tools) { return __awaiter(void 0, void 0
                 _b.label = 8;
             case 8:
                 if (!PRLabelCheck) return [3 /*break*/, 10];
-                //await ListEvents(pr_No, actionStartTime);
                 tools.log("Checking PR to ensure only one config label has been added");
                 return [4 /*yield*/, ValidatePRLabel(pr_No, labelsToAdd, outputLabels, actionStartTime)];
             case 9:

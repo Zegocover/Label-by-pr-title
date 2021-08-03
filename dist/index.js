@@ -19543,6 +19543,7 @@ actions_toolkit_1.Toolkit.run(function (tools) { return __awaiter(void 0, void 0
                                 continue;
                             }
                             pr_LabelNames.push(name_1);
+                            tools.log("PR Label: " + name_1);
                             //Match PR labels with the config labels
                             if (Arr_Match(configLabels, name_1)) {
                                 labelMatchCount++;

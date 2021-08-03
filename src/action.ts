@@ -91,6 +91,7 @@ Toolkit.run( async tools => {
 			if (!name) {continue;}
 
 			pr_LabelNames.push(name);
+			tools.log(`PR Label: ${name}`);
 
 			//Match PR labels with the config labels
 			if (Arr_Match(configLabels, name)) {

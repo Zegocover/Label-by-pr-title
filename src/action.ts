@@ -49,21 +49,29 @@ Toolkit.run( async tools => {
 	}
 
 	if (PRLabelCheck) {
-		console.time("StartTime")
-		console.timeLog("StartTime");
-		tools.log("Data from PR: Update at 5 seconds: ");
-		sleep(5000);
-		console.timeLog("StartTime");
+		ListEvents(pr_No);
 		tools.log("Checking PR to ensure only one config label has been added")
 		await ValidatePRLabel(pr_No, labelsToAdd, outputLabels)
 	}
 	tools.exit.success("Action complete");
 
 	//#endregion
-	function sleep(ms : number) {
-		return new Promise(resolve => setTimeout(resolve, ms));
-	      }
+
 	//#region Github calls
+
+	async function ListEvents(pr_No :number)
+	{
+		const PREvents = await tools.github.issues.listEvents({
+			owner: tools.context.repo.owner,
+			repo: tools.context.repo.repo,
+			issue_number: pr_No,
+		});
+
+		for(let event of PREvents.data) {
+			tools.log(`The event name is: ${event.event}`);	
+		}
+
+	}
 
 	/*
 	* Ensure PR has only one config label

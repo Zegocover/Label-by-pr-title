@@ -19510,10 +19510,28 @@ var yaml = __nccwpck_require__(1917);
 var labels_1 = __nccwpck_require__(9234);
 actions_toolkit_1.Toolkit.run(function (tools) { return __awaiter(void 0, void 0, void 0, function () {
     //#endregion
-    function sleep(ms) {
-        return new Promise(function (resolve) { return setTimeout(resolve, ms); });
-    }
     //#region Github calls
+    function ListEvents(pr_No) {
+        return __awaiter(this, void 0, void 0, function () {
+            var PREvents, _i, _a, event_1;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
+                    case 0: return [4 /*yield*/, tools.github.issues.listEvents({
+                            owner: tools.context.repo.owner,
+                            repo: tools.context.repo.repo,
+                            issue_number: pr_No
+                        })];
+                    case 1:
+                        PREvents = _b.sent();
+                        for (_i = 0, _a = PREvents.data; _i < _a.length; _i++) {
+                            event_1 = _a[_i];
+                            tools.log("The event name is: " + event_1.event);
+                        }
+                        return [2 /*return*/];
+                }
+            });
+        });
+    }
     /*
     * Ensure PR has only one config label
     */
@@ -19841,11 +19859,7 @@ actions_toolkit_1.Toolkit.run(function (tools) { return __awaiter(void 0, void 0
                 _b.label = 8;
             case 8:
                 if (!PRLabelCheck) return [3 /*break*/, 10];
-                console.time("StartTime");
-                console.timeLog("StartTime");
-                tools.log("Data from PR: Update at 5 seconds: ");
-                sleep(5000);
-                console.timeLog("StartTime");
+                ListEvents(pr_No);
                 tools.log("Checking PR to ensure only one config label has been added");
                 return [4 /*yield*/, ValidatePRLabel(pr_No, labelsToAdd, outputLabels)];
             case 9:

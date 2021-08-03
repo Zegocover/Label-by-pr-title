@@ -19580,86 +19580,12 @@ actions_toolkit_1.Toolkit.run(function (tools) { return __awaiter(void 0, void 0
             });
         });
     }
-    function ListEvents(pr_No, startTime) {
-        return __awaiter(this, void 0, void 0, function () {
-            var pageNo, link, eventList, PREvents, _i, _a, event_1, lastIndex, lastEvent, lastEventTime, lastEventData, myLabels, _b, myLabels_1, label, name_1;
-            return __generator(this, function (_c) {
-                switch (_c.label) {
-                    case 0:
-                        tools.log("Get list of events");
-                        pageNo = 0;
-                        _c.label = 1;
-                    case 1:
-                        pageNo++;
-                        tools.log("Page number is: " + pageNo);
-                        return [4 /*yield*/, tools.github.issues.listEvents({
-                                owner: tools.context.repo.owner,
-                                repo: tools.context.repo.repo,
-                                issue_number: pr_No,
-                                page: pageNo
-                            })];
-                    case 2:
-                        eventList = _c.sent();
-                        link = eventList.headers.link;
-                        console.log("The link to the header is: " + link);
-                        if (!link) {
-                            tools.exit.failure("link is undefined for page " + pageNo);
-                            return [3 /*break*/, 4];
-                        }
-                        _c.label = 3;
-                    case 3:
-                        if (link.includes("rel=\"next\"")) return [3 /*break*/, 1];
-                        _c.label = 4;
-                    case 4: return [4 /*yield*/, tools.github.issues.listEvents({
-                            owner: tools.context.repo.owner,
-                            repo: tools.context.repo.repo,
-                            issue_number: pr_No,
-                            page: pageNo
-                        })];
-                    case 5:
-                        PREvents = _c.sent();
-                        tools.log("Get last event");
-                        for (_i = 0, _a = PREvents.data; _i < _a.length; _i++) {
-                            event_1 = _a[_i];
-                            tools.log("The event name is: " + event_1.event + " at " + event_1.created_at);
-                        }
-                        lastIndex = PREvents.data.length - 1;
-                        tools.log("Index of last event is " + lastIndex);
-                        lastEvent = PREvents.data[lastIndex];
-                        tools.log("The event name is: " + lastEvent.event + " at " + lastEvent.created_at);
-                        lastEventTime = Math.round(new Date(lastEvent.created_at).getTime() / 1000);
-                        tools.log("Is start time " + lastEventTime + " greater than or equal to " + startTime);
-                        if (!(lastEvent.event == 'labeled' && lastEventTime >= startTime)) return [3 /*break*/, 7];
-                        tools.log("Caught Last time");
-                        return [4 /*yield*/, tools.github.issues.getEvent({
-                                owner: tools.context.repo.owner,
-                                repo: tools.context.repo.repo,
-                                event_id: lastEvent.id
-                            })];
-                    case 6:
-                        lastEventData = _c.sent();
-                        myLabels = lastEventData.data.issue.labels;
-                        tools.log("Do we have labels?");
-                        for (_b = 0, myLabels_1 = myLabels; _b < myLabels_1.length; _b++) {
-                            label = myLabels_1[_b];
-                            name_1 = typeof (label) === "string" ? label : label.name;
-                            if (!name_1) {
-                                continue;
-                            }
-                            tools.log("PR Labels from labelled event: " + name_1);
-                        }
-                        _c.label = 7;
-                    case 7: return [2 /*return*/];
-                }
-            });
-        });
-    }
     /*
     * Ensure PR has only one config label
     */
     function ValidatePRLabel(pr_No, labelAdded, outputLabels, actionStartTime) {
         return __awaiter(this, void 0, void 0, function () {
-            var pr_LabelsData, configLabels, labelMatchCount, pr_LabelNames, labelIterator, _i, labelIterator_1, label, name_2;
+            var pr_LabelsData, configLabels, labelMatchCount, pr_LabelNames, labelIterator, _i, labelIterator_1, label, name_1;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0: return [4 /*yield*/, GetPRData(pr_No)];
@@ -19691,14 +19617,14 @@ actions_toolkit_1.Toolkit.run(function (tools) { return __awaiter(void 0, void 0
                     case 4:
                         for (_i = 0, labelIterator_1 = labelIterator; _i < labelIterator_1.length; _i++) {
                             label = labelIterator_1[_i];
-                            name_2 = typeof (label) === "string" ? label : label.name;
-                            if (!name_2) {
+                            name_1 = typeof (label) === "string" ? label : label.name;
+                            if (!name_1) {
                                 continue;
                             }
-                            pr_LabelNames.push(name_2);
-                            tools.log("PR Label: " + name_2);
+                            pr_LabelNames.push(name_1);
+                            tools.log("PR Label: " + name_1);
                             //Match PR labels with the config labels
-                            if (Arr_Match(configLabels, name_2)) {
+                            if (Arr_Match(configLabels, name_1)) {
                                 labelMatchCount++;
                             }
                         }
@@ -19716,20 +19642,20 @@ actions_toolkit_1.Toolkit.run(function (tools) { return __awaiter(void 0, void 0
     */
     function LabelExistOnPullRequest(pr_No, labelsToAdd, pr_Labels) {
         return __awaiter(this, void 0, void 0, function () {
-            var checkedLabels, _i, pr_Labels_1, label, name_3;
+            var checkedLabels, _i, pr_Labels_1, label, name_2;
             return __generator(this, function (_a) {
                 checkedLabels = labelsToAdd.slice();
                 if (pr_Labels.length > 0) {
                     tools.log("This PR has labels, checking...");
                     for (_i = 0, pr_Labels_1 = pr_Labels; _i < pr_Labels_1.length; _i++) {
                         label = pr_Labels_1[_i];
-                        name_3 = typeof (label) === "string" ? label : label.name;
-                        if (!name_3) {
+                        name_2 = typeof (label) === "string" ? label : label.name;
+                        if (!name_2) {
                             continue;
                         }
-                        if (Arr_Match(labelsToAdd, name_3)) {
-                            tools.log("Label " + name_3 + " already added to PR");
-                            RemoveFromArray(checkedLabels, name_3);
+                        if (Arr_Match(labelsToAdd, name_2)) {
+                            tools.log("Label " + name_2 + " already added to PR");
+                            RemoveFromArray(checkedLabels, name_2);
                         }
                     }
                 }

@@ -193,7 +193,7 @@ actions_toolkit_1.Toolkit.run(function (tools) { return __awaiter(void 0, void 0
             var pr_LabelsData, configLabels, labelMatchCount, pr_LabelNames, labelIterator, _i, labelIterator_1, label, name_2;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, GetPRData(pr_No, true)];
+                    case 0: return [4 /*yield*/, GetPRData(pr_No)];
                     case 1:
                         pr_LabelsData = (_a.sent()).labels;
                         configLabels = outputLabels.split(',').map(function (i) { return i.trim(); });
@@ -201,6 +201,7 @@ actions_toolkit_1.Toolkit.run(function (tools) { return __awaiter(void 0, void 0
                         pr_LabelNames = [];
                         labelIterator = [];
                         if (!(pr_LabelsData.length > 0)) return [3 /*break*/, 2];
+                        tools.log("Pull request has labels");
                         labelIterator = pr_LabelsData;
                         return [3 /*break*/, 4];
                     case 2:
@@ -292,14 +293,13 @@ actions_toolkit_1.Toolkit.run(function (tools) { return __awaiter(void 0, void 0
     /* Get the PR Title from PR number
     * Return pull request data property
     */
-    function GetPRData(pr_No, debug) {
+    function GetPRData(pr_No) {
         return __awaiter(this, void 0, void 0, function () {
             var pullRequest;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
                         tools.log("Get pull request data");
-                        if (!(debug == false)) return [3 /*break*/, 2];
                         return [4 /*yield*/, tools.github.issues.get({
                                 owner: tools.context.repo.owner,
                                 repo: tools.context.repo.repo,
@@ -308,24 +308,7 @@ actions_toolkit_1.Toolkit.run(function (tools) { return __awaiter(void 0, void 0
                             })];
                     case 1:
                         pullRequest = _a.sent();
-                        return [3 /*break*/, 5];
-                    case 2: return [4 /*yield*/, tools.github.issues.listLabelsOnIssue({
-                            owner: tools.context.repo.owner,
-                            repo: tools.context.repo.repo,
-                            issue_number: pr_No
-                        })];
-                    case 3:
-                        pullRequest = _a.sent();
-                        return [4 /*yield*/, tools.github.issues.get({
-                                owner: tools.context.repo.owner,
-                                repo: tools.context.repo.repo,
-                                issue_number: pr_No,
-                                ref: tools.context.sha
-                            })];
-                    case 4:
-                        pullRequest = _a.sent();
-                        _a.label = 5;
-                    case 5: return [2 /*return*/, pullRequest.data];
+                        return [2 /*return*/, pullRequest.data];
                 }
             });
         });
@@ -496,7 +479,7 @@ actions_toolkit_1.Toolkit.run(function (tools) { return __awaiter(void 0, void 0
                 labels = _b.sent();
                 outputLabels = LabelsToOutput(labels);
                 tools.log.note("Config labels: " + outputLabels);
-                return [4 /*yield*/, GetPRData(pr_No, false)];
+                return [4 /*yield*/, GetPRData(pr_No)];
             case 2:
                 pr_Data = (_b.sent());
                 pr_Title = pr_Data.title;

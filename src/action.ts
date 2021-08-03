@@ -26,7 +26,7 @@ Toolkit.run( async tools => {
 	const outputLabels         = LabelsToOutput(labels);
 	tools.log.note(`Config labels: ${outputLabels}`);
 
-	const pr_Data		   = (await GetPRData(pr_No, false));
+	const pr_Data		   = (await GetPRData(pr_No));
 	const pr_Title             = pr_Data.title;
 	const pr_Labels		   = pr_Data.labels;
 	const labelsToAdd          = MatchLabelsWithTitle(pr_Title, labels);
@@ -191,7 +191,7 @@ Toolkit.run( async tools => {
 	* Ensure PR has only one config label
 	*/
 	async function ValidatePRLabel(pr_No :number, labelAdded :string[], outputLabels :string, actionStartTime :number) {
-		const pr_LabelsData            = (await GetPRData(pr_No, true)).labels;
+		const pr_LabelsData            = (await GetPRData(pr_No)).labels;
 		const configLabels : string[]  = outputLabels.split(',').map((i) => i.trim());
 		var   labelMatchCount          = 0;
 		var   pr_LabelNames : string[] = [];
@@ -206,6 +206,7 @@ Toolkit.run( async tools => {
 		    }[] = [];
 
 		if (pr_LabelsData.length > 0) {
+			tools.log("Pull request has labels");
 			labelIterator = pr_LabelsData;
 		} else {
 			tools.log("No labels retrieved on pull request. Attempt to retrieve labeled event data created by this action.")
@@ -292,32 +293,16 @@ Toolkit.run( async tools => {
 	/* Get the PR Title from PR number
 	* Return pull request data property
 	*/
-	async function GetPRData(pr_No : number, debug : boolean) {
+	async function GetPRData(pr_No : number) {
 		tools.log("Get pull request data");
 		var pullRequest;
 
-		if (debug == false) {
 		pullRequest = await tools.github.issues.get({
 			owner: tools.context.repo.owner,
 			repo: tools.context.repo.repo,
 			issue_number: pr_No,
 			ref: tools.context.sha,
 		});
-		} else {
-			pullRequest = await tools.github.issues.listLabelsOnIssue({
-			owner: tools.context.repo.owner,
-			repo: tools.context.repo.repo,
-			issue_number: pr_No,
-
-			});
-
-			pullRequest = await tools.github.issues.get({
-			owner: tools.context.repo.owner,
-			repo: tools.context.repo.repo,
-			issue_number: pr_No,
-			ref: tools.context.sha,
-			});
-		}
 
 		return pullRequest.data;
 	}

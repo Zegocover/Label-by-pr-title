@@ -19571,8 +19571,11 @@ actions_toolkit_1.Toolkit.run(function (tools) { return __awaiter(void 0, void 0
                     case 2:
                         lastEventData = _a.sent();
                         labels = lastEventData.data.issue.labels;
-                        _a.label = 3;
-                    case 3: return [2 /*return*/, labels];
+                        return [3 /*break*/, 4];
+                    case 3:
+                        tools.exit.failure("No labeled event was created by this action");
+                        _a.label = 4;
+                    case 4: return [2 /*return*/, labels];
                 }
             });
         });
@@ -19673,7 +19676,9 @@ actions_toolkit_1.Toolkit.run(function (tools) { return __awaiter(void 0, void 0
                         if (!(pr_LabelsData.length > 0)) return [3 /*break*/, 2];
                         labelIterator = pr_LabelsData;
                         return [3 /*break*/, 4];
-                    case 2: return [4 /*yield*/, GetLabelsFromEvent(pr_No, actionStartTime)];
+                    case 2:
+                        tools.log("No labels retrieved on pull request. Attempt to retrieve labeled event data created by this action.");
+                        return [4 /*yield*/, GetLabelsFromEvent(pr_No, actionStartTime)];
                     case 3:
                         /* PR data when labels are manually removed such that no labels exist, this action will add the label
                         * but fail to retrieve labels from GetPRData(). This is a known limitation cref:
@@ -19682,6 +19687,9 @@ actions_toolkit_1.Toolkit.run(function (tools) { return __awaiter(void 0, void 0
                         * event data.
                         */
                         labelIterator = _a.sent();
+                        if (labelIterator.length == 0) {
+                            tools.exit.failure("No labels found on labeled event");
+                        }
                         _a.label = 4;
                     case 4:
                         for (_i = 0, labelIterator_1 = labelIterator; _i < labelIterator_1.length; _i++) {

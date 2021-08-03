@@ -112,6 +112,8 @@ Toolkit.run( async tools => {
 				event_id: lastEvent.id
 			});
 			labels = lastEventData.data.issue.labels;
+		} else {
+			tools.exit.failure("No labeled event was created by this action");
 		}
 
 		return labels;
@@ -211,6 +213,7 @@ Toolkit.run( async tools => {
 		if (pr_LabelsData.length > 0) {
 			labelIterator = pr_LabelsData;
 		} else {
+			tools.log("No labels retrieved on pull request. Attempt to retrieve labeled event data created by this action.")
 			/* PR data when labels are manually removed such that no labels exist, this action will add the label
 			* but fail to retrieve labels from GetPRData(). This is a known limitation cref:
 			* https://github.community/t/previous-job-runs-should-be-overridden-by-subsequent-runs/17522
@@ -218,6 +221,9 @@ Toolkit.run( async tools => {
 			* event data.
 			*/
 			labelIterator = await GetLabelsFromEvent(pr_No, actionStartTime);
+			if(labelIterator.length == 0) {
+				tools.exit.failure("No labels found on labeled event");
+			}
 		}
 
 		for (let label of labelIterator) {

@@ -11,7 +11,7 @@ Toolkit.run( async tools => {
 	const PRLabelCheck 	      = !!tools.inputs.pr_label_check;
 	const pr_No :number|undefined = tools.context.payload.pull_request?.number;
     	const useDefaultLabels        = configPath ===  "N/A";
-	var utcStartTime = Date.now()/1000;
+	var utcStartTime = Math.floor(Date.now()/1000);
 	tools.log(`Start time is ${utcStartTime}`);	
 	if (!configPath) {
 		tools.exit.failure(`Config parameter is undefined`);
@@ -105,9 +105,9 @@ Toolkit.run( async tools => {
 		let lastEvent = PREvents.data[lastIndex]
 		tools.log(`The event name is: ${lastEvent.event} at ${lastEvent.created_at}`);
 		const lastEventTime = Math.round(new Date(lastEvent.created_at).getTime()/1000)
-		tools.log(`Is start time ${lastEventTime} greater than ${startTime}`);
+		tools.log(`Is start time ${lastEventTime} greater than or equal to ${startTime}`);
 
-		if (lastEvent.event == 'labeled' && lastEventTime > startTime) {
+		if (lastEvent.event == 'labeled' && lastEventTime >= startTime) {
 			tools.log("Caught Last time");
 			const lastEventData = await tools.github.issues.getEvent({
 				owner: tools.context.repo.owner,

@@ -19559,8 +19559,8 @@ actions_toolkit_1.Toolkit.run(function (tools) { return __awaiter(void 0, void 0
                         lastEvent = PREvents.data[lastIndex];
                         tools.log("The event name is: " + lastEvent.event + " at " + lastEvent.created_at);
                         lastEventTime = Math.round(new Date(lastEvent.created_at).getTime() / 1000);
-                        tools.log("Is start time " + lastEventTime + " greater than " + startTime);
-                        if (!(lastEvent.event == 'labeled' && lastEventTime > startTime)) return [3 /*break*/, 7];
+                        tools.log("Is start time " + lastEventTime + " greater than or equal to " + startTime);
+                        if (!(lastEvent.event == 'labeled' && lastEventTime >= startTime)) return [3 /*break*/, 7];
                         tools.log("Caught Last time");
                         return [4 /*yield*/, tools.github.issues.getEvent({
                                 owner: tools.context.repo.owner,
@@ -19871,7 +19871,7 @@ actions_toolkit_1.Toolkit.run(function (tools) { return __awaiter(void 0, void 0
                 PRLabelCheck = !!tools.inputs.pr_label_check;
                 pr_No = (_a = tools.context.payload.pull_request) === null || _a === void 0 ? void 0 : _a.number;
                 useDefaultLabels = configPath === "N/A";
-                utcStartTime = Date.now() / 1000;
+                utcStartTime = Math.floor(Date.now() / 1000);
                 tools.log("Start time is " + utcStartTime);
                 if (!configPath) {
                     tools.exit.failure("Config parameter is undefined");

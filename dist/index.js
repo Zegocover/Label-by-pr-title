@@ -19522,6 +19522,7 @@ actions_toolkit_1.Toolkit.run(function (tools) { return __awaiter(void 0, void 0
                         _c.label = 1;
                     case 1:
                         pageNo++;
+                        tools.log("Page number is: " + pageNo);
                         return [4 /*yield*/, tools.github.issues.listEvents({
                                 owner: tools.context.repo.owner,
                                 repo: tools.context.repo.repo,
@@ -19534,6 +19535,13 @@ actions_toolkit_1.Toolkit.run(function (tools) { return __awaiter(void 0, void 0
                         console.log("The link to the header is: " + link);
                         if (!link) {
                             tools.log("link is undefined for page " + pageNo);
+                            return [3 /*break*/, 4];
+                        }
+                        if (link.includes("rel=\"next\"")) {
+                            tools.log("Page number: " + pageNo + " Next page exists");
+                        }
+                        else {
+                            tools.log("no more pages. Last page is: " + pageNo);
                         }
                         _c.label = 3;
                     case 3:

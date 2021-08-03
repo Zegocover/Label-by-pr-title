@@ -67,6 +67,7 @@ Toolkit.run( async tools => {
 
 		do {
 			pageNo++;
+				tools.log(`Page number is: ${pageNo}`);
 			let eventList = await tools.github.issues.listEvents({
 				owner: tools.context.repo.owner,
 				repo: tools.context.repo.repo,
@@ -74,9 +75,17 @@ Toolkit.run( async tools => {
 				page:pageNo
 			});
 			link = eventList.headers.link
+			
 		console.log(`The link to the header is: ${link}`);
 			if (!link){
 				tools.log(`link is undefined for page ${pageNo}`);
+				break;
+			}
+			if (link.includes(`rel="next"`))
+			{
+				tools.log(`Page number: ${pageNo} Next page exists`);
+			} else {
+				tools.log("no more pages. Last page is: " + pageNo);
 			}
 
 		} while (typeof(link) ===  "string")

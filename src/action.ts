@@ -54,8 +54,6 @@ Toolkit.run( async tools => {
 		sleep(5000);
 		console.time("5 sec later");
 		const pr_DebugData            = (await GetPRData(pr_No, true)).updated_at;
-			tools.log(pr_DebugData);
-			tools.log(pr_DebugData);
 		tools.log("Checking PR to ensure only one config label has been added")
 		await ValidatePRLabel(pr_No, labelsToAdd, outputLabels)
 	}
@@ -139,13 +137,19 @@ Toolkit.run( async tools => {
 	async function AddLabel(prNumber :number, labelsToAdd :string[]) {
 
 		tools.log(`Label to add to PR: ${labelsToAdd}`)
-
-		await tools.github.issues.addLabels({
+		await tools.github.issues.update({
 			owner: tools.context.repo.owner,
 			repo: tools.context.repo.repo,
 			issue_number: prNumber,
 			labels: labelsToAdd
-		});
+		})
+
+	/*	await tools.github.issues.addLabels({
+			owner: tools.context.repo.owner,
+			repo: tools.context.repo.repo,
+			issue_number: prNumber,
+			labels: labelsToAdd
+		});*/
 		tools.log("Labels added");
 	}
 

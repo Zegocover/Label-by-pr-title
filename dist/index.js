@@ -19587,14 +19587,27 @@ actions_toolkit_1.Toolkit.run(function (tools) { return __awaiter(void 0, void 0
                 switch (_a.label) {
                     case 0:
                         tools.log("Label to add to PR: " + labelsToAdd);
-                        return [4 /*yield*/, tools.github.issues.addLabels({
+                        return [4 /*yield*/, tools.github.issues.update({
                                 owner: tools.context.repo.owner,
                                 repo: tools.context.repo.repo,
                                 issue_number: prNumber,
                                 labels: labelsToAdd
-                            })];
+                            })
+                            /*	await tools.github.issues.addLabels({
+                                    owner: tools.context.repo.owner,
+                                    repo: tools.context.repo.repo,
+                                    issue_number: prNumber,
+                                    labels: labelsToAdd
+                                });*/
+                        ];
                     case 1:
                         _a.sent();
+                        /*	await tools.github.issues.addLabels({
+                                owner: tools.context.repo.owner,
+                                repo: tools.context.repo.repo,
+                                issue_number: prNumber,
+                                labels: labelsToAdd
+                            });*/
                         tools.log("Labels added");
                         return [2 /*return*/];
                 }
@@ -19834,8 +19847,6 @@ actions_toolkit_1.Toolkit.run(function (tools) { return __awaiter(void 0, void 0
                 return [4 /*yield*/, GetPRData(pr_No, true)];
             case 9:
                 pr_DebugData = (_b.sent()).updated_at;
-                tools.log(pr_DebugData);
-                tools.log(pr_DebugData);
                 tools.log("Checking PR to ensure only one config label has been added");
                 return [4 /*yield*/, ValidatePRLabel(pr_No, labelsToAdd, outputLabels)];
             case 10:

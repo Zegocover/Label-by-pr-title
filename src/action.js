@@ -65,24 +65,18 @@ actions_toolkit_1.Toolkit.run(function (tools) { return __awaiter(void 0, void 0
                         link = eventList.headers.link;
                         console.log("The link to the header is: " + link);
                         if (!link) {
-                            tools.log("link is undefined for page " + pageNo);
+                            tools.exit.failure("link is undefined for page " + pageNo);
                             return [3 /*break*/, 4];
-                        }
-                        if (link.includes("rel=\"next\"")) {
-                            tools.log("Page number: " + pageNo + " Next page exists");
-                        }
-                        else {
-                            tools.log("no more pages. Last page is: " + pageNo);
                         }
                         _c.label = 3;
                     case 3:
-                        if (typeof (link) === "string") return [3 /*break*/, 1];
+                        if (link.includes("rel=\"next\"")) return [3 /*break*/, 1];
                         _c.label = 4;
                     case 4: return [4 /*yield*/, tools.github.issues.listEvents({
                             owner: tools.context.repo.owner,
                             repo: tools.context.repo.repo,
                             issue_number: pr_No,
-                            page: pageNo - 1
+                            page: pageNo
                         })];
                     case 5:
                         PREvents = _c.sent();

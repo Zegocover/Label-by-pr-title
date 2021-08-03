@@ -78,23 +78,16 @@ Toolkit.run( async tools => {
 			
 		console.log(`The link to the header is: ${link}`);
 			if (!link){
-				tools.log(`link is undefined for page ${pageNo}`);
+				tools.exit.failure(`link is undefined for page ${pageNo}`);
 				break;
 			}
-			if (link.includes(`rel="next"`))
-			{
-				tools.log(`Page number: ${pageNo} Next page exists`);
-			} else {
-				tools.log("no more pages. Last page is: " + pageNo);
-			}
-
-		} while (typeof(link) ===  "string")
+		} while (link.includes(`rel="next"`))
 
 		const PREvents = await tools.github.issues.listEvents({
 			owner: tools.context.repo.owner,
 			repo: tools.context.repo.repo,
 			issue_number: pr_No,
-			page:pageNo-1
+			page:pageNo
 		});
 		
 

@@ -56,7 +56,7 @@ actions_toolkit_1.Toolkit.run(function (tools) { return __awaiter(void 0, void 0
                         PREvents = _b.sent();
                         for (_i = 0, _a = PREvents.data; _i < _a.length; _i++) {
                             event_1 = _a[_i];
-                            tools.log("The event name is: " + event_1.event);
+                            tools.log("The event name is: " + event_1.event + " at " + event_1.created_at);
                         }
                         return [2 /*return*/];
                 }

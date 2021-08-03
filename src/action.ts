@@ -68,7 +68,7 @@ Toolkit.run( async tools => {
 		});
 
 		for(let event of PREvents.data) {
-			tools.log(`The event name is: ${event.event}`);	
+			tools.log(`The event name is: ${event.event} at ${event.created_at}`);	
 		}
 
 	}

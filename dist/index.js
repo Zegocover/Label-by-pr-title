@@ -19513,7 +19513,7 @@ actions_toolkit_1.Toolkit.run(function (tools) { return __awaiter(void 0, void 0
     //#region Github calls
     function ListEvents(pr_No) {
         return __awaiter(this, void 0, void 0, function () {
-            var PREvents, _i, _a, event_1, lastIndex, lastEvent, lastEventData, myLabels, _b, myLabels_1, label, name_1;
+            var PREvents, link, _i, _a, event_1, lastIndex, lastEvent, lastEventData, myLabels, _b, myLabels_1, label, name_1;
             return __generator(this, function (_c) {
                 switch (_c.label) {
                     case 0:
@@ -19525,6 +19525,11 @@ actions_toolkit_1.Toolkit.run(function (tools) { return __awaiter(void 0, void 0
                             })];
                     case 1:
                         PREvents = _c.sent();
+                        link = PREvents.headers.link;
+                        if (!link) {
+                            return [2 /*return*/];
+                        }
+                        console.log("The link to the header is: " + link);
                         tools.log("Get last event");
                         for (_i = 0, _a = PREvents.data; _i < _a.length; _i++) {
                             event_1 = _a[_i];

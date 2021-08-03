@@ -67,6 +67,12 @@ Toolkit.run( async tools => {
 			repo: tools.context.repo.repo,
 			issue_number: pr_No,
 		});
+		const link = PREvents.headers.link
+		if (!link) { return;}
+		console.log(`The link to the header is: ${link}`);
+
+
+
 
 		tools.log("Get last event");
 		for(let event of PREvents.data) {

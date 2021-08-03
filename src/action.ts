@@ -74,7 +74,8 @@ Toolkit.run( async tools => {
 			owner: tools.context.repo.owner,
 			repo: tools.context.repo.repo,
 			issue_number: pr_No,
-
+			per_page:10,
+			page:1
 			});
 		const configLabels : string[]  = outputLabels.split(',').map((i) => i.trim());
 		var   labelMatchCount          = 0;
@@ -144,19 +145,12 @@ Toolkit.run( async tools => {
 	async function AddLabel(prNumber :number, labelsToAdd :string[]) {
 
 		tools.log(`Label to add to PR: ${labelsToAdd}`)
-		await tools.github.issues.update({
+		await tools.github.issues.addLabels({
 			owner: tools.context.repo.owner,
 			repo: tools.context.repo.repo,
 			issue_number: prNumber,
 			labels: labelsToAdd
-		})
-
-	/*	await tools.github.issues.addLabels({
-			owner: tools.context.repo.owner,
-			repo: tools.context.repo.repo,
-			issue_number: prNumber,
-			labels: labelsToAdd
-		});*/
+		});
 		tools.log("Labels added");
 	}
 

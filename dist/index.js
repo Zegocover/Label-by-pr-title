@@ -19525,7 +19525,9 @@ actions_toolkit_1.Toolkit.run(function (tools) { return __awaiter(void 0, void 0
                     case 0: return [4 /*yield*/, tools.github.issues.listLabelsOnIssue({
                             owner: tools.context.repo.owner,
                             repo: tools.context.repo.repo,
-                            issue_number: pr_No
+                            issue_number: pr_No,
+                            per_page: 10,
+                            page: 1
                         })];
                     case 1:
                         pr_LabelsData = _b.sent();
@@ -19592,27 +19594,14 @@ actions_toolkit_1.Toolkit.run(function (tools) { return __awaiter(void 0, void 0
                 switch (_a.label) {
                     case 0:
                         tools.log("Label to add to PR: " + labelsToAdd);
-                        return [4 /*yield*/, tools.github.issues.update({
+                        return [4 /*yield*/, tools.github.issues.addLabels({
                                 owner: tools.context.repo.owner,
                                 repo: tools.context.repo.repo,
                                 issue_number: prNumber,
                                 labels: labelsToAdd
-                            })
-                            /*	await tools.github.issues.addLabels({
-                                    owner: tools.context.repo.owner,
-                                    repo: tools.context.repo.repo,
-                                    issue_number: prNumber,
-                                    labels: labelsToAdd
-                                });*/
-                        ];
+                            })];
                     case 1:
                         _a.sent();
-                        /*	await tools.github.issues.addLabels({
-                                owner: tools.context.repo.owner,
-                                repo: tools.context.repo.repo,
-                                issue_number: prNumber,
-                                labels: labelsToAdd
-                            });*/
                         tools.log("Labels added");
                         return [2 /*return*/];
                 }

@@ -62,17 +62,29 @@ Toolkit.run( async tools => {
 	async function ListEvents(pr_No :number)
 	{
 		tools.log("Get list of events");
+		var pageNo = 1;
+		var link;
+
+		do {
+			let eventList = await tools.github.issues.listEvents({
+				owner: tools.context.repo.owner,
+				repo: tools.context.repo.repo,
+				issue_number: pr_No,
+				page:pageNo
+			});
+			link = eventList.headers.link
+		console.log(`The link to the header is: ${link}`);
+			pageNo++;
+
+		} while (!link)
+
 		const PREvents = await tools.github.issues.listEvents({
 			owner: tools.context.repo.owner,
 			repo: tools.context.repo.repo,
 			issue_number: pr_No,
+			page:pageNo-1
 		});
-		const link = PREvents.headers.link
-		if (!link) { return;}
-		console.log(`The link to the header is: ${link}`);
-
-
-
+		
 
 		tools.log("Get last event");
 		for(let event of PREvents.data) {

@@ -49,29 +49,35 @@ actions_toolkit_1.Toolkit.run(function (tools) { return __awaiter(void 0, void 0
                 switch (_c.label) {
                     case 0:
                         tools.log("Get list of events");
-                        pageNo = 1;
+                        pageNo = 0;
                         _c.label = 1;
-                    case 1: return [4 /*yield*/, tools.github.issues.listEvents({
-                            owner: tools.context.repo.owner,
-                            repo: tools.context.repo.repo,
-                            issue_number: pr_No,
-                            page: pageNo
-                        })];
+                    case 1:
+                        pageNo++;
+                        return [4 /*yield*/, tools.github.issues.listEvents({
+                                owner: tools.context.repo.owner,
+                                repo: tools.context.repo.repo,
+                                issue_number: pr_No,
+                                page: pageNo
+                            })];
                     case 2:
                         eventList = _c.sent();
                         link = eventList.headers.link;
                         console.log("The link to the header is: " + link);
-                        pageNo++;
+                        if (!link) {
+                            tools.log("link is undefined for page " + pageNo);
+                        }
                         _c.label = 3;
                     case 3:
                         if (!link) return [3 /*break*/, 1];
                         _c.label = 4;
-                    case 4: return [4 /*yield*/, tools.github.issues.listEvents({
-                            owner: tools.context.repo.owner,
-                            repo: tools.context.repo.repo,
-                            issue_number: pr_No,
-                            page: pageNo - 1
-                        })];
+                    case 4:
+                        link;
+                        return [4 /*yield*/, tools.github.issues.listEvents({
+                                owner: tools.context.repo.owner,
+                                repo: tools.context.repo.repo,
+                                issue_number: pr_No,
+                                page: pageNo - 1
+                            })];
                     case 5:
                         PREvents = _c.sent();
                         tools.log("Get last event");

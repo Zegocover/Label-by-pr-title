@@ -62,10 +62,11 @@ Toolkit.run( async tools => {
 	async function ListEvents(pr_No :number)
 	{
 		tools.log("Get list of events");
-		var pageNo = 1;
+		var pageNo = 0;
 		var link;
 
 		do {
+			pageNo++;
 			let eventList = await tools.github.issues.listEvents({
 				owner: tools.context.repo.owner,
 				repo: tools.context.repo.repo,
@@ -74,10 +75,12 @@ Toolkit.run( async tools => {
 			});
 			link = eventList.headers.link
 		console.log(`The link to the header is: ${link}`);
-			pageNo++;
+			if (!link){
+				tools.log(`link is undefined for page ${pageNo}`);
+			}
 
 		} while (!link)
-
+link
 		const PREvents = await tools.github.issues.listEvents({
 			owner: tools.context.repo.owner,
 			repo: tools.context.repo.repo,

@@ -79,8 +79,8 @@ Toolkit.run( async tools => {
 				tools.log(`link is undefined for page ${pageNo}`);
 			}
 
-		} while (!link)
-link
+		} while (typeof(link) ===  "string")
+
 		const PREvents = await tools.github.issues.listEvents({
 			owner: tools.context.repo.owner,
 			repo: tools.context.repo.repo,

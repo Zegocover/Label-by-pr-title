@@ -49,11 +49,11 @@ Toolkit.run( async tools => {
 	}
 
 	if (PRLabelCheck) {
-		console.timeLog("Time before timer");
-			tools.log("Data from PR: Update at 7 seconds: ");
+		console.time("StartTime")
+		console.timeLog("StartTime");
+		tools.log("Data from PR: Update at 5 seconds: ");
 		sleep(5000);
-		console.time("5 sec later");
-		const pr_DebugData            = (await GetPRData(pr_No, true)).updated_at;
+		console.timeLog("StartTime");
 		tools.log("Checking PR to ensure only one config label has been added")
 		await ValidatePRLabel(pr_No, labelsToAdd, outputLabels)
 	}
@@ -69,7 +69,13 @@ Toolkit.run( async tools => {
 	* Ensure PR has only one config label
 	*/
 	async function ValidatePRLabel(pr_No :number, labelAdded :string[], outputLabels :string) {
-		const pr_LabelsData            = (await GetPRData(pr_No, true)).labels;
+		//const pr_LabelsData            = (await GetPRData(pr_No, true)).labels;
+		const pr_LabelsData            = await tools.github.issues.listLabelsOnIssue({
+			owner: tools.context.repo.owner,
+			repo: tools.context.repo.repo,
+			issue_number: pr_No,
+
+			});
 		const configLabels : string[]  = outputLabels.split(',').map((i) => i.trim());
 		var   labelMatchCount          = 0;
 		var   pr_LabelNames : string[] = [];
@@ -79,7 +85,7 @@ Toolkit.run( async tools => {
 			return;
 		}
 
-		for (let label of pr_LabelsData) {
+		for (let label of pr_LabelsData.data) {
 
 			let name = typeof(label) ===  "string" ? label: label.name;
 			if (!name) {continue;}
@@ -159,6 +165,7 @@ Toolkit.run( async tools => {
 	async function GetPRData(pr_No : number, debug : boolean) {
 		tools.log("Get pull request data");
 		var pullRequest;
+
 		if (debug == false) {
 		pullRequest = await tools.github.issues.get({
 			owner: tools.context.repo.owner,
@@ -167,6 +174,13 @@ Toolkit.run( async tools => {
 			ref: tools.context.sha,
 		});
 		} else {
+			pullRequest = await tools.github.issues.listLabelsOnIssue({
+			owner: tools.context.repo.owner,
+			repo: tools.context.repo.repo,
+			issue_number: pr_No,
+
+			});
+
 			pullRequest = await tools.github.issues.get({
 			owner: tools.context.repo.owner,
 			repo: tools.context.repo.repo,

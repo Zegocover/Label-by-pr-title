@@ -19519,12 +19519,16 @@ actions_toolkit_1.Toolkit.run(function (tools) { return __awaiter(void 0, void 0
     */
     function ValidatePRLabel(pr_No, labelAdded, outputLabels) {
         return __awaiter(this, void 0, void 0, function () {
-            var pr_LabelsData, configLabels, labelMatchCount, pr_LabelNames, _i, pr_LabelsData_1, label, name_1;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0: return [4 /*yield*/, GetPRData(pr_No, true)];
+            var pr_LabelsData, configLabels, labelMatchCount, pr_LabelNames, _i, _a, label, name_1;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
+                    case 0: return [4 /*yield*/, tools.github.issues.listLabelsOnIssue({
+                            owner: tools.context.repo.owner,
+                            repo: tools.context.repo.repo,
+                            issue_number: pr_No
+                        })];
                     case 1:
-                        pr_LabelsData = (_a.sent()).labels;
+                        pr_LabelsData = _b.sent();
                         configLabels = outputLabels.split(',').map(function (i) { return i.trim(); });
                         labelMatchCount = 0;
                         pr_LabelNames = [];
@@ -19532,8 +19536,8 @@ actions_toolkit_1.Toolkit.run(function (tools) { return __awaiter(void 0, void 0
                             tools.exit.failure("PR has no labels");
                             return [2 /*return*/];
                         }
-                        for (_i = 0, pr_LabelsData_1 = pr_LabelsData; _i < pr_LabelsData_1.length; _i++) {
-                            label = pr_LabelsData_1[_i];
+                        for (_i = 0, _a = pr_LabelsData.data; _i < _a.length; _i++) {
+                            label = _a[_i];
                             name_1 = typeof (label) === "string" ? label : label.name;
                             if (!name_1) {
                                 continue;
@@ -19633,17 +19637,24 @@ actions_toolkit_1.Toolkit.run(function (tools) { return __awaiter(void 0, void 0
                             })];
                     case 1:
                         pullRequest = _a.sent();
-                        return [3 /*break*/, 4];
-                    case 2: return [4 /*yield*/, tools.github.issues.get({
+                        return [3 /*break*/, 5];
+                    case 2: return [4 /*yield*/, tools.github.issues.listLabelsOnIssue({
                             owner: tools.context.repo.owner,
                             repo: tools.context.repo.repo,
-                            issue_number: pr_No,
-                            ref: tools.context.sha
+                            issue_number: pr_No
                         })];
                     case 3:
                         pullRequest = _a.sent();
-                        _a.label = 4;
-                    case 4: return [2 /*return*/, pullRequest.data];
+                        return [4 /*yield*/, tools.github.issues.get({
+                                owner: tools.context.repo.owner,
+                                repo: tools.context.repo.repo,
+                                issue_number: pr_No,
+                                ref: tools.context.sha
+                            })];
+                    case 4:
+                        pullRequest = _a.sent();
+                        _a.label = 5;
+                    case 5: return [2 /*return*/, pullRequest.data];
                 }
             });
         });
@@ -19790,7 +19801,7 @@ actions_toolkit_1.Toolkit.run(function (tools) { return __awaiter(void 0, void 0
         }
         return labels;
     }
-    var configPath, PRLabelCheck, pr_No, useDefaultLabels, labels, outputLabels, pr_Data, pr_Title, pr_Labels, labelsToAdd, addLabelToPR, pr_DebugData;
+    var configPath, PRLabelCheck, pr_No, useDefaultLabels, labels, outputLabels, pr_Data, pr_Title, pr_Labels, labelsToAdd, addLabelToPR;
     var _a;
     return __generator(this, function (_b) {
         switch (_b.label) {
@@ -19839,20 +19850,18 @@ actions_toolkit_1.Toolkit.run(function (tools) { return __awaiter(void 0, void 0
                 tools.log("No labels to add to PR");
                 _b.label = 8;
             case 8:
-                if (!PRLabelCheck) return [3 /*break*/, 11];
-                console.timeLog("Time before timer");
-                tools.log("Data from PR: Update at 7 seconds: ");
+                if (!PRLabelCheck) return [3 /*break*/, 10];
+                console.time("StartTime");
+                console.timeLog("StartTime");
+                tools.log("Data from PR: Update at 5 seconds: ");
                 sleep(5000);
-                console.time("5 sec later");
-                return [4 /*yield*/, GetPRData(pr_No, true)];
-            case 9:
-                pr_DebugData = (_b.sent()).updated_at;
+                console.timeLog("StartTime");
                 tools.log("Checking PR to ensure only one config label has been added");
                 return [4 /*yield*/, ValidatePRLabel(pr_No, labelsToAdd, outputLabels)];
-            case 10:
+            case 9:
                 _b.sent();
-                _b.label = 11;
-            case 11:
+                _b.label = 10;
+            case 10:
                 tools.exit.success("Action complete");
                 return [2 /*return*/];
         }

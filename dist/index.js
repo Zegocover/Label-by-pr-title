@@ -19668,10 +19668,6 @@ actions_toolkit_1.Toolkit.run(function (tools) { return __awaiter(void 0, void 0
                         configLabels = outputLabels.split(',').map(function (i) { return i.trim(); });
                         labelMatchCount = 0;
                         pr_LabelNames = [];
-                        if (pr_Labels.length < 1) {
-                            tools.exit.failure("PR has no labels");
-                            return [2 /*return*/];
-                        }
                         labelIterator = [];
                         if (!(pr_LabelsData.length > 0)) return [3 /*break*/, 2];
                         labelIterator = pr_LabelsData;

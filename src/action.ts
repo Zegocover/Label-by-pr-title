@@ -195,11 +195,6 @@ Toolkit.run( async tools => {
 		const configLabels : string[]  = outputLabels.split(',').map((i) => i.trim());
 		var   labelMatchCount          = 0;
 		var   pr_LabelNames : string[] = [];
-
-		if (pr_Labels.length<1) {
-			tools.exit.failure("PR has no labels");
-			return;
-		}
 		var labelIterator : {
 			id: number;
 			node_id: string;

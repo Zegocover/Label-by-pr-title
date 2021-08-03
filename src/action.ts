@@ -12,6 +12,7 @@ Toolkit.run( async tools => {
 	const pr_No :number|undefined = tools.context.payload.pull_request?.number;
     	const useDefaultLabels        = configPath ===  "N/A";
 	var utcStartTime = Date.now();
+	tools.log(`Start time is ${utcStartTime}`);
 	
 
 	if (!configPath) {
@@ -106,6 +107,7 @@ Toolkit.run( async tools => {
 		let lastEvent = PREvents.data[lastIndex]
 		tools.log(`The event name is: ${lastEvent.event} at ${lastEvent.created_at}`);
 		const lastEventTime = Math.round(new Date(lastEvent.created_at).getTime()/1000)
+		tools.log(`Is start time ${startTime} greater than ${lastEventTime}`);
 
 		if (lastEvent.event == 'labeled' && startTime > lastEventTime) {
 			tools.log("Caught Last time");

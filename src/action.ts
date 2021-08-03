@@ -49,7 +49,7 @@ Toolkit.run( async tools => {
 	}
 
 	if (PRLabelCheck) {
-		ListEvents(pr_No);
+		await ListEvents(pr_No);
 		tools.log("Checking PR to ensure only one config label has been added")
 		await ValidatePRLabel(pr_No, labelsToAdd, outputLabels)
 	}
@@ -69,6 +69,9 @@ Toolkit.run( async tools => {
 		});
 
 		tools.log("Get last event");
+		for(let event of PREvents.data) {
+			tools.log(`The event name is: ${event.event}`);	
+		}
 		let lastIndex = PREvents.data.length -1
 		tools.log(`Index of last event is ${lastIndex}`);
 		let lastEvent = PREvents.data[lastIndex]

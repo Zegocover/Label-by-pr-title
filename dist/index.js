@@ -19513,9 +19513,9 @@ actions_toolkit_1.Toolkit.run(function (tools) { return __awaiter(void 0, void 0
     //#region Github calls
     function ListEvents(pr_No) {
         return __awaiter(this, void 0, void 0, function () {
-            var PREvents, lastIndex, lastEvent, lastEventData, myLabels, _i, myLabels_1, label, name_1;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
+            var PREvents, _i, _a, event_1, lastIndex, lastEvent, lastEventData, myLabels, _b, myLabels_1, label, name_1;
+            return __generator(this, function (_c) {
+                switch (_c.label) {
                     case 0:
                         tools.log("Get list of events");
                         return [4 /*yield*/, tools.github.issues.listEvents({
@@ -19524,8 +19524,12 @@ actions_toolkit_1.Toolkit.run(function (tools) { return __awaiter(void 0, void 0
                                 issue_number: pr_No
                             })];
                     case 1:
-                        PREvents = _a.sent();
+                        PREvents = _c.sent();
                         tools.log("Get last event");
+                        for (_i = 0, _a = PREvents.data; _i < _a.length; _i++) {
+                            event_1 = _a[_i];
+                            tools.log("The event name is: " + event_1.event);
+                        }
                         lastIndex = PREvents.data.length - 1;
                         tools.log("Index of last event is " + lastIndex);
                         lastEvent = PREvents.data[lastIndex];
@@ -19537,18 +19541,18 @@ actions_toolkit_1.Toolkit.run(function (tools) { return __awaiter(void 0, void 0
                                 event_id: lastEvent.id
                             })];
                     case 2:
-                        lastEventData = _a.sent();
+                        lastEventData = _c.sent();
                         myLabels = lastEventData.data.issue.labels;
                         tools.log("Do we have labels?");
-                        for (_i = 0, myLabels_1 = myLabels; _i < myLabels_1.length; _i++) {
-                            label = myLabels_1[_i];
+                        for (_b = 0, myLabels_1 = myLabels; _b < myLabels_1.length; _b++) {
+                            label = myLabels_1[_b];
                             name_1 = typeof (label) === "string" ? label : label.name;
                             if (!name_1) {
                                 continue;
                             }
                             tools.log("PR Labels from labelled event: " + name_1);
                         }
-                        _a.label = 3;
+                        _c.label = 3;
                     case 3: return [2 /*return*/];
                 }
             });
@@ -19880,14 +19884,16 @@ actions_toolkit_1.Toolkit.run(function (tools) { return __awaiter(void 0, void 0
                 tools.log("No labels to add to PR");
                 _b.label = 8;
             case 8:
-                if (!PRLabelCheck) return [3 /*break*/, 10];
-                ListEvents(pr_No);
-                tools.log("Checking PR to ensure only one config label has been added");
-                return [4 /*yield*/, ValidatePRLabel(pr_No, labelsToAdd, outputLabels)];
+                if (!PRLabelCheck) return [3 /*break*/, 11];
+                return [4 /*yield*/, ListEvents(pr_No)];
             case 9:
                 _b.sent();
-                _b.label = 10;
+                tools.log("Checking PR to ensure only one config label has been added");
+                return [4 /*yield*/, ValidatePRLabel(pr_No, labelsToAdd, outputLabels)];
             case 10:
+                _b.sent();
+                _b.label = 11;
+            case 11:
                 tools.exit.success("Action complete");
                 return [2 /*return*/];
         }

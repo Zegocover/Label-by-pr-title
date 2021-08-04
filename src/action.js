@@ -126,7 +126,7 @@ actions_toolkit_1.Toolkit.run(function (tools) { return __awaiter(void 0, void 0
                         labelMatchCount = 0;
                         pr_LabelNames = [];
                         labelIterator = [];
-                        if (!(pr_LabelsData.length > 0)) return [3 /*break*/, 2];
+                        if (!(pr_LabelsData.length <= 0)) return [3 /*break*/, 2];
                         tools.log("Pull request has labels");
                         labelIterator = pr_LabelsData;
                         return [3 /*break*/, 4];

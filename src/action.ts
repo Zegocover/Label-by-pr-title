@@ -135,7 +135,7 @@ Toolkit.run( async tools => {
 			default: boolean;
 		    }[] = [];
 
-		if (pr_LabelsData.length > 0) {
+		if (pr_LabelsData.length <= 0) {
 			tools.log("Pull request has labels");
 			labelIterator = pr_LabelsData;
 		} else {

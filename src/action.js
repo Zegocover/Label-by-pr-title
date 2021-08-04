@@ -42,12 +42,81 @@ var labels_1 = require("./labels");
 actions_toolkit_1.Toolkit.run(function (tools) { return __awaiter(void 0, void 0, void 0, function () {
     //#endregion
     //#region Github calls
+    /* Find the last event and return its data
+    */
+    function GetLastEvent(pr_No, timestamp) {
+        return __awaiter(this, void 0, void 0, function () {
+            var pageNo, link, events, lastIndex, lastEvent;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        pageNo = 0;
+                        _a.label = 1;
+                    case 1:
+                        pageNo++;
+                        return [4 /*yield*/, tools.github.issues.listEvents({
+                                owner: tools.context.repo.owner,
+                                repo: tools.context.repo.repo,
+                                issue_number: pr_No,
+                                page: pageNo
+                            })];
+                    case 2:
+                        events = _a.sent();
+                        link = events.headers.link;
+                        if (!link) {
+                            tools.exit.failure("link is undefined for page " + pageNo);
+                            return [3 /*break*/, 4];
+                        }
+                        _a.label = 3;
+                    case 3:
+                        if (link.includes("rel=\"next\"")) return [3 /*break*/, 1];
+                        _a.label = 4;
+                    case 4:
+                        lastIndex = events.data.length - 1;
+                        lastEvent = events.data[lastIndex];
+                        return [2 /*return*/, lastEvent];
+                }
+            });
+        });
+    }
+    /* Retrieve labels added by this action from the Labelled event
+    */
+    function GetLabelsFromEvent(pr_No, actionStartTime) {
+        return __awaiter(this, void 0, void 0, function () {
+            var labels, lastEvent, lastEventTime, lastEventData;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        labels = [];
+                        return [4 /*yield*/, GetLastEvent(pr_No, actionStartTime)];
+                    case 1:
+                        lastEvent = _a.sent();
+                        lastEventTime = Math.round(new Date(lastEvent.created_at).getTime() / 1000);
+                        if (!(lastEvent.event == 'labeled' && lastEventTime >= actionStartTime)) return [3 /*break*/, 3];
+                        tools.log("Found labeled event added by this action");
+                        return [4 /*yield*/, tools.github.issues.getEvent({
+                                owner: tools.context.repo.owner,
+                                repo: tools.context.repo.repo,
+                                event_id: lastEvent.id
+                            })];
+                    case 2:
+                        lastEventData = _a.sent();
+                        labels = lastEventData.data.issue.labels;
+                        return [3 /*break*/, 4];
+                    case 3:
+                        tools.exit.failure("No labeled event was created by this action");
+                        _a.label = 4;
+                    case 4: return [2 /*return*/, labels];
+                }
+            });
+        });
+    }
     /*
     * Ensure PR has only one config label
     */
-    function ValidatePRLabel(pr_No, labelAdded, outputLabels) {
+    function ValidatePRLabel(pr_No, labelAdded, outputLabels, actionStartTime) {
         return __awaiter(this, void 0, void 0, function () {
-            var pr_LabelsData, configLabels, labelMatchCount, pr_LabelNames, _i, pr_LabelsData_1, label, name_1;
+            var pr_LabelsData, configLabels, labelMatchCount, pr_LabelNames, labelIterator, _i, labelIterator_1, label, name_1;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0: return [4 /*yield*/, GetPRData(pr_No)];
@@ -56,17 +125,35 @@ actions_toolkit_1.Toolkit.run(function (tools) { return __awaiter(void 0, void 0
                         configLabels = outputLabels.split(',').map(function (i) { return i.trim(); });
                         labelMatchCount = 0;
                         pr_LabelNames = [];
-                        if (pr_Labels.length < 1) {
-                            tools.exit.failure("PR has no labels");
-                            return [2 /*return*/];
+                        labelIterator = [];
+                        if (!(pr_LabelsData.length > 0)) return [3 /*break*/, 2];
+                        tools.log("Pull request has labels");
+                        labelIterator = pr_LabelsData;
+                        return [3 /*break*/, 4];
+                    case 2:
+                        tools.log("No labels retrieved on pull request. Attempt to retrieve labeled event data created by this action.");
+                        return [4 /*yield*/, GetLabelsFromEvent(pr_No, actionStartTime)];
+                    case 3:
+                        /* PR data when labels are manually removed such that no labels exist, this action will add the label
+                        * but fail to retrieve labels from GetPRData(). This is a known limitation cref:
+                        * https://github.community/t/previous-job-runs-should-be-overridden-by-subsequent-runs/17522
+                        * workaround: Find the labeled event that was created by this action and retrieve the labels from
+                        * event data.
+                        */
+                        labelIterator = _a.sent();
+                        if (labelIterator.length == 0) {
+                            tools.exit.failure("No labels found on labeled event");
                         }
-                        for (_i = 0, pr_LabelsData_1 = pr_LabelsData; _i < pr_LabelsData_1.length; _i++) {
-                            label = pr_LabelsData_1[_i];
+                        _a.label = 4;
+                    case 4:
+                        for (_i = 0, labelIterator_1 = labelIterator; _i < labelIterator_1.length; _i++) {
+                            label = labelIterator_1[_i];
                             name_1 = typeof (label) === "string" ? label : label.name;
                             if (!name_1) {
                                 continue;
                             }
                             pr_LabelNames.push(name_1);
+                            tools.log("PR Label: " + name_1);
                             //Match PR labels with the config labels
                             if (Arr_Match(configLabels, name_1)) {
                                 labelMatchCount++;
@@ -293,7 +380,7 @@ actions_toolkit_1.Toolkit.run(function (tools) { return __awaiter(void 0, void 0
         }
         return labels;
     }
-    var configPath, PRLabelCheck, pr_No, useDefaultLabels, labels, outputLabels, pr_Data, pr_Title, pr_Labels, labelsToAdd, addLabelToPR;
+    var configPath, PRLabelCheck, pr_No, useDefaultLabels, actionStartTime, labels, outputLabels, pr_Data, pr_Title, pr_Labels, labelsToAdd, addLabelToPR;
     var _a;
     return __generator(this, function (_b) {
         switch (_b.label) {
@@ -302,6 +389,7 @@ actions_toolkit_1.Toolkit.run(function (tools) { return __awaiter(void 0, void 0
                 PRLabelCheck = !!tools.inputs.pr_label_check;
                 pr_No = (_a = tools.context.payload.pull_request) === null || _a === void 0 ? void 0 : _a.number;
                 useDefaultLabels = configPath === "N/A";
+                actionStartTime = Math.floor(Date.now() / 1000);
                 if (!configPath) {
                     tools.exit.failure("Config parameter is undefined");
                     return [2 /*return*/];
@@ -344,7 +432,7 @@ actions_toolkit_1.Toolkit.run(function (tools) { return __awaiter(void 0, void 0
             case 8:
                 if (!PRLabelCheck) return [3 /*break*/, 10];
                 tools.log("Checking PR to ensure only one config label has been added");
-                return [4 /*yield*/, ValidatePRLabel(pr_No, labelsToAdd, outputLabels)];
+                return [4 /*yield*/, ValidatePRLabel(pr_No, labelsToAdd, outputLabels, actionStartTime)];
             case 9:
                 _b.sent();
                 _b.label = 10;

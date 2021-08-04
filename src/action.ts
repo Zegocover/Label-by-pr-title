@@ -6,10 +6,10 @@ import {LabelAndCriteria} from "./labels";
 Toolkit.run( async tools => {
 	//#region Main code
 	const configPath              = tools.inputs.config;
-	const PRLabelCheck 	      = !!tools.inputs.pr_label_check;
+	const PRLabelCheck            = !!tools.inputs.pr_label_check;
 	const pr_No :number|undefined = tools.context.payload.pull_request?.number;
-    	const useDefaultLabels        = configPath ===  "N/A";
-
+	const useDefaultLabels        = configPath === "N/A";
+	var   actionStartTime         = Math.floor(Date.now()/1000);
 	if (!configPath) {
 		tools.exit.failure(`Config parameter is undefined`);
 		return;
@@ -49,7 +49,7 @@ Toolkit.run( async tools => {
 
 	if (PRLabelCheck) {
 		tools.log("Checking PR to ensure only one config label has been added")
-		await ValidatePRLabel(pr_No, labelsToAdd, outputLabels)
+		await ValidatePRLabel(pr_No, labelsToAdd, outputLabels, actionStartTime)
 	}
 	tools.exit.success("Action complete");
 
@@ -57,26 +57,108 @@ Toolkit.run( async tools => {
 
 	//#region Github calls
 
+	/* Find the last event and return its data
+	*/
+	async function GetLastEvent(pr_No :number, timestamp :number)
+	{
+		var pageNo = 0;
+		var link;
+		var events;
+
+		do {
+			pageNo++;
+			events = await tools.github.issues.listEvents({
+				owner: tools.context.repo.owner,
+				repo: tools.context.repo.repo,
+				issue_number: pr_No,
+				page:pageNo
+			});
+			link = events.headers.link
+
+			if (!link){
+				tools.exit.failure(`link is undefined for page ${pageNo}`);
+				break;
+			}
+		} while (link.includes(`rel="next"`))
+
+		let lastIndex = events.data.length -1
+		let lastEvent = events.data[lastIndex]
+
+		return lastEvent;
+	}
+
+	/* Retrieve labels added by this action from the Labelled event
+	*/
+	async function GetLabelsFromEvent(pr_No :number, actionStartTime :number ){
+		var labels : {
+			id: number;
+			node_id: string;
+			url: string;
+			name: string;
+			description: string;
+			color: string;
+			default: boolean;
+		    }[] = [];
+		const lastEvent = await GetLastEvent(pr_No,actionStartTime);
+		const lastEventTime = Math.round(new Date(lastEvent.created_at).getTime()/1000)
+
+		if (lastEvent.event == 'labeled' && lastEventTime >= actionStartTime) {
+			tools.log("Found labeled event added by this action");
+			const lastEventData = await tools.github.issues.getEvent({
+				owner: tools.context.repo.owner,
+				repo: tools.context.repo.repo,
+				event_id: lastEvent.id
+			});
+			labels = lastEventData.data.issue.labels;
+		} else {
+			tools.exit.failure("No labeled event was created by this action");
+		}
+
+		return labels;
+	}
+
 	/*
 	* Ensure PR has only one config label
 	*/
-	async function ValidatePRLabel(pr_No :number, labelAdded :string[], outputLabels :string) {
+	async function ValidatePRLabel(pr_No :number, labelAdded :string[], outputLabels :string, actionStartTime :number) {
 		const pr_LabelsData            = (await GetPRData(pr_No)).labels;
 		const configLabels : string[]  = outputLabels.split(',').map((i) => i.trim());
 		var   labelMatchCount          = 0;
 		var   pr_LabelNames : string[] = [];
+		var labelIterator : {
+			id: number;
+			node_id: string;
+			url: string;
+			name: string;
+			description: string;
+			color: string;
+			default: boolean;
+		    }[] = [];
 
-		if (pr_Labels.length<1) {
-			tools.exit.failure("PR has no labels");
-			return;
+		if (pr_LabelsData.length > 0) {
+			tools.log("Pull request has labels");
+			labelIterator = pr_LabelsData;
+		} else {
+			tools.log("No labels retrieved on pull request. Attempt to retrieve labeled event data created by this action.")
+			/* PR data when labels are manually removed such that no labels exist, this action will add the label
+			* but fail to retrieve labels from GetPRData(). This is a known limitation cref:
+			* https://github.community/t/previous-job-runs-should-be-overridden-by-subsequent-runs/17522
+			* workaround: Find the labeled event that was created by this action and retrieve the labels from
+			* event data.
+			*/
+			labelIterator = await GetLabelsFromEvent(pr_No, actionStartTime);
+			if(labelIterator.length == 0) {
+				tools.exit.failure("No labels found on labeled event");
+			}
 		}
 
-		for (let label of pr_LabelsData) {
+		for (let label of labelIterator) {
 
 			let name = typeof(label) ===  "string" ? label: label.name;
 			if (!name) {continue;}
 
 			pr_LabelNames.push(name);
+			tools.log(`PR Label: ${name}`);
 
 			//Match PR labels with the config labels
 			if (Arr_Match(configLabels, name)) {
@@ -129,7 +211,6 @@ Toolkit.run( async tools => {
 	async function AddLabel(prNumber :number, labelsToAdd :string[]) {
 
 		tools.log(`Label to add to PR: ${labelsToAdd}`)
-
 		await tools.github.issues.addLabels({
 			owner: tools.context.repo.owner,
 			repo: tools.context.repo.repo,
@@ -144,7 +225,9 @@ Toolkit.run( async tools => {
 	*/
 	async function GetPRData(pr_No : number) {
 		tools.log("Get pull request data");
-		const pullRequest = await tools.github.issues.get({
+		var pullRequest;
+
+		pullRequest = await tools.github.issues.get({
 			owner: tools.context.repo.owner,
 			repo: tools.context.repo.repo,
 			issue_number: pr_No,

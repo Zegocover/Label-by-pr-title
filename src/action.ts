@@ -135,7 +135,7 @@ Toolkit.run( async tools => {
 			default: boolean;
 		    }[] = [];
 
-		if (pr_LabelsData.length <= 0) {
+		if (pr_LabelsData.length > 0) {
 			tools.log("Pull request has labels");
 			labelIterator = pr_LabelsData;
 		} else {
@@ -231,7 +231,6 @@ Toolkit.run( async tools => {
 			owner: tools.context.repo.owner,
 			repo: tools.context.repo.repo,
 			issue_number: pr_No,
-			ref: tools.context.sha,
 		});
 
 		return pullRequest.data;

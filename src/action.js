@@ -126,7 +126,7 @@ actions_toolkit_1.Toolkit.run(function (tools) { return __awaiter(void 0, void 0
                         labelMatchCount = 0;
                         pr_LabelNames = [];
                         labelIterator = [];
-                        if (!(pr_LabelsData.length <= 0)) return [3 /*break*/, 2];
+                        if (!(pr_LabelsData.length > 0)) return [3 /*break*/, 2];
                         tools.log("Pull request has labels");
                         labelIterator = pr_LabelsData;
                         return [3 /*break*/, 4];
@@ -229,8 +229,7 @@ actions_toolkit_1.Toolkit.run(function (tools) { return __awaiter(void 0, void 0
                         return [4 /*yield*/, tools.github.issues.get({
                                 owner: tools.context.repo.owner,
                                 repo: tools.context.repo.repo,
-                                issue_number: pr_No,
-                                ref: tools.context.sha
+                                issue_number: pr_No
                             })];
                     case 1:
                         pullRequest = _a.sent();

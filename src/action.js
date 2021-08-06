@@ -160,7 +160,7 @@ actions_toolkit_1.Toolkit.run(function (tools) { return __awaiter(void 0, void 0
                             }
                         }
                         if (labelMatchCount != 1) {
-                            tools.exit.failure("Only one config label expected.\n\t\t\t\n Expected: " + labelAdded.join(',') + "\n Actual: " + pr_LabelNames.join(','));
+                            tools.exit.failure("Exactly one config label expected.\n\t\t\t\n Expected: " + labelAdded.join(',') + "\n Actual: " + pr_LabelNames.join(','));
                             return [2 /*return*/];
                         }
                         return [2 /*return*/];

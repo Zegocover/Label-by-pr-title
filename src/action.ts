@@ -167,7 +167,7 @@ Toolkit.run( async tools => {
 		}
 
 		if (labelMatchCount != 1) {
-			tools.exit.failure(`Only one config label expected.
+			tools.exit.failure(`Exactly one config label expected.
 			\n Expected: ${labelAdded.join(',')}\n Actual: ${pr_LabelNames.join(',')}`);
 			return;
 		}

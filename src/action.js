@@ -324,24 +324,27 @@ actions_toolkit_1.Toolkit.run(function (tools) { return __awaiter(void 0, void 0
             arr.splice(index, 1);
         }
     }
-    /* Given string strBase does it start with strMatch
+    /* Given string strBase does it (default) start with || matches strMatch
     *  returns: True|False
     */
-    function Str_Match(strBase, strMatch) {
-        if (strBase.toLowerCase().startsWith(strMatch.toLowerCase())) {
+    function Str_Match(strBase, strMatch, exactMatch) {
+        if (exactMatch === void 0) { exactMatch = false; }
+        if ((!exactMatch && strBase.toLowerCase().startsWith(strMatch.toLowerCase())) ||
+            (exactMatch && strBase.toLowerCase() === strMatch.toLowerCase())) {
             return true;
         }
         else {
             return false;
         }
     }
-    /* Given array arrBase for each item, does it start with strMatch
+    /* Given array arrBase for each item, does it starts with || matches (default) strMatch
     *  returns: True|False
     */
-    function Arr_Match(arrBase, strMatch) {
+    function Arr_Match(arrBase, strMatch, exactMatch) {
+        if (exactMatch === void 0) { exactMatch = true; }
         for (var _i = 0, arrBase_1 = arrBase; _i < arrBase_1.length; _i++) {
             var item = arrBase_1[_i];
-            if (Str_Match(item, strMatch)) {
+            if (Str_Match(item, strMatch, exactMatch)) {
                 return true;
             }
         }

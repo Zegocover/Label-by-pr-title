@@ -319,24 +319,25 @@ Toolkit.run( async tools => {
 		}
 	}
 
-	/* Given string strBase does it start with strMatch
+	/* Given string strBase does it (default) start with || matches strMatch
 	*  returns: True|False
 	*/
-	function Str_Match(strBase :string, strMatch :string) {
+	function Str_Match(strBase :string, strMatch :string, exactMatch : boolean = false) {
 
-		if (strBase.toLowerCase().startsWith(strMatch.toLowerCase())) {
+		if ((!exactMatch && strBase.toLowerCase().startsWith(strMatch.toLowerCase())) || 
+			(exactMatch && strBase.toLowerCase() === strMatch.toLowerCase()) ) {
 			return true;
 		}
 		else { return false; }
 	}
 
-	/* Given array arrBase for each item, does it start with strMatch
+	/* Given array arrBase for each item, does it starts with || matches (default) strMatch
 	*  returns: True|False
 	*/
-	function Arr_Match(arrBase :string[], strMatch :string) {
+	function Arr_Match(arrBase :string[], strMatch :string, exactMatch :boolean = true) {
 
 		for (let item of arrBase) {
-			if (Str_Match(item,strMatch)) {
+			if (Str_Match(item,strMatch, exactMatch)) {
 				return true;
 			}
 		}
